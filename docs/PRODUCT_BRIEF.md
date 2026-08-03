@@ -73,9 +73,11 @@ Children ages 5–9.
 ## Business model hypothesis
 
 Primary:
+
 - Family subscription
 
 Possible future revenue:
+
 - Annual family memberships
 - Situation-specific lesson packs
 - Live workshops

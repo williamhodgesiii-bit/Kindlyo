@@ -75,41 +75,41 @@ Use one highly readable sans-serif family.
 
 Requirements:
 
-* Strong lowercase readability
-* Clear distinction between similar characters
-* Comfortable line height
-* Large default child-interface sizing
-* No decorative typefaces for body text
+- Strong lowercase readability
+- Clear distinction between similar characters
+- Comfortable line height
+- Large default child-interface sizing
+- No decorative typefaces for body text
 
 ## Components
 
 Initial component set:
 
-* Button
-* Icon button
-* Card
-* Progress indicator
-* Choice card
-* Dialog
-* Toast
-* Avatar
-* Profile selector
-* Lesson shell
-* Story panel
-* Mission card
-* Parent insight card
-* Empty state
-* Error state
-* Skeleton loader
+- Button
+- Icon button
+- Card
+- Progress indicator
+- Choice card
+- Dialog
+- Toast
+- Avatar
+- Profile selector
+- Lesson shell
+- Story panel
+- Mission card
+- Parent insight card
+- Empty state
+- Error state
+- Skeleton loader
 
 ## Accessibility requirements
 
-* Minimum 44 by 44 pixel interactive targets
-* Visible focus states
-* Keyboard support
-* Semantic headings
-* Form labels
-* Sufficient contrast
-* Reduced-motion support
-* Captions or transcripts for audio and video
-* No information communicated only through color
+- Minimum 44 by 44 pixel interactive targets
+- Visible focus states
+- Keyboard support
+- Semantic headings
+- Form labels
+- Sufficient contrast
+- Reduced-motion support
+- Captions or transcripts for audio and video
+- No information communicated only through color

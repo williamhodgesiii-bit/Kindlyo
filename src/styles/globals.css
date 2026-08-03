@@ -1,0 +1,65 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+/*
+ * Global baseline. Accessibility rules here are product requirements from
+ * docs/DESIGN_SYSTEM.md, not cosmetic defaults.
+ */
+
+html {
+  /* Respect the user's font-size preference; never lock to px. */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+}
+
+/* Visible focus for every interactive element. Never remove without a
+   replacement of equal or better visibility. */
+:focus-visible {
+  outline: 3px solid var(--color-brand-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Interactive targets meet the 44x44 minimum. */
+a,
+button,
+input,
+select,
+textarea,
+[role="button"] {
+  min-height: var(--size-touch-target);
+}
+
+a,
+button,
+[role="button"] {
+  min-width: var(--size-touch-target);
+}
+
+/* Inline links in prose should not be forced to a 44px block. */
+p a,
+li a {
+  min-height: 0;
+  min-width: 0;
+}
+
+/*
+ * Reduced-motion support: honour the OS preference globally rather than
+ * relying on each component to remember.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

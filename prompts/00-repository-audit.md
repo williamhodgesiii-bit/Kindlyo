@@ -29,6 +29,7 @@ is a read-only audit. Do not change product code.
 ## Output
 
 A short written report covering:
+
 - What exists
 - What is missing
 - Risks and open questions

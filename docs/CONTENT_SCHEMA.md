@@ -59,9 +59,9 @@ export type Lesson = {
 
 ## Rules
 
-* UI components must render lesson data.
-* UI components must not contain curriculum-specific logic.
-* Lesson completion must record the lesson version.
-* Published lesson content must be immutable.
-* Revisions should create a new version.
-* Draft lessons must not appear to normal users.
+- UI components must render lesson data.
+- UI components must not contain curriculum-specific logic.
+- Lesson completion must record the lesson version.
+- Published lesson content must be immutable.
+- Revisions should create a new version.
+- Draft lessons must not appear to normal users.

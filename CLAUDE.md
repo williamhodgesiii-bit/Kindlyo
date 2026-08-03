@@ -35,12 +35,15 @@ Do not expand the scope beyond the approved MVP without explicit instruction.
 ## Target audience
 
 Primary learner:
+
 - Children ages 5–9
 
 Primary customer:
+
 - Parents and guardians
 
 Future users, but not part of the initial MVP:
+
 - Tweens
 - Teens
 - Adults

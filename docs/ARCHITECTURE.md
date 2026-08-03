@@ -39,15 +39,15 @@ Do not create microservices.
 
 ## Domain modules
 
-* Accounts
-* Families
-* Child profiles
-* Curriculum
-* Lesson delivery
-* Progress
-* Offline missions
-* Subscriptions
-* Analytics
+- Accounts
+- Families
+- Child profiles
+- Curriculum
+- Lesson delivery
+- Progress
+- Offline missions
+- Subscriptions
+- Analytics
 
 ## Boundaries
 
@@ -74,30 +74,30 @@ src/
 
 ## Data entities
 
-* User
-* Family
-* FamilyMembership
-* ChildProfile
-* Module
-* Lesson
-* LessonVersion
-* LessonProgress
-* MissionCompletion
-* Subscription
-* AnalyticsEvent
+- User
+- Family
+- FamilyMembership
+- ChildProfile
+- Module
+- Lesson
+- LessonVersion
+- LessonProgress
+- MissionCompletion
+- Subscription
+- AnalyticsEvent
 
 ## Authorization principles
 
-* Every child profile belongs to a family.
-* Every protected query must verify family membership.
-* Never trust a family or child identifier supplied by the browser.
-* Database access should be scoped to the authenticated parent.
-* Administrative curriculum publishing requires a separate permission.
+- Every child profile belongs to a family.
+- Every protected query must verify family membership.
+- Never trust a family or child identifier supplied by the browser.
+- Database access should be scoped to the authenticated parent.
+- Administrative curriculum publishing requires a separate permission.
 
 ## Initial deployment environments
 
-* Local
-* Preview
-* Production
+- Local
+- Preview
+- Production
 
 Each environment must use separate secrets and database resources.

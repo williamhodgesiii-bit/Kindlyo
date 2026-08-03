@@ -7,19 +7,25 @@ interactive stories and real-world missions.
 The parent or guardian owns the account. Children learn within a
 parent-controlled session and never create independent accounts.
 
-> **Status:** early-stage. This repository currently contains the product
-> documentation and repository scaffolding. The application foundation is set up
-> via [`prompts/01-project-foundation.md`](prompts/01-project-foundation.md).
+> **Status:** early-stage. The technical foundation and application shell are in
+> place. There is no authentication, database, payment, or analytics integration
+> yet, and no real curriculum — only placeholder module data.
 
 ## Repository structure
 
 ```text
 kindlyo/
-├── .github/            Issue and pull request templates
+├── .github/            Issue/PR templates and CI workflow
 ├── docs/               Product, curriculum, design, privacy, and technical docs
+├── e2e/                Playwright end-to-end specs
 ├── prompts/            Ordered build-phase prompts (00–12)
-├── public/             Static assets (populated during foundation setup)
-├── src/                Application source (populated during foundation setup)
+├── public/             Static assets
+├── src/
+│   ├── app/            App Router routes, error and not-found pages
+│   ├── components/     Shared UI
+│   ├── features/       Domain modules (business logic lives here, not in pages)
+│   ├── lib/            Cross-cutting helpers, including environment validation
+│   └── styles/         Design tokens and global styles
 ├── CLAUDE.md           Guardrails and working process for contributors and agents
 ├── README.md
 ├── .env.example        Example environment variables
@@ -34,20 +40,20 @@ kindlyo/
 
 ## Documentation
 
-| Document | Purpose |
-| --- | --- |
-| [PRODUCT_BRIEF.md](docs/PRODUCT_BRIEF.md) | What Kindlyo is and the problem it solves |
-| [MVP_SCOPE.md](docs/MVP_SCOPE.md) | What is in and out of the MVP |
-| [USER_JOURNEYS.md](docs/USER_JOURNEYS.md) | Primary paths through the product |
-| [CURRICULUM_PRINCIPLES.md](docs/CURRICULUM_PRINCIPLES.md) | How lessons teach |
-| [CONTENT_SCHEMA.md](docs/CONTENT_SCHEMA.md) | Structured lesson content model |
-| [DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) | Brand, tokens, components, accessibility |
-| [PRIVACY_AND_SAFETY.md](docs/PRIVACY_AND_SAFETY.md) | Data posture and safety rules |
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Stack, structure, and boundaries |
-| [ANALYTICS.md](docs/ANALYTICS.md) | What we measure and why |
-| [TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md) | Unit, component, e2e, and auth tests |
-| [ROADMAP.md](docs/ROADMAP.md) | Phased plan from discovery to validation |
-| [DECISIONS.md](docs/DECISIONS.md) | Decision log |
+| Document                                                  | Purpose                                   |
+| --------------------------------------------------------- | ----------------------------------------- |
+| [PRODUCT_BRIEF.md](docs/PRODUCT_BRIEF.md)                 | What Kindlyo is and the problem it solves |
+| [MVP_SCOPE.md](docs/MVP_SCOPE.md)                         | What is in and out of the MVP             |
+| [USER_JOURNEYS.md](docs/USER_JOURNEYS.md)                 | Primary paths through the product         |
+| [CURRICULUM_PRINCIPLES.md](docs/CURRICULUM_PRINCIPLES.md) | How lessons teach                         |
+| [CONTENT_SCHEMA.md](docs/CONTENT_SCHEMA.md)               | Structured lesson content model           |
+| [DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)                 | Brand, tokens, components, accessibility  |
+| [PRIVACY_AND_SAFETY.md](docs/PRIVACY_AND_SAFETY.md)       | Data posture and safety rules             |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md)                   | Stack, structure, and boundaries          |
+| [ANALYTICS.md](docs/ANALYTICS.md)                         | What we measure and why                   |
+| [TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md)           | Unit, component, e2e, and auth tests      |
+| [ROADMAP.md](docs/ROADMAP.md)                             | Phased plan from discovery to validation  |
+| [DECISIONS.md](docs/DECISIONS.md)                         | Decision log                              |
 
 ## Build-phase prompts
 
@@ -58,20 +64,47 @@ verification checklist.
 
 ## Getting started
 
-The application toolchain is not configured yet — that happens in
-[`prompts/01-project-foundation.md`](prompts/01-project-foundation.md). Once it
-is set up, the standard checks are:
+Requires Node.js 22 or newer.
 
 ```bash
-npm run lint
-npm run typecheck
-npm run test
-npm run test:e2e
-npm run build
+npm install
+npm run dev          # http://localhost:3000
 ```
 
-Copy [`.env.example`](.env.example) to `.env.local` and fill in values before
-running the app. Keep server-only secrets out of client code.
+Copy [`.env.example`](.env.example) to `.env.local` if you need to override
+defaults. Nothing is required to run locally — `APP_ENV` defaults to `local` and
+`NEXT_PUBLIC_APP_URL` to `http://localhost:3000`. Malformed values fail fast with
+a named error. Keep server-only secrets out of client code; only `NEXT_PUBLIC_*`
+values reach the browser.
+
+### Checks
+
+```bash
+npm run lint          # ESLint, including jsx-a11y accessibility rules
+npm run typecheck     # tsc --noEmit, strict mode
+npm run test          # Vitest unit and component tests
+npm run test:e2e      # Playwright end-to-end tests
+npm run build         # Production build
+npm run format        # Prettier
+```
+
+All of these run in CI on every push and pull request.
+
+`npm run test:e2e` downloads its own browser on first use. In environments that
+ship a pre-installed browser and forbid downloads, point at it instead:
+
+```bash
+PLAYWRIGHT_CHROMIUM_EXECUTABLE=/path/to/chromium npm run test:e2e
+```
+
+### Routes
+
+| Route         | Purpose                                    |
+| ------------- | ------------------------------------------ |
+| `/`           | Public marketing page                      |
+| `/learn`      | Placeholder learning area (module outline) |
+| `/parent`     | Placeholder parent area                    |
+| `/api/health` | Health check for uptime monitoring         |
 
 ## Contributing
 

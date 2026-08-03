@@ -1,0 +1,61 @@
+import { expect, test } from "@playwright/test";
+
+test.describe("application shell", () => {
+  test("renders the marketing page with one h1 and shared landmarks", async ({
+    page,
+  }) => {
+    await page.goto("/");
+
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+    await expect(page.getByRole("banner")).toBeVisible();
+    await expect(page.getByRole("main")).toBeVisible();
+    await expect(page.getByRole("contentinfo")).toBeVisible();
+  });
+
+  test("navigates to the placeholder routes", async ({ page }) => {
+    await page.goto("/");
+
+    await page.getByRole("link", { name: "Learn", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Learn" })).toBeVisible();
+    await expect(page.getByText("Meeting People")).toBeVisible();
+
+    await page.getByRole("link", { name: "For parents" }).click();
+    await expect(
+      page.getByRole("heading", { name: "For parents", level: 1 }),
+    ).toBeVisible();
+  });
+
+  test("skip link moves focus to the main content", async ({ page }) => {
+    await page.goto("/");
+
+    await page.keyboard.press("Tab");
+    const skipLink = page.getByRole("link", { name: "Skip to main content" });
+    await expect(skipLink).toBeFocused();
+
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(/#main-content$/);
+  });
+
+  test("shows the custom not-found page for an unknown route", async ({
+    page,
+  }) => {
+    const response = await page.goto("/this-route-does-not-exist");
+
+    expect(response?.status()).toBe(404);
+    await expect(
+      page.getByRole("heading", { name: "We could not find that page" }),
+    ).toBeVisible();
+  });
+
+  test("is usable at a small viewport without horizontal scroll", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 375, height: 720 });
+    await page.goto("/");
+
+    const overflows = await page.evaluate(
+      () => document.documentElement.scrollWidth > window.innerWidth + 1,
+    );
+    expect(overflows).toBe(false);
+  });
+});
