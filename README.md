@@ -106,6 +106,22 @@ PLAYWRIGHT_CHROMIUM_EXECUTABLE=/path/to/chromium npm run test:e2e
 | `/parent`     | Placeholder parent area                    |
 | `/api/health` | Health check for uptime monitoring         |
 
+## Daily workflow
+
+Work happens on dated `claude/YYYY-MM-DD` branches and ships to `main` at the
+end of the day:
+
+```bash
+scripts/day.sh start              # branch from main
+scripts/day.sh save "What I did"  # commit and push
+scripts/day.sh ship               # verify, write CHANGELOG.md, merge to main
+scripts/day.sh cleanup            # preview removal of merged, stale branches
+```
+
+`ship` refuses to release while any check is failing. See
+[`docs/DAILY_WORKFLOW.md`](docs/DAILY_WORKFLOW.md) for the details and
+[`CHANGELOG.md`](CHANGELOG.md) for what has shipped.
+
 ## Contributing
 
 - File bugs and ideas using the templates in
