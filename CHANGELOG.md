@@ -13,3 +13,4 @@ Newest first.
 
 - Scaffold Kindlyo repository structure and documentation
 - Add technical foundation and application shell
+- Add daily branch workflow, changelog, and stale branch cleanup
