@@ -172,15 +172,25 @@ cmd_ship() {
   # --no-ff so main's history shows one merge commit per shipping day.
   git merge --no-ff "$branch" -m "Ship $branch"
 
+  # Push the release before the tag. If tagging is restricted on the host, a
+  # failure here must not leave the merge sitting unpushed on your machine.
+  push_with_retry origin "$MAIN_BRANCH"
+
   local tag="ship/$(today)"
   if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
-    note "tag $tag already exists; leaving it alone"
+    note "tag $tag already exists locally; leaving it alone"
   else
     git tag -a "$tag" -m "Shipped $branch"
-    push_with_retry origin "$tag"
   fi
 
-  push_with_retry origin "$MAIN_BRANCH"
+  # Best effort: some hosts refuse tag creation. The release is already out, so
+  # this is a warning, never a failure.
+  if git push origin "$tag" >/dev/null 2>&1; then
+    note "pushed tag $tag"
+  else
+    note "could not push tag $tag (permission denied?); it still exists locally"
+  fi
+
   git checkout "$branch"
   info "Shipped $branch to $MAIN_BRANCH"
 }

@@ -14,3 +14,4 @@ Newest first.
 - Scaffold Kindlyo repository structure and documentation
 - Add technical foundation and application shell
 - Add daily branch workflow, changelog, and stale branch cleanup
+- Push main before tagging so a restricted tag cannot block a release

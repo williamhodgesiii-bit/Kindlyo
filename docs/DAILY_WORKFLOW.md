@@ -52,7 +52,12 @@ The end-of-day release. In order:
    to land, and commits it.
 4. Merges into `main` with `--no-ff`, so `main`'s history shows exactly one
    `Ship claude/YYYY-MM-DD` commit per day.
-5. Tags the release `ship/YYYY-MM-DD` and pushes the tag and `main`.
+5. Pushes `main`, then tags the release `ship/YYYY-MM-DD` and pushes the tag.
+
+`main` is pushed before the tag on purpose. Some hosts restrict who may create
+tags, and a blocked tag must never leave a finished release sitting unpushed on
+your machine. If the tag cannot be pushed you get a warning, the tag still
+exists locally, and the release is unaffected.
 
 `SKIP_CHECKS=1` exists for emergencies. Reaching for it routinely defeats the
 purpose of the command.
