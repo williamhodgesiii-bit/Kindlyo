@@ -89,6 +89,21 @@ Do not add any of the following unless explicitly approved:
 - Never claim a task is complete when checks are failing.
 - Do not silently change product requirements.
 
+## Session workflow
+
+Handle the branch bookkeeping yourself; the user should not have to ask.
+
+- At the start of a session, run `scripts/day.sh start` to move onto that day's
+  `claude/YYYY-MM-DD` branch. If the session begins on a different branch with
+  work already on it, say so and confirm before switching.
+- Commit and push as you go with `scripts/day.sh save "message"`.
+- When the user says they are finished for the day, or asks to ship or release,
+  run `scripts/day.sh ship`. It runs every check before merging to `main` and
+  stops if any fail. Never bypass it with `SKIP_CHECKS=1` unless asked.
+- Do not push directly to `main` by hand. `ship` is the only route.
+
+See `docs/DAILY_WORKFLOW.md` for the full description.
+
 ## Working process
 
 For every substantial task:
