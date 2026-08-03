@@ -15,3 +15,4 @@ Newest first.
 - Add technical foundation and application shell
 - Add daily branch workflow, changelog, and stale branch cleanup
 - Push main before tagging so a restricted tag cannot block a release
+- Allow tag pushes and branch deletion from hosted sessions via a GH_PAT token

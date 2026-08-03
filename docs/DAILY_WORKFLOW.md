@@ -102,6 +102,28 @@ the repository's Branches page.
 Trigger it by hand from the Actions tab. Manual runs default to a dry run;
 untick "dry run" to delete.
 
+## Pushing tags and deleting branches from a hosted session
+
+Hosted agent sessions route git through a proxy that allows pushing commits and
+branches but refuses **tag creation** and **branch deletion**. Day-to-day work is
+unaffected; only `ship`'s tag step and `cleanup`'s deletions hit it.
+
+To lift the restriction, give the session a GitHub token:
+
+1. Create a **fine-grained personal access token** on GitHub
+   (Settings → Developer settings → Personal access tokens → Fine-grained).
+   - Repository access: only this repository.
+   - Permission: **Contents → Read and write**. Nothing else is needed.
+2. Add it to the environment as **`GH_PAT`**
+   (Claude Code → environment settings → environment variables).
+
+With `GH_PAT` set, `ship` and `cleanup` automatically send just those two
+operations straight to GitHub. Everything else keeps using the normal remote.
+
+The token is passed through `GIT_ASKPASS`, so it never lands in the command
+line, in `.git/config`, or in any commit. Without `GH_PAT` nothing breaks — you
+get a warning, and the weekly cleanup workflow still handles deletions.
+
 ## Prerequisites
 
 - `main` should be the repository's **default branch**

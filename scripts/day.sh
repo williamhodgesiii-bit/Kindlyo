@@ -52,6 +52,43 @@ require_clean_tree() {
     die "working tree has uncommitted changes; commit or stash them first"
 }
 
+# owner/name, derived from the origin URL unless GH_REPO overrides it.
+repo_slug() {
+  if [ -n "${GH_REPO:-}" ]; then
+    printf '%s' "$GH_REPO"
+    return
+  fi
+  git remote get-url origin | sed -E 's#.*/([^/]+/[^/]+?)(\.git)?$#\1#'
+}
+
+# Some hosted sessions proxy git through a service that refuses tag creation
+# and branch deletion. When GH_PAT is set, send just those operations straight
+# to GitHub instead.
+#
+# The token is passed via GIT_ASKPASS so it never appears in the command line
+# or in .git/config.
+direct_push() {
+  [ -n "${GH_PAT:-}" ] || return 1
+
+  local askpass status
+  askpass="$(mktemp)"
+  cat >"$askpass" <<'ASKPASS'
+#!/bin/sh
+case "$1" in
+Username*) printf 'x-access-token' ;;
+Password*) printf '%s' "$GH_PAT" ;;
+esac
+ASKPASS
+  chmod 700 "$askpass"
+
+  GIT_ASKPASS="$askpass" GIT_TERMINAL_PROMPT=0 \
+    git push "https://github.com/$(repo_slug).git" "$@"
+  status=$?
+
+  rm -f "$askpass"
+  return "$status"
+}
+
 # Network calls occasionally fail in sandboxes and CI; retry with backoff.
 push_with_retry() {
   local attempt=0
@@ -187,8 +224,12 @@ cmd_ship() {
   # this is a warning, never a failure.
   if git push origin "$tag" >/dev/null 2>&1; then
     note "pushed tag $tag"
+  elif direct_push "$tag" >/dev/null 2>&1; then
+    note "pushed tag $tag directly to GitHub"
+  elif [ -n "${GH_PAT:-}" ]; then
+    note "could not push tag $tag even with GH_PAT; it still exists locally"
   else
-    note "could not push tag $tag (permission denied?); it still exists locally"
+    note "could not push tag $tag; set GH_PAT to push tags from here"
   fi
 
   git checkout "$branch"
@@ -224,8 +265,12 @@ cmd_cleanup() {
     found=1
     local short="${ref#origin/}"
     if [ "$apply" = "1" ]; then
-      if git push origin --delete "$short"; then
+      if git push origin --delete "$short" 2>/dev/null; then
         note "deleted $short"
+      elif direct_push --delete "$short" >/dev/null 2>&1; then
+        note "deleted $short directly on GitHub"
+      elif [ -z "${GH_PAT:-}" ]; then
+        note "could not delete $short; set GH_PAT, or let the weekly workflow do it"
       else
         note "could not delete $short (permission denied?) - remove it on GitHub"
       fi
