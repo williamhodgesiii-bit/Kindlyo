@@ -13,7 +13,7 @@ import type { Page } from "@playwright/test";
  * it creates profiles through the parent UI, so the real path is covered too.
  */
 
-const PROFILE_KEY = "kindlyo.demo.profiles.v1";
+const PROFILE_KEY = "kindlyo.prototype.profiles.v1";
 
 export type SeededProfile = { id: string; nickname: string };
 
@@ -47,6 +47,9 @@ export async function seedProfiles(
       JSON.stringify({
         profiles,
         selectedProfileId: profiles[0]?.id ?? null,
+        // Seeded families are past onboarding; the onboarding flow has its own
+        // spec that starts from nothing.
+        onboardedAt: "2026-08-04T09:00:00.000Z",
       }),
     ],
   );

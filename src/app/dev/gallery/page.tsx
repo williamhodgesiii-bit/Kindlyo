@@ -20,6 +20,7 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import { StoryPanel } from "@/components/ui/StoryPanel";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Heading, Text } from "@/components/ui/Typography";
+import { avatarIds, avatarLabels } from "@/features/profiles/types";
 import { isDevRouteEnabled } from "@/lib/devOnly";
 import {
   ChoiceDemo,
@@ -180,6 +181,28 @@ export default function GalleryPage() {
             <Avatar nickname="Sam" />
             <Avatar nickname="Ada" size="lg" />
             <Avatar size="lg" />
+          </div>
+        </Section>
+
+        <Section
+          title="Avatar pictures"
+          intent="Six drawings, addressed by id. Inline SVG only — there is no img element and no src prop anywhere, so a photograph of a child cannot be stored."
+        >
+          <div className="flex flex-wrap items-end gap-4">
+            {avatarIds.map((id) => (
+              <figure key={id} className="text-center">
+                <Avatar nickname={avatarLabels[id]} avatarId={id} size="lg" />
+                <figcaption className="mt-2 text-sm text-text-secondary">
+                  {avatarLabels[id]}
+                </figcaption>
+              </figure>
+            ))}
+            <figure className="text-center">
+              <Avatar nickname="Robin" size="lg" />
+              <figcaption className="mt-2 text-sm text-text-secondary">
+                No picture
+              </figcaption>
+            </figure>
           </div>
         </Section>
 

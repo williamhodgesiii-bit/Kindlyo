@@ -41,3 +41,33 @@ describe("Avatar", () => {
     );
   });
 });
+
+describe("drawn avatars", () => {
+  it("renders the chosen drawing instead of the initial", () => {
+    render(<Avatar nickname="Ada" avatarId="fox" />);
+
+    const avatar = screen.getByRole("img", { name: "Ada" });
+    expect(avatar.querySelector("svg")).toBeInTheDocument();
+    expect(avatar).not.toHaveTextContent("A");
+  });
+
+  it("still has no image element and no src, whatever is chosen", () => {
+    const { container } = render(<Avatar nickname="Ada" avatarId="star" />);
+
+    expect(container.querySelector("img")).toBeNull();
+    expect(container.querySelector("[src]")).toBeNull();
+  });
+
+  it("falls back to the initial when no avatar is chosen", () => {
+    render(<Avatar nickname="Ada" />);
+
+    expect(screen.getByRole("img", { name: "Ada" })).toHaveTextContent("A");
+  });
+
+  it("keeps the nickname as the accessible name, not the drawing", () => {
+    render(<Avatar nickname="Ada" avatarId="boat" />);
+
+    expect(screen.getByRole("img", { name: "Ada" })).toBeInTheDocument();
+    expect(screen.queryByText("Boat")).toBeNull();
+  });
+});

@@ -6,14 +6,18 @@ import {
   recordCompletion,
 } from "@/features/lessons/progressStorage";
 import {
+  completeOnboarding,
   createProfile,
   readFamilyState,
 } from "@/features/profiles/profileStorage";
-import { ParentDashboard } from "./ParentDashboard";
+import { ParentArea } from "./ParentArea";
 
 /** Seeded through the real stores, so the wiring is covered too. */
 function seedProfile(nickname: string): string {
-  const result = createProfile(nickname, "5–6", window.localStorage);
+  const result = createProfile(
+    { nickname: nickname, ageBand: "5–6" },
+    window.localStorage,
+  );
   if (!result.ok) throw new Error("could not seed a profile");
   return result.profile.id;
 }
@@ -34,24 +38,39 @@ function panelFor(nickname: string): HTMLElement {
 
 beforeEach(() => {
   window.localStorage.clear();
+  // These cover the dashboard, so onboarding is already behind us. The
+  // onboarding flow itself is covered in ParentOnboarding.test.tsx.
+  completeOnboarding(window.localStorage);
 });
 
+/** The dashboard is reached through ParentArea, which owns the family state. */
+function renderDashboard() {
+  return render(<ParentArea />);
+}
+
 describe("creating profiles", () => {
-  it("starts with an empty state and a form", async () => {
-    render(<ParentDashboard />);
+  async function openAddForm(user: ReturnType<typeof userEvent.setup>) {
+    await user.click(
+      await screen.findByRole("button", { name: "Add a child" }),
+    );
+  }
+
+  it("starts with an empty state offering to add one", async () => {
+    renderDashboard();
 
     expect(
       await screen.findByRole("heading", { name: "No profiles yet" }),
     ).toBeInTheDocument();
-    expect(screen.getByLabelText("Nickname")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Nickname")).not.toBeInTheDocument();
   });
 
   it("adds a profile", async () => {
     const user = userEvent.setup();
-    render(<ParentDashboard />);
+    renderDashboard();
+    await openAddForm(user);
 
-    await user.type(await screen.findByLabelText("Nickname"), "Ada");
-    await user.click(screen.getByRole("button", { name: "Add profile" }));
+    await user.type(screen.getByLabelText("Nickname"), "Ada");
+    await user.click(screen.getByRole("button", { name: "Create profile" }));
 
     expect(screen.getByRole("heading", { name: "Ada" })).toBeInTheDocument();
     expect(readFamilyState(window.localStorage).profiles).toHaveLength(1);
@@ -59,24 +78,59 @@ describe("creating profiles", () => {
 
   it("stores the chosen age band", async () => {
     const user = userEvent.setup();
-    render(<ParentDashboard />);
+    renderDashboard();
+    await openAddForm(user);
 
-    await user.type(await screen.findByLabelText("Nickname"), "Ben");
+    await user.type(screen.getByLabelText("Nickname"), "Ben");
     await user.click(screen.getByRole("radio", { name: "Ages 7–9" }));
-    await user.click(screen.getByRole("button", { name: "Add profile" }));
+    await user.click(screen.getByRole("button", { name: "Create profile" }));
 
     expect(readFamilyState(window.localStorage).profiles[0]?.ageBand).toBe(
       "7–9",
     );
   });
 
+  it("stores an optional avatar, and leaves it out when none is picked", async () => {
+    const user = userEvent.setup();
+    renderDashboard();
+    await openAddForm(user);
+
+    await user.type(screen.getByLabelText("Nickname"), "Ada");
+    await user.click(screen.getByRole("radio", { name: "Fox" }));
+    await user.click(screen.getByRole("button", { name: "Create profile" }));
+
+    expect(readFamilyState(window.localStorage).profiles[0]?.avatarId).toBe(
+      "fox",
+    );
+
+    await openAddForm(user);
+    await user.type(screen.getByLabelText("Nickname"), "Ben");
+    await user.click(screen.getByRole("button", { name: "Create profile" }));
+
+    expect(
+      readFamilyState(window.localStorage).profiles[1]?.avatarId,
+    ).toBeUndefined();
+  });
+
+  it("offers no way to enter a surname, birthday, or email", async () => {
+    const user = userEvent.setup();
+    renderDashboard();
+    await openAddForm(user);
+
+    const fields = screen.getAllByRole("textbox");
+    expect(fields).toHaveLength(1);
+    expect(fields[0]).toHaveAccessibleName("Nickname");
+    expect(
+      screen.queryByLabelText(/surname|last name|birth|email/i),
+    ).toBeNull();
+  });
+
   it("says so rather than saving an empty nickname", async () => {
     const user = userEvent.setup();
-    render(<ParentDashboard />);
+    renderDashboard();
+    await openAddForm(user);
 
-    await user.click(
-      await screen.findByRole("button", { name: "Add profile" }),
-    );
+    await user.click(screen.getByRole("button", { name: "Create profile" }));
 
     expect(screen.getByText("Please enter a nickname.")).toBeInTheDocument();
     expect(readFamilyState(window.localStorage).profiles).toHaveLength(0);
@@ -86,19 +140,150 @@ describe("creating profiles", () => {
     seedProfile("Ada");
     seedProfile("Ben");
     seedProfile("Cal");
-    render(<ParentDashboard />);
+    renderDashboard();
 
     expect(
       await screen.findByText("Three profiles is the maximum"),
     ).toBeInTheDocument();
-    expect(screen.queryByLabelText("Nickname")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Add a child" })).toBeNull();
+  });
+});
+
+describe("editing a profile", () => {
+  it("renames a child", async () => {
+    const user = userEvent.setup();
+    const ada = seedProfile("Ada");
+    renderDashboard();
+
+    await user.click(
+      await screen.findByRole("button", { name: "Edit profile: Ada" }),
+    );
+    const field = within(screen.getByRole("dialog")).getByLabelText("Nickname");
+    await user.clear(field);
+    await user.type(field, "Adaline");
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(
+      screen.getByRole("heading", { name: "Adaline" }),
+    ).toBeInTheDocument();
+    const stored = readFamilyState(window.localStorage).profiles[0];
+    expect(stored?.nickname).toBe("Adaline");
+    // Same profile, so progress and identity survive the rename.
+    expect(stored?.id).toBe(ada);
+  });
+
+  it("changes the age band and the picture", async () => {
+    const user = userEvent.setup();
+    seedProfile("Ada");
+    renderDashboard();
+
+    await user.click(
+      await screen.findByRole("button", { name: "Edit profile: Ada" }),
+    );
+    const dialog = within(screen.getByRole("dialog"));
+    await user.click(dialog.getByRole("radio", { name: "Ages 7–9" }));
+    await user.click(dialog.getByRole("radio", { name: "Star" }));
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    const stored = readFamilyState(window.localStorage).profiles[0];
+    expect(stored?.ageBand).toBe("7–9");
+    expect(stored?.avatarId).toBe("star");
+  });
+
+  it("removes a picture again", async () => {
+    const user = userEvent.setup();
+    createProfile(
+      { nickname: "Ada", ageBand: "5–6", avatarId: "fox" },
+      window.localStorage,
+    );
+    renderDashboard();
+
+    await user.click(
+      await screen.findByRole("button", { name: "Edit profile: Ada" }),
+    );
+    await user.click(
+      within(screen.getByRole("dialog")).getByRole("radio", {
+        name: "No picture",
+      }),
+    );
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(
+      readFamilyState(window.localStorage).profiles[0]?.avatarId,
+    ).toBeUndefined();
+  });
+
+  it("keeps the old details when the edit is cancelled", async () => {
+    const user = userEvent.setup();
+    seedProfile("Ada");
+    renderDashboard();
+
+    await user.click(
+      await screen.findByRole("button", { name: "Edit profile: Ada" }),
+    );
+    const field = within(screen.getByRole("dialog")).getByLabelText("Nickname");
+    await user.clear(field);
+    await user.type(field, "Someone else");
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
+
+    expect(readFamilyState(window.localStorage).profiles[0]?.nickname).toBe(
+      "Ada",
+    );
+    expect(screen.getByRole("heading", { name: "Ada" })).toBeInTheDocument();
+  });
+
+  it("refuses to save an empty nickname", async () => {
+    const user = userEvent.setup();
+    seedProfile("Ada");
+    renderDashboard();
+
+    await user.click(
+      await screen.findByRole("button", { name: "Edit profile: Ada" }),
+    );
+    await user.clear(
+      within(screen.getByRole("dialog")).getByLabelText("Nickname"),
+    );
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(screen.getByText("Please enter a nickname.")).toBeInTheDocument();
+    expect(readFamilyState(window.localStorage).profiles[0]?.nickname).toBe(
+      "Ada",
+    );
+  });
+
+  it("edits only the child whose button was pressed", async () => {
+    const user = userEvent.setup();
+    seedProfile("Ada");
+    seedProfile("Ben");
+    renderDashboard();
+
+    await user.click(
+      await screen.findByRole("button", { name: "Edit profile: Ben" }),
+    );
+    const field = within(screen.getByRole("dialog")).getByLabelText("Nickname");
+    await user.clear(field);
+    await user.type(field, "Benji");
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    const stored = readFamilyState(window.localStorage).profiles;
+    expect(stored.map((profile) => profile.nickname)).toEqual(["Ada", "Benji"]);
+  });
+});
+
+describe("prototype storage", () => {
+  it("says plainly where the data is kept", async () => {
+    renderDashboard();
+
+    expect(
+      await screen.findByText(/Prototype — stored on this device only/),
+    ).toBeInTheDocument();
   });
 });
 
 describe("progress and missions", () => {
   it("shows a calm empty state before any lesson is finished", async () => {
     seedProfile("Ada");
-    render(<ParentDashboard />);
+    renderDashboard();
 
     expect(
       await screen.findByRole("heading", { name: "No missions yet" }),
@@ -108,7 +293,7 @@ describe("progress and missions", () => {
   it("shows the module count and the mission once a lesson is finished", async () => {
     const ada = seedProfile("Ada");
     finishLesson(ada, "saying-hello");
-    render(<ParentDashboard />);
+    renderDashboard();
 
     const panel = panelFor("Ada");
     expect(
@@ -125,7 +310,7 @@ describe("progress and missions", () => {
     const user = userEvent.setup();
     const ada = seedProfile("Ada");
     finishLesson(ada, "saying-hello");
-    render(<ParentDashboard />);
+    renderDashboard();
 
     await user.click(
       await screen.findByRole("button", { name: /Mark as done/ }),
@@ -150,7 +335,7 @@ describe("progress and missions", () => {
     const ada = seedProfile("Ada");
     seedProfile("Ben");
     finishLesson(ada, "saying-hello");
-    render(<ParentDashboard />);
+    renderDashboard();
 
     expect(
       await within(panelFor("Ada")).findByRole("progressbar", {
@@ -171,7 +356,7 @@ describe("progress and missions", () => {
     const ada = seedProfile("Ada");
     seedProfile("Ben");
     finishLesson(ada, "saying-hello");
-    render(<ParentDashboard />);
+    renderDashboard();
     await screen.findByRole("heading", { name: "Ada" });
 
     expect(screen.queryByText(/streak/i)).not.toBeInTheDocument();
@@ -186,7 +371,7 @@ describe("resetting progress", () => {
     const user = userEvent.setup();
     const ada = seedProfile("Ada");
     finishLesson(ada, "saying-hello");
-    render(<ParentDashboard />);
+    renderDashboard();
 
     await user.click(
       await screen.findByRole("button", { name: /Reset progress for Ada/ }),
@@ -206,7 +391,7 @@ describe("resetting progress", () => {
     const user = userEvent.setup();
     const ada = seedProfile("Ada");
     finishLesson(ada, "saying-hello");
-    render(<ParentDashboard />);
+    renderDashboard();
 
     await user.click(
       await screen.findByRole("button", { name: /Reset progress for Ada/ }),
@@ -231,7 +416,7 @@ describe("resetting progress", () => {
     const ben = seedProfile("Ben");
     finishLesson(ada, "saying-hello");
     finishLesson(ben, "saying-hello");
-    render(<ParentDashboard />);
+    renderDashboard();
 
     await user.click(
       await screen.findByRole("button", { name: /Reset progress for Ada/ }),
@@ -252,7 +437,7 @@ describe("resetting progress", () => {
     const user = userEvent.setup();
     const ada = seedProfile("Ada");
     finishLesson(ada, "saying-hello");
-    render(<ParentDashboard />);
+    renderDashboard();
 
     await user.click(
       await screen.findByRole("button", { name: /Reset progress for Ada/ }),
@@ -271,7 +456,7 @@ describe("deleting a profile", () => {
   it("asks first", async () => {
     const user = userEvent.setup();
     seedProfile("Ada");
-    render(<ParentDashboard />);
+    renderDashboard();
 
     await user.click(
       await screen.findByRole("button", { name: /Delete profile: Ada/ }),
@@ -285,7 +470,7 @@ describe("deleting a profile", () => {
     const user = userEvent.setup();
     const ada = seedProfile("Ada");
     finishLesson(ada, "saying-hello");
-    render(<ParentDashboard />);
+    renderDashboard();
 
     await user.click(
       await screen.findByRole("button", { name: /Delete profile: Ada/ }),

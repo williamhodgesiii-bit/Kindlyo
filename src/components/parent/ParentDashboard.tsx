@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useId, useReducer, useState } from "react";
+import { useCallback, useReducer, useState } from "react";
+import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Dialog } from "@/components/ui/Dialog";
@@ -9,30 +10,25 @@ import { InlineFeedback } from "@/components/ui/InlineFeedback";
 import { MissionCard } from "@/components/ui/MissionCard";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { ProgressBar } from "@/components/ui/ProgressBar";
-import { Skeleton } from "@/components/ui/Skeleton";
 import { Heading, Text } from "@/components/ui/Typography";
-import { Avatar } from "@/components/ui/Avatar";
 import { PersonIcon } from "@/components/ui/icons";
 import { meetingPeopleModule } from "@/content/modules";
 import { setMissionStatus } from "@/features/lessons/progressStorage";
 import { useModulePath } from "@/features/lessons/useModulePath";
-import { useFamily } from "@/features/profiles/useFamily";
-import {
-  ageBands,
-  maxNicknameLength,
-  maxProfiles,
-  type AgeBand,
-  type ChildProfile,
-} from "@/features/profiles/types";
+import type { Family } from "@/features/profiles/useFamily";
+import { maxProfiles, type ChildProfile } from "@/features/profiles/types";
+import { ProfileForm } from "./ProfileForm";
+import { PrototypeStorageNotice } from "./PrototypeStorageNotice";
 
 /**
- * The parent area: profiles, progress, missions, and the controls that undo
- * things.
+ * The parent area: profiles, progress, missions, and the controls that change
+ * or undo things.
  *
- * The destructive controls — reset progress, delete profile — sit behind the
- * shared Dialog with an explicit confirmation, because
+ * Editorial in tone — this is the adult surface. Long measure, full sentences,
+ * quiet controls, and the destructive ones (reset progress, delete profile)
+ * behind the shared Dialog with an explicit confirmation, because
  * docs/PRIVACY_AND_SAFETY.md requires a parent be able to delete progress and
- * profiles, and Journey 6 requires the confirmation.
+ * profiles and Journey 6 requires the confirmation.
  *
  * Deliberately calm: a child's progress is shown as a count and a bar, with no
  * streak, no comparison between siblings, and no "behind schedule" language.
@@ -46,108 +42,20 @@ function useProgressVersion() {
   return useReducer((version: number) => version + 1, 0);
 }
 
-function CreateProfileForm({
-  onCreate,
-  atLimit,
-}: {
-  onCreate: (nickname: string, ageBand: AgeBand) => { ok: boolean };
-  atLimit: boolean;
-}) {
-  const nicknameId = useId();
-  const [nickname, setNickname] = useState("");
-  const [ageBand, setAgeBand] = useState<AgeBand>(ageBands[0] ?? "5–6");
-  const [error, setError] = useState<string | null>(null);
-
-  if (atLimit) {
-    return (
-      <InlineFeedback tone="neutral" title="Three profiles is the maximum">
-        You can create up to {maxProfiles} child profiles. Delete one below if
-        you need room for another.
-      </InlineFeedback>
-    );
-  }
-
-  return (
-    <form
-      className="grid gap-4 sm:max-w-md"
-      onSubmit={(event) => {
-        event.preventDefault();
-        const result = onCreate(nickname, ageBand);
-        if (!result.ok) {
-          setError("Please enter a nickname.");
-          return;
-        }
-        setNickname("");
-        setError(null);
-      }}
-    >
-      <div>
-        <label htmlFor={nicknameId} className="block font-semibold">
-          Nickname
-        </label>
-        <Text tone="secondary" size="sm" className="mt-1">
-          A first name or nickname is all we store. No surname, no birthday.
-        </Text>
-        <input
-          id={nicknameId}
-          name="nickname"
-          value={nickname}
-          maxLength={maxNicknameLength}
-          autoComplete="off"
-          onChange={(event) => setNickname(event.target.value)}
-          className="mt-2 w-full rounded-lg border border-border bg-surface px-4 py-2 text-base"
-        />
-      </div>
-
-      <fieldset>
-        <legend className="font-semibold">Age</legend>
-        <div className="mt-2 flex flex-wrap gap-3">
-          {ageBands.map((band) => (
-            <label
-              key={band}
-              className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2"
-            >
-              <input
-                type="radio"
-                name="ageBand"
-                value={band}
-                checked={ageBand === band}
-                onChange={() => setAgeBand(band)}
-                className="h-auto w-auto min-h-0 min-w-0"
-              />
-              Ages {band}
-            </label>
-          ))}
-        </div>
-      </fieldset>
-
-      {error ? (
-        <InlineFeedback tone="problem" title="That did not save">
-          {error}
-        </InlineFeedback>
-      ) : null}
-
-      <div>
-        <Button type="submit">Add profile</Button>
-      </div>
-    </form>
-  );
-}
-
 function ProfilePanel({
   profile,
+  family,
   onChanged,
-  onDelete,
-  onReset,
   progressVersion,
 }: {
   profile: ChildProfile;
+  family: Family;
   onChanged: () => void;
-  onDelete: (profileId: string) => void;
-  onReset: (profileId: string) => void;
   progressVersion: number;
 }) {
-  const [confirming, setConfirming] = useState<"reset" | "delete" | null>(null);
+  const [dialog, setDialog] = useState<"edit" | "reset" | "delete" | null>(
+    null,
+  );
   const path = useModulePath(profile.id, progressVersion);
 
   const missions =
@@ -169,9 +77,14 @@ function ProfilePanel({
       elevation="soft"
       aria-labelledby={`profile-${profile.id}`}
     >
-      <div className="flex flex-wrap items-center gap-3">
-        <Avatar nickname={profile.nickname} size="lg" decorative />
-        <div className="min-w-0">
+      <div className="flex flex-wrap items-center gap-4">
+        <Avatar
+          nickname={profile.nickname}
+          {...(profile.avatarId ? { avatarId: profile.avatarId } : {})}
+          size="lg"
+          decorative
+        />
+        <div className="min-w-0 flex-1">
           <Heading level={3} id={`profile-${profile.id}`}>
             {profile.nickname}
           </Heading>
@@ -179,6 +92,13 @@ function ProfilePanel({
             Ages {profile.ageBand}
           </Text>
         </div>
+        <Button
+          variant="secondary"
+          aria-label={`Edit profile: ${profile.nickname}`}
+          onClick={() => setDialog("edit")}
+        >
+          Edit
+        </Button>
       </div>
 
       <ProgressBar
@@ -238,34 +158,55 @@ function ProfilePanel({
         <Button
           variant="quiet"
           aria-label={`Reset progress for ${profile.nickname}`}
-          onClick={() => setConfirming("reset")}
+          onClick={() => setDialog("reset")}
         >
           Reset progress
         </Button>
         <Button
           variant="quiet"
           aria-label={`Delete profile: ${profile.nickname}`}
-          onClick={() => setConfirming("delete")}
+          onClick={() => setDialog("delete")}
         >
           Delete profile
         </Button>
       </div>
 
       <Dialog
-        open={confirming === "reset"}
-        onClose={() => setConfirming(null)}
+        open={dialog === "edit"}
+        onClose={() => setDialog(null)}
+        title={`Edit ${profile.nickname}'s profile`}
+      >
+        <ProfileForm
+          profile={profile}
+          submitLabel="Save changes"
+          onCancel={() => setDialog(null)}
+          onSubmit={(draft) => {
+            const result = family.update(profile.id, draft);
+            if (!result.ok) {
+              return { ok: false, reason: "Please enter a nickname." };
+            }
+            setDialog(null);
+            return { ok: true };
+          }}
+        />
+      </Dialog>
+
+      <Dialog
+        open={dialog === "reset"}
+        onClose={() => setDialog(null)}
         title={`Reset ${profile.nickname}'s progress?`}
         description="Finished lessons and mission notes are cleared, and the lessons lock back to the beginning. The profile itself stays."
         footer={
           <div className="flex flex-wrap justify-end gap-3">
-            <Button variant="secondary" onClick={() => setConfirming(null)}>
+            <Button variant="secondary" onClick={() => setDialog(null)}>
               Keep progress
             </Button>
             <Button
               variant="danger"
               onClick={() => {
-                onReset(profile.id);
-                setConfirming(null);
+                family.resetProgress(profile.id);
+                onChanged();
+                setDialog(null);
               }}
             >
               Reset progress
@@ -275,20 +216,21 @@ function ProfilePanel({
       />
 
       <Dialog
-        open={confirming === "delete"}
-        onClose={() => setConfirming(null)}
+        open={dialog === "delete"}
+        onClose={() => setDialog(null)}
         title={`Delete ${profile.nickname}'s profile?`}
         description="The profile and all of its progress are removed from this device. This cannot be undone."
         footer={
           <div className="flex flex-wrap justify-end gap-3">
-            <Button variant="secondary" onClick={() => setConfirming(null)}>
+            <Button variant="secondary" onClick={() => setDialog(null)}>
               Keep profile
             </Button>
             <Button
               variant="danger"
               onClick={() => {
-                onDelete(profile.id);
-                setConfirming(null);
+                family.remove(profile.id);
+                onChanged();
+                setDialog(null);
               }}
             >
               Delete profile
@@ -300,76 +242,91 @@ function ProfilePanel({
   );
 }
 
-export function ParentDashboard() {
-  const family = useFamily();
+export function ParentDashboard({ family }: { family: Family }) {
   const [progressVersion, bumpProgress] = useProgressVersion();
-
-  if (!family.hydrated) {
-    return (
-      <PageContainer>
-        <Skeleton variant="block" loadingLabel="Loading your family" />
-        <Skeleton variant="text" lines={3} className="mt-6" />
-      </PageContainer>
-    );
-  }
+  const [adding, setAdding] = useState(false);
+  const atLimit = family.profiles.length >= maxProfiles;
 
   return (
     <PageContainer>
       <Heading level={1}>For parents</Heading>
-      <Text size="lg" tone="secondary" className="mt-4 max-w-2xl">
+      <Text size="lg" tone="secondary" className="mt-4 max-w-prose">
         Your children&rsquo;s profiles, how they are getting on, and the
         real-world missions to try together.
       </Text>
 
-      <InlineFeedback
-        tone="neutral"
-        className="mt-6"
-        title="Stored on this device"
-      >
-        Profiles and progress are kept in this browser only while we build.
-        There are no accounts yet, and nothing is sent anywhere.
-      </InlineFeedback>
-
-      <section aria-labelledby="add-profile" className="mt-10">
-        <Heading level={2} id="add-profile">
-          Add a child profile
-        </Heading>
-        <div className="mt-4">
-          <CreateProfileForm
-            atLimit={family.profiles.length >= maxProfiles}
-            onCreate={(nickname, ageBand) => family.create(nickname, ageBand)}
-          />
-        </div>
-      </section>
+      <PrototypeStorageNotice className="mt-6" />
 
       <section aria-labelledby="profiles" className="mt-12">
-        <Heading level={2} id="profiles">
-          Profiles
-        </Heading>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <Heading level={2} id="profiles">
+            Children
+          </Heading>
+          {/* With no children yet, the empty state carries the invitation
+              instead — two identical buttons on one screen is one too many. */}
+          {!adding && !atLimit && family.profiles.length > 0 ? (
+            <Button onClick={() => setAdding(true)}>Add a child</Button>
+          ) : null}
+        </div>
 
-        {family.profiles.length === 0 ? (
+        {atLimit ? (
+          <InlineFeedback
+            tone="neutral"
+            className="mt-4"
+            title="Three profiles is the maximum"
+          >
+            You can have up to {maxProfiles} child profiles. Delete one below if
+            you need room for another.
+          </InlineFeedback>
+        ) : null}
+
+        {adding ? (
+          <Card className="mt-4">
+            <Heading level={3} size="sm">
+              Add a child
+            </Heading>
+            <div className="mt-4">
+              <ProfileForm
+                submitLabel="Create profile"
+                onCancel={() => setAdding(false)}
+                onSubmit={(draft) => {
+                  const result = family.create(draft);
+                  if (!result.ok) {
+                    return {
+                      ok: false,
+                      reason:
+                        result.reason === "limit"
+                          ? `You can have up to ${maxProfiles} profiles.`
+                          : "Please enter a nickname.",
+                    };
+                  }
+                  setAdding(false);
+                  return { ok: true };
+                }}
+              />
+            </div>
+          </Card>
+        ) : null}
+
+        {family.profiles.length === 0 && !adding ? (
           <EmptyState
             className="mt-4"
             icon={<PersonIcon />}
             title="No profiles yet"
-            description="Add a profile above, then hand the learning area to your child."
+            description="Add a profile, then hand the learning area to your child."
+            action={
+              <Button onClick={() => setAdding(true)}>Add a child</Button>
+            }
           />
         ) : (
-          <div className="mt-4 grid gap-6">
+          <div className="mt-6 grid gap-6">
             {family.profiles.map((profile) => (
               <ProfilePanel
                 key={profile.id}
                 profile={profile}
+                family={family}
                 progressVersion={progressVersion}
                 onChanged={bumpProgress}
-                onDelete={(profileId) => {
-                  family.remove(profileId);
-                  bumpProgress();
-                }}
-                onReset={(profileId) => {
-                  family.resetProgress(profileId);
-                  bumpProgress();
-                }}
               />
             ))}
           </div>

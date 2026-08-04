@@ -1,10 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  completeOnboarding,
   createProfile,
   deleteProfile,
   profileStorageKey,
   readFamilyState,
   selectProfile,
+  updateProfile,
 } from "./profileStorage";
 import { maxProfiles } from "./types";
 
@@ -31,7 +33,7 @@ beforeEach(() => {
 
 describe("creating profiles", () => {
   it("stores a nickname and an age band, and nothing else", () => {
-    const result = createProfile("Ada", "5–6", storage);
+    const result = createProfile({ nickname: "Ada", ageBand: "5–6" }, storage);
 
     expect(result.ok).toBe(true);
     if (!result.ok) return;
@@ -44,7 +46,7 @@ describe("creating profiles", () => {
   });
 
   it("round-trips through storage", () => {
-    createProfile("Ada", "5–6", storage);
+    createProfile({ nickname: "Ada", ageBand: "5–6" }, storage);
 
     const state = readFamilyState(storage);
     expect(state.profiles).toHaveLength(1);
@@ -53,8 +55,8 @@ describe("creating profiles", () => {
   });
 
   it("gives every profile its own id", () => {
-    const first = createProfile("Ada", "5–6", storage);
-    const second = createProfile("Ben", "7–9", storage);
+    const first = createProfile({ nickname: "Ada", ageBand: "5–6" }, storage);
+    const second = createProfile({ nickname: "Ben", ageBand: "7–9" }, storage);
 
     expect(
       first.ok && second.ok && first.profile.id !== second.profile.id,
@@ -62,13 +64,13 @@ describe("creating profiles", () => {
   });
 
   it("trims the nickname", () => {
-    createProfile("  Ada  ", "5–6", storage);
+    createProfile({ nickname: "  Ada  ", ageBand: "5–6" }, storage);
 
     expect(readFamilyState(storage).profiles[0]?.nickname).toBe("Ada");
   });
 
   it("refuses a nickname that is only whitespace", () => {
-    const result = createProfile("   ", "5–6", storage);
+    const result = createProfile({ nickname: "   ", ageBand: "5–6" }, storage);
 
     expect(result.ok).toBe(false);
     if (result.ok) return;
@@ -77,11 +79,11 @@ describe("creating profiles", () => {
   });
 
   it("stops at three profiles", () => {
-    createProfile("Ada", "5–6", storage);
-    createProfile("Ben", "5–6", storage);
-    createProfile("Cal", "7–9", storage);
+    createProfile({ nickname: "Ada", ageBand: "5–6" }, storage);
+    createProfile({ nickname: "Ben", ageBand: "5–6" }, storage);
+    createProfile({ nickname: "Cal", ageBand: "7–9" }, storage);
 
-    const fourth = createProfile("Dee", "7–9", storage);
+    const fourth = createProfile({ nickname: "Dee", ageBand: "7–9" }, storage);
 
     expect(fourth.ok).toBe(false);
     if (fourth.ok) return;
@@ -92,7 +94,7 @@ describe("creating profiles", () => {
 
 describe("selecting a profile", () => {
   it("remembers who is learning", () => {
-    const created = createProfile("Ada", "5–6", storage);
+    const created = createProfile({ nickname: "Ada", ageBand: "5–6" }, storage);
     if (!created.ok) throw new Error("setup failed");
 
     const state = selectProfile(created.profile.id, storage);
@@ -102,7 +104,7 @@ describe("selecting a profile", () => {
   });
 
   it("clears the selection when given null", () => {
-    const created = createProfile("Ada", "5–6", storage);
+    const created = createProfile({ nickname: "Ada", ageBand: "5–6" }, storage);
     if (!created.ok) throw new Error("setup failed");
     selectProfile(created.profile.id, storage);
 
@@ -110,7 +112,7 @@ describe("selecting a profile", () => {
   });
 
   it("refuses to select a profile that does not exist", () => {
-    createProfile("Ada", "5–6", storage);
+    createProfile({ nickname: "Ada", ageBand: "5–6" }, storage);
 
     expect(selectProfile("someone-else", storage).selectedProfileId).toBeNull();
   });
@@ -118,8 +120,8 @@ describe("selecting a profile", () => {
 
 describe("deleting a profile", () => {
   it("removes it", () => {
-    const created = createProfile("Ada", "5–6", storage);
-    createProfile("Ben", "7–9", storage);
+    const created = createProfile({ nickname: "Ada", ageBand: "5–6" }, storage);
+    createProfile({ nickname: "Ben", ageBand: "7–9" }, storage);
     if (!created.ok) throw new Error("setup failed");
 
     const state = deleteProfile(created.profile.id, storage);
@@ -128,7 +130,7 @@ describe("deleting a profile", () => {
   });
 
   it("clears the selection if the deleted profile was the selected one", () => {
-    const created = createProfile("Ada", "5–6", storage);
+    const created = createProfile({ nickname: "Ada", ageBand: "5–6" }, storage);
     if (!created.ok) throw new Error("setup failed");
     selectProfile(created.profile.id, storage);
 
@@ -138,8 +140,8 @@ describe("deleting a profile", () => {
   });
 
   it("leaves another profile's selection alone", () => {
-    const ada = createProfile("Ada", "5–6", storage);
-    const ben = createProfile("Ben", "7–9", storage);
+    const ada = createProfile({ nickname: "Ada", ageBand: "5–6" }, storage);
+    const ben = createProfile({ nickname: "Ben", ageBand: "7–9" }, storage);
     if (!ada.ok || !ben.ok) throw new Error("setup failed");
     selectProfile(ben.profile.id, storage);
 
@@ -224,10 +226,217 @@ describe("failing safely", () => {
       throw new Error("QuotaExceededError");
     });
 
-    const result = createProfile("Ada", "5–6", full);
+    const result = createProfile({ nickname: "Ada", ageBand: "5–6" }, full);
 
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.state.profiles).toHaveLength(1);
+  });
+});
+
+describe("editing a profile", () => {
+  function seed(nickname = "Ada") {
+    const result = createProfile({ nickname, ageBand: "5–6" }, storage);
+    if (!result.ok) throw new Error("setup failed");
+    return result.profile;
+  }
+
+  it("renames without changing the id", () => {
+    const ada = seed();
+
+    const result = updateProfile(ada.id, { nickname: "Adaline" }, storage);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.profile.id).toBe(ada.id);
+    expect(readFamilyState(storage).profiles[0]?.nickname).toBe("Adaline");
+  });
+
+  it("leaves fields the draft does not mention alone", () => {
+    const ada = createProfile(
+      { nickname: "Ada", ageBand: "5–6", avatarId: "fox" },
+      storage,
+    );
+    if (!ada.ok) throw new Error("setup failed");
+
+    updateProfile(ada.profile.id, { nickname: "Adaline" }, storage);
+
+    const stored = readFamilyState(storage).profiles[0];
+    expect(stored?.ageBand).toBe("5–6");
+    expect(stored?.avatarId).toBe("fox");
+  });
+
+  it("changes the age band", () => {
+    const ada = seed();
+
+    updateProfile(ada.id, { ageBand: "7–9" }, storage);
+
+    expect(readFamilyState(storage).profiles[0]?.ageBand).toBe("7–9");
+  });
+
+  it("adds an avatar", () => {
+    const ada = seed();
+
+    updateProfile(ada.id, { avatarId: "star" }, storage);
+
+    expect(readFamilyState(storage).profiles[0]?.avatarId).toBe("star");
+  });
+
+  it("clears an avatar when the draft says null", () => {
+    const ada = createProfile(
+      { nickname: "Ada", ageBand: "5–6", avatarId: "fox" },
+      storage,
+    );
+    if (!ada.ok) throw new Error("setup failed");
+
+    updateProfile(ada.profile.id, { avatarId: null }, storage);
+
+    expect(readFamilyState(storage).profiles[0]?.avatarId).toBeUndefined();
+  });
+
+  it("trims the new nickname", () => {
+    const ada = seed();
+
+    updateProfile(ada.id, { nickname: "  Adaline  " }, storage);
+
+    expect(readFamilyState(storage).profiles[0]?.nickname).toBe("Adaline");
+  });
+
+  it("refuses an empty nickname and changes nothing", () => {
+    const ada = seed();
+
+    const result = updateProfile(ada.id, { nickname: "   " }, storage);
+
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.reason).toBe("empty-nickname");
+    expect(readFamilyState(storage).profiles[0]?.nickname).toBe("Ada");
+  });
+
+  it("reports a profile that is not there", () => {
+    const result = updateProfile("nobody", { nickname: "Ghost" }, storage);
+
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.reason).toBe("not-found");
+  });
+
+  it("edits only the profile it was asked to edit", () => {
+    const ada = seed("Ada");
+    seed("Ben");
+
+    updateProfile(ada.id, { nickname: "Adaline" }, storage);
+
+    expect(
+      readFamilyState(storage).profiles.map((profile) => profile.nickname),
+    ).toEqual(["Adaline", "Ben"]);
+  });
+});
+
+describe("avatars", () => {
+  it("stores one when it is chosen", () => {
+    createProfile(
+      { nickname: "Ada", ageBand: "5–6", avatarId: "moon" },
+      storage,
+    );
+
+    expect(readFamilyState(storage).profiles[0]?.avatarId).toBe("moon");
+  });
+
+  it("leaves the field out when none is chosen", () => {
+    createProfile({ nickname: "Ada", ageBand: "5–6" }, storage);
+
+    expect("avatarId" in (readFamilyState(storage).profiles[0] ?? {})).toBe(
+      false,
+    );
+  });
+
+  it("drops an unrecognised avatar rather than the whole profile", () => {
+    const tampered = createStorage({
+      [profileStorageKey]: JSON.stringify({
+        profiles: [
+          {
+            id: "a",
+            nickname: "Ada",
+            ageBand: "5–6",
+            avatarId: "https://example.com/photo.jpg",
+            createdAt: "x",
+          },
+        ],
+        selectedProfileId: null,
+        onboardedAt: null,
+      }),
+    });
+
+    const stored = readFamilyState(tampered).profiles[0];
+    expect(stored?.nickname).toBe("Ada");
+    expect(stored?.avatarId).toBeUndefined();
+  });
+});
+
+describe("onboarding", () => {
+  it("starts unfinished", () => {
+    expect(readFamilyState(storage).onboardedAt).toBeNull();
+  });
+
+  it("records when it was completed", () => {
+    completeOnboarding(storage, "2026-08-04T10:00:00.000Z");
+
+    expect(readFamilyState(storage).onboardedAt).toBe(
+      "2026-08-04T10:00:00.000Z",
+    );
+  });
+
+  it("keeps the first completion", () => {
+    completeOnboarding(storage, "2026-08-04T10:00:00.000Z");
+    completeOnboarding(storage, "2026-08-09T10:00:00.000Z");
+
+    expect(readFamilyState(storage).onboardedAt).toBe(
+      "2026-08-04T10:00:00.000Z",
+    );
+  });
+
+  it("survives deleting every profile", () => {
+    const ada = createProfile({ nickname: "Ada", ageBand: "5–6" }, storage);
+    if (!ada.ok) throw new Error("setup failed");
+    completeOnboarding(storage, "2026-08-04T10:00:00.000Z");
+
+    deleteProfile(ada.profile.id, storage);
+
+    expect(readFamilyState(storage).profiles).toHaveLength(0);
+    expect(readFamilyState(storage).onboardedAt).not.toBeNull();
+  });
+
+  it("ignores a nonsense stored value", () => {
+    const tampered = createStorage({
+      [profileStorageKey]: JSON.stringify({
+        profiles: [],
+        selectedProfileId: null,
+        onboardedAt: 12345,
+      }),
+    });
+
+    expect(readFamilyState(tampered).onboardedAt).toBeNull();
+  });
+});
+
+describe("what is stored", () => {
+  it("holds a nickname, an age band, an avatar id, and timestamps — nothing else", () => {
+    createProfile(
+      { nickname: "Ada", ageBand: "5–6", avatarId: "fox" },
+      storage,
+    );
+    const raw = storage.getItem(profileStorageKey) ?? "";
+    const parsed = JSON.parse(raw) as {
+      profiles: Record<string, unknown>[];
+    };
+
+    expect(Object.keys(parsed.profiles[0] ?? {}).sort()).toEqual([
+      "ageBand",
+      "avatarId",
+      "createdAt",
+      "id",
+      "nickname",
+    ]);
   });
 });

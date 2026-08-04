@@ -26,9 +26,11 @@ test.describe("application shell", () => {
       }),
     ).toBeVisible();
 
+    // A browser with no profiles is a parent's first visit, so the parent area
+    // opens on onboarding. The flow itself is covered in profiles.spec.ts.
     await page.getByRole("link", { name: "For parents" }).click();
     await expect(
-      page.getByRole("heading", { name: "For parents", level: 1 }),
+      page.getByRole("heading", { name: "Welcome to Kindlyo", level: 1 }),
     ).toBeVisible();
   });
 
