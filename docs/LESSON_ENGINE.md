@@ -13,6 +13,7 @@ src/content/
 ├── modules.ts              the module outline (eight titles from MVP_SCOPE)
 └── lessons/
     ├── saying-hello.ts     authored content, one file per lesson
+    ├── …                   lessons 2-8
     └── index.ts            validates every lesson at import
 
 src/features/curriculum/
@@ -24,14 +25,23 @@ src/features/curriculum/
 src/features/lessons/
 ├── steps.ts                lesson -> ordered steps
 ├── lessonMachine.ts        progression rules, as a pure reducer
-├── progressStorage.ts      refresh-safe demo progress in local storage
-└── useLessonRun.ts         binds the reducer to a lesson and to storage
+├── moduleProgress.ts       progress -> locked/available/in-progress/complete
+├── progressStorage.ts      per-profile progress in local storage
+├── useLessonRun.ts         binds the reducer to a lesson and to storage
+└── useModulePath.ts        reads one child's path after mount
+
+src/features/profiles/
+├── types.ts                a nickname and an age band, nothing else
+├── profileStorage.ts       local demo profiles, capped at three
+└── useFamily.ts            client access to profiles and the selection
 
 src/components/lesson/
-├── LessonRunner.tsx        the renderer: switches on step kind
+├── LessonRunner.tsx        the profile gate, then the renderer
 ├── illustrations.tsx       local SVG scenes, keyed by illustrationKey
 └── steps/                  one view per step kind
 
+src/components/path/LearningPath.tsx    who is learning, and where they are
+src/components/parent/ParentDashboard.tsx   profiles, missions, reset, delete
 src/components/shells/LessonShell.tsx   title, progress, step region, footer
 ```
 
@@ -90,6 +100,54 @@ Deliberate choices worth keeping:
   the reducer stays pure.
 - **`hydrate` lives in the machine** rather than a `useState` beside it, so
   restoring saved progress is one transition instead of two racing updates.
+
+## Module progression
+
+`buildModulePath(module, getLesson, progress)` derives one child's view of the
+module: every lesson as `locked`, `available`, `in-progress`, `complete`, or
+`unwritten`, plus the finished count and where "Continue" should go. Pure, like
+the lesson reducer, so the unlock rules live in one tested place.
+
+The rules:
+
+- The first written lesson is always available.
+- **Completing a lesson unlocks the next one.** Nothing else does — a
+  half-finished run leaves the next lesson locked.
+- Complete beats in-progress: replaying a finished lesson leaves it complete,
+  and finished lessons stay open. Locking a child out of a story they liked
+  would be a punitive mechanic.
+- A saved run counts as in-progress only if it matches the current lesson
+  version. A stale run cannot be resumed, so it must not claim "Continue".
+- Unwritten entries are shown as "being written" and skipped by the chain: a
+  child is never locked out by our authoring backlog.
+
+Locked rows render information, not a control. There is no button to press and
+be refused, the wording is a direction ("Finish lesson 2 first") rather than a
+demerit, and the state is carried in words as well as by the icon.
+
+## Progress, per child
+
+Progress belongs to a child profile, and one child's progress must never appear
+for another. That is enforced in the store rather than in the screens: every
+read and write in `progressStorage.ts` takes a `profileId` first, and the file
+is nested `{ [profileId]: { [lessonId]: entry } }`.
+
+An entry holds up to three things:
+
+| Field           | Written by                     | Version rule                                    |
+| --------------- | ------------------------------ | ----------------------------------------------- |
+| `run`           | the lesson, as it is played    | strict — resumed only on an exact version match |
+| `completion`    | reaching the completion step   | recorded, but survives a revision               |
+| `missionStatus` | the parent, from the dashboard | none                                            |
+
+The two version rules differ on purpose. A `run` points at a step that may have
+moved, so a revision discards it. A `completion` is an achievement; a content
+edit must not silently erase a child's finished lessons, or re-lock what they
+had opened.
+
+Profiles themselves live in `src/features/profiles/`: a nickname, an age band,
+an id, and a created-at date — no legal name, no birthday, no photograph
+(`PRIVACY_AND_SAFETY.md`). Up to three per family, enforced in the store.
 
 ## Content validation
 
@@ -155,18 +213,23 @@ Accessibility work the engine owns:
 
 ## Edge cases handled
 
-| Case                                        | Behaviour                                     |
-| ------------------------------------------- | --------------------------------------------- |
-| Unknown lesson slug                         | 404                                           |
-| Draft lesson, viewer may not see drafts     | 404, through the same path as unknown         |
-| Saved step index beyond the lesson          | clamped to the last step                      |
-| Saved choice id no longer in the content    | dropped; the step asks again                  |
-| Saved progress from an older lesson version | discarded; lesson starts fresh                |
-| Corrupt or tampered local storage           | ignored; lesson starts fresh                  |
-| Local storage disabled or full              | lesson runs, progress is simply not saved     |
-| Unknown `illustrationKey`                   | neutral placeholder drawing, no error         |
-| Reload mid-lesson                           | resumes on the same step, with answers intact |
-| Before storage has been read                | skeleton, so step one never flashes           |
+| Case                                        | Behaviour                                                |
+| ------------------------------------------- | -------------------------------------------------------- |
+| Unknown lesson slug                         | 404                                                      |
+| Draft lesson, viewer may not see drafts     | 404, through the same path as unknown                    |
+| Saved step index beyond the lesson          | clamped to the last step                                 |
+| Saved choice id no longer in the content    | dropped; the step asks again                             |
+| Saved progress from an older lesson version | discarded; lesson starts fresh                           |
+| Corrupt or tampered local storage           | ignored; lesson starts fresh                             |
+| Local storage disabled or full              | lesson runs, progress is simply not saved                |
+| Unknown `illustrationKey`                   | neutral placeholder drawing, no error                    |
+| Reload mid-lesson                           | resumes on the same step, with answers intact            |
+| Before storage has been read                | skeleton, so step one never flashes                      |
+| No profile selected                         | the lesson asks who is learning, and links to the picker |
+| Lesson not unlocked for this child          | "Not this one yet", with the way back                    |
+| Profile deleted                             | its progress goes with it; selection clears              |
+| Selection pointing at a deleted profile     | resolves to nobody, never to another child               |
+| More than three profiles in storage         | capped on read, so a hand edit cannot widen it           |
 
 ## Acceptance criteria
 
@@ -186,8 +249,19 @@ The slice is done when all of these hold, and they do:
    Playwright spec runs the lesson start to finish in a production build.
 10. Lint, typecheck, unit tests, e2e, and `next build` all pass.
 
+## The review activity
+
+Lesson 8, "Review and real-world challenge", is the module's review: two
+decision scenes that revisit the earlier principles inside one new story, plus
+the real-world challenge as its offline mission. It uses the ordinary lesson
+schema — no separate quiz machinery — which is why there is no review engine in
+this directory. Spaced review across sessions (`reviewQuestionIds`, still
+empty) is a later slice.
+
 ## Not in this slice
 
-Authentication, database persistence, child profiles, progress in the parent
-dashboard, spaced review (`reviewQuestionIds` is present but empty), marking a
-mission complete, and lessons two through eight.
+Authentication, database persistence, subscriptions, spaced review, and any
+module beyond "Meeting People". Profiles and progress are local to one browser:
+they are per-device, shared by anyone using it, and lost when storage is
+cleared. That is acceptable for demo progress and not acceptable for real
+progress — the database slice replaces both stores.

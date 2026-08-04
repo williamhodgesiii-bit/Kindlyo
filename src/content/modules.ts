@@ -34,13 +34,21 @@ export const meetingPeopleModule: CurriculumModule = {
   status: "draft",
   lessons: [
     { order: 1, title: "Saying hello", slug: "saying-hello" },
-    { order: 2, title: "Introducing yourself" },
-    { order: 3, title: "Remembering and using names" },
-    { order: 4, title: "Meeting someone new" },
-    { order: 5, title: "Joining a group" },
-    { order: 6, title: "Listening while someone speaks" },
-    { order: 7, title: "Leaving a conversation" },
-    { order: 8, title: "Review and real-world challenge" },
+    { order: 2, title: "Introducing yourself", slug: "introducing-yourself" },
+    { order: 3, title: "Remembering and using names", slug: "using-names" },
+    { order: 4, title: "Meeting someone new", slug: "meeting-someone-new" },
+    { order: 5, title: "Joining a group", slug: "joining-a-group" },
+    { order: 6, title: "Listening while someone speaks", slug: "listening" },
+    {
+      order: 7,
+      title: "Leaving a conversation",
+      slug: "leaving-a-conversation",
+    },
+    {
+      order: 8,
+      title: "Review and real-world challenge",
+      slug: "review-challenge",
+    },
   ],
 };
 

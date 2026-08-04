@@ -2,6 +2,11 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import { makeTestLesson } from "@/features/curriculum/fixtures";
+import { readProfileProgress } from "@/features/lessons/progressStorage";
+import {
+  createProfile,
+  selectProfile,
+} from "@/features/profiles/profileStorage";
 import { LessonRunner } from "./LessonRunner";
 
 /**
@@ -11,7 +16,21 @@ import { LessonRunner } from "./LessonRunner";
  * a decision, and every choice answers with its own feedback.
  */
 
-const lesson = makeTestLesson();
+/**
+ * The fixture lesson stands in for lesson one: its id and slug match the first
+ * lesson of the real module, so the path guard treats it as the open lesson
+ * rather than a locked one.
+ */
+const lesson = makeTestLesson({ id: "saying-hello", slug: "saying-hello" });
+
+let profileId = "";
+
+function seedSelectedProfile(nickname = "Ada"): string {
+  const result = createProfile(nickname, "5–6", window.localStorage);
+  if (!result.ok) throw new Error("could not seed a profile");
+  selectProfile(result.profile.id, window.localStorage);
+  return result.profile.id;
+}
 
 function next() {
   return screen.getByRole("button", { name: "Next" });
@@ -35,6 +54,7 @@ async function goTo(
 
 beforeEach(() => {
   window.localStorage.clear();
+  profileId = seedSelectedProfile();
 });
 
 describe("LessonRunner", () => {
@@ -258,5 +278,83 @@ describe("LessonRunner", () => {
 
     const heading = screen.getByRole("heading", { name: "The decision" });
     expect(document.activeElement).toBe(heading.closest("[tabindex='-1']"));
+  });
+});
+
+describe("the profile gate", () => {
+  it("asks who is learning before starting a lesson", async () => {
+    window.localStorage.clear();
+    render(<LessonRunner lesson={lesson} />);
+
+    expect(
+      await screen.findByRole("heading", { name: "Who is learning?" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Choose a profile" }),
+    ).toHaveAttribute("href", "/learn");
+    expect(screen.queryByText("Something happens.")).not.toBeInTheDocument();
+  });
+
+  it("will not open a lesson the child has not unlocked", async () => {
+    // Lesson two, with lesson one unfinished.
+    const locked = makeTestLesson({
+      id: "introducing-yourself",
+      slug: "introducing-yourself",
+      order: 2,
+    });
+    render(<LessonRunner lesson={locked} />);
+
+    expect(
+      await screen.findByRole("heading", { name: "Not this one yet" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/opens after lesson 1/)).toBeInTheDocument();
+    expect(screen.queryByText("Something happens.")).not.toBeInTheDocument();
+  });
+});
+
+describe("recording completion", () => {
+  it("records the lesson and its version against the chosen profile", async () => {
+    const user = userEvent.setup();
+    render(<LessonRunner lesson={lesson} />);
+    await screen.findByRole("heading", { name: "The opening" });
+
+    await goTo(user, "completion");
+
+    const entry = readProfileProgress(profileId, window.localStorage)[
+      lesson.id
+    ];
+    expect(entry?.completion?.lessonVersion).toBe(lesson.version);
+    expect(entry?.completion?.completedAt).toEqual(expect.any(String));
+  });
+
+  it("records nothing against any other profile", async () => {
+    const user = userEvent.setup();
+    const other = createProfile("Ben", "7–9", window.localStorage);
+    if (!other.ok) throw new Error("could not seed a second profile");
+
+    render(<LessonRunner lesson={lesson} />);
+    await screen.findByRole("heading", { name: "The opening" });
+    await goTo(user, "completion");
+
+    expect(readProfileProgress(other.profile.id, window.localStorage)).toEqual(
+      {},
+    );
+  });
+
+  it("keeps the completion when the lesson is started again", async () => {
+    const user = userEvent.setup();
+    render(<LessonRunner lesson={lesson} />);
+    await screen.findByRole("heading", { name: "The opening" });
+    await goTo(user, "completion");
+
+    await user.click(
+      screen.getByRole("button", { name: "Start this lesson again" }),
+    );
+
+    // Replaying must not re-lock the lessons this one unlocked.
+    expect(
+      readProfileProgress(profileId, window.localStorage)[lesson.id]
+        ?.completion,
+    ).toBeDefined();
   });
 });

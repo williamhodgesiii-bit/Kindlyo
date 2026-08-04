@@ -140,6 +140,141 @@ function TwoChildrenMeeting({ className }: IllustrationProps) {
   );
 }
 
+/** Two children side by side, mid-conversation. */
+function TwoChildrenTalking({ className }: IllustrationProps) {
+  return (
+    <svg {...svgProps} className={className}>
+      <rect width="320" height="180" rx="20" fill="var(--color-tint-clay)" />
+      {/* Left child, leaning in */}
+      <circle cx="118" cy="72" r="24" fill="var(--color-brand-secondary)" />
+      <rect
+        x="88"
+        y="102"
+        width="60"
+        height="52"
+        rx="24"
+        fill="var(--color-brand-secondary)"
+      />
+      {/* Right child */}
+      <circle cx="202" cy="72" r="24" fill="var(--color-brand-accent)" />
+      <rect
+        x="172"
+        y="102"
+        width="60"
+        height="52"
+        rx="24"
+        fill="var(--color-brand-accent)"
+      />
+      {/* Speech bubbles, one each */}
+      <rect
+        x="70"
+        y="26"
+        width="56"
+        height="26"
+        rx="13"
+        fill="var(--color-surface)"
+      />
+      <rect
+        x="196"
+        y="30"
+        width="44"
+        height="22"
+        rx="11"
+        fill="var(--color-surface)"
+      />
+    </svg>
+  );
+}
+
+/** A small group at work, with space at the edge for one more. */
+function GroupOfChildren({ className }: IllustrationProps) {
+  return (
+    <svg {...svgProps} className={className}>
+      <rect width="320" height="180" rx="20" fill="var(--color-tint-sage)" />
+      {/* The group, gathered around something */}
+      <circle cx="120" cy="66" r="20" fill="var(--color-brand-primary)" />
+      <circle cx="168" cy="58" r="20" fill="var(--color-brand-secondary)" />
+      <circle cx="214" cy="68" r="20" fill="var(--color-brand-accent)" />
+      <rect
+        x="96"
+        y="88"
+        width="144"
+        height="52"
+        rx="24"
+        fill="var(--color-surface)"
+        opacity="0.9"
+      />
+      {/* The thing they are making */}
+      <rect
+        x="132"
+        y="104"
+        width="72"
+        height="20"
+        rx="10"
+        fill="var(--color-brand-accent)"
+      />
+      {/* One child at the edge, not yet part of it */}
+      <circle cx="52" cy="112" r="16" fill="var(--color-brand-secondary)" />
+      <rect
+        x="34"
+        y="130"
+        width="36"
+        height="28"
+        rx="14"
+        fill="var(--color-brand-secondary)"
+      />
+    </svg>
+  );
+}
+
+/** One child heading off, hand raised back toward another. */
+function WavingGoodbye({ className }: IllustrationProps) {
+  return (
+    <svg {...svgProps} className={className}>
+      <rect width="320" height="180" rx="20" fill="var(--color-tint-honey)" />
+      {/* A doorway */}
+      <rect
+        x="236"
+        y="36"
+        width="56"
+        height="120"
+        rx="10"
+        fill="var(--color-surface)"
+        opacity="0.85"
+      />
+      {/* Staying child */}
+      <circle cx="96" cy="78" r="22" fill="var(--color-brand-secondary)" />
+      <rect
+        x="68"
+        y="106"
+        width="56"
+        height="48"
+        rx="22"
+        fill="var(--color-brand-secondary)"
+      />
+      {/* Leaving child, turned toward the door, waving back */}
+      <circle cx="204" cy="82" r="22" fill="var(--color-brand-primary)" />
+      <rect
+        x="178"
+        y="110"
+        width="52"
+        height="44"
+        rx="20"
+        fill="var(--color-brand-primary)"
+      />
+      <rect
+        x="162"
+        y="66"
+        width="12"
+        height="30"
+        rx="6"
+        fill="var(--color-brand-primary)"
+        transform="rotate(-28 168 81)"
+      />
+    </svg>
+  );
+}
+
 /** Neutral placeholder for a key with no drawing yet. */
 function PlaceholderScene({ className }: IllustrationProps) {
   return (
@@ -162,6 +297,9 @@ function PlaceholderScene({ className }: IllustrationProps) {
 const illustrations: Record<string, ComponentType<IllustrationProps>> = {
   "art-table-morning": ArtTableMorning,
   "two-children-meeting": TwoChildrenMeeting,
+  "two-children-talking": TwoChildrenTalking,
+  "group-of-children": GroupOfChildren,
+  "waving-goodbye": WavingGoodbye,
 };
 
 export const illustrationKeys = Object.keys(illustrations);

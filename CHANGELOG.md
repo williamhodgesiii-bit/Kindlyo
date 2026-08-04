@@ -11,6 +11,10 @@ Newest first.
 
 ## 2026-08-04
 
+- Add the local progress system for the Meeting People module
+
+## 2026-08-04
+
 - Build the lesson-engine vertical slice with lesson one
 
 ## 2026-08-04

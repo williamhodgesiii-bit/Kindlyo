@@ -304,3 +304,61 @@ Format:
   `getLessonBySlug` starts returning `undefined` for drafts — which the lesson
   route already turns into a 404 through the same path as an unknown slug, so
   the URL cannot be used to probe for unreleased content.
+
+## 021. Local progress is scoped to a child profile, in a v2 store
+
+- Date: 2026-08-04
+- Status: accepted
+- Context: Decision 019 stored demo progress as a single anonymous track. The
+  module now needs progress per child, and "one child's progress must never
+  appear for another child" is a product rule, not a nicety. There is still no
+  database and no account to hang a profile on.
+- Decision: Add local child profiles (`src/features/profiles/`) — a nickname,
+  an age band, an id, and a created-at date, capped at three, with the cap and
+  the validation enforced in the store rather than in the form. Move lesson
+  progress to a v2 key nested under the profile id, so every read and write
+  takes a `profileId` first and scoping cannot be forgotten at a call site. The
+  v1 key is ignored rather than migrated.
+- Consequences: Profile separation is enforced by the shape of the store and
+  covered by unit and end-to-end tests. Discarding v1 loses any demo progress
+  from the previous build, which is the right trade for scaffolding. Local
+  storage is still per-device and shared by everyone using it; the database
+  slice replaces both stores, and the profile shape is deliberately close to
+  what that table will hold.
+
+## 022. Completions survive a lesson revision; runs do not
+
+- Date: 2026-08-04
+- Status: accepted
+- Context: Every progress record carries the lesson version it was made
+  against. Decision 019 discarded anything from a different version, which is
+  right for a resumable position and wrong for a finished lesson: a typo fix
+  would have erased a child's completed lessons and re-locked the rest of the
+  module behind them.
+- Decision: Split the two. A `run` stays version-strict — the step it points at
+  may have moved, so a revision discards it and the lesson starts fresh. A
+  `completion` records the version but is never invalidated by a later one.
+  Replaying a lesson keeps the first completion rather than rewriting it.
+- Consequences: A content edit is safe to make. The recorded version is the
+  audit trail — it says which text a child actually completed — rather than a
+  cache key. If a lesson is ever rewritten so substantially that old
+  completions should not count, that needs a deliberate migration, not a
+  version bump.
+
+## 023. Lesson 8 is the review activity; missions are marked by the parent
+
+- Date: 2026-08-04
+- Status: accepted
+- Context: The module needs a review activity and an offline-mission status.
+  Both could have been new subsystems — a quiz engine, a child-facing "I did
+  it" button.
+- Decision: Author lesson 8 ("Review and real-world challenge", already named
+  in `MVP_SCOPE.md`) as a review-shaped lesson in the ordinary content schema:
+  decision scenes that revisit the earlier principles in one new story, with
+  the real-world challenge as its mission. Mission status is binary and marked
+  by the parent in their own area, not by the child on the completion screen.
+- Consequences: No new machinery for either. The review benefits from every
+  accessibility and content rule the lesson engine already enforces, and
+  spaced review can be added later without unpicking it. Marking a mission
+  stays with the adult who was actually there, which is also what Journey 4
+  describes; a child cannot mark their own homework.

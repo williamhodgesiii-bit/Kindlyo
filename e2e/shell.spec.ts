@@ -17,7 +17,14 @@ test.describe("application shell", () => {
 
     await page.getByRole("link", { name: "Learn", exact: true }).click();
     await expect(page.getByRole("heading", { name: "Learn" })).toBeVisible();
-    await expect(page.getByText("Meeting People")).toBeVisible();
+    // With no child profile on this device, the learning area asks a grown-up
+    // to set one up rather than showing the module. Progression itself is
+    // covered in progress.spec.ts.
+    await expect(
+      page.getByRole("heading", {
+        name: "First, a grown-up sets up a profile",
+      }),
+    ).toBeVisible();
 
     await page.getByRole("link", { name: "For parents" }).click();
     await expect(
