@@ -11,6 +11,10 @@ Newest first.
 
 ## 2026-08-04
 
+- Build the lesson-engine vertical slice with lesson one
+
+## 2026-08-04
+
 - Add the Kindlyo design system and component gallery
 - Keep next dev from rewriting CLAUDE.md on every run
 

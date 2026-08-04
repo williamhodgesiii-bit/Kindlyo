@@ -95,12 +95,16 @@ child and parent surfaces can have genuinely different chrome.
 
 Every route passes through exactly one shell:
 
-| Route      | Shell                                                 |
-| ---------- | ----------------------------------------------------- |
-| `/`        | `ParentAppShell` via `src/app/(marketing)/layout.tsx` |
-| `/learn`   | `ChildAppShell` via `src/app/learn/layout.tsx`        |
-| `/parent`  | `ParentAppShell` via `src/app/parent/layout.tsx`      |
-| 404, error | `ParentAppShell`, rendered by the page itself         |
+| Route                       | Shell                                                 |
+| --------------------------- | ----------------------------------------------------- |
+| `/`                         | `ParentAppShell` via `src/app/(marketing)/layout.tsx` |
+| `/learn`, `/learn/lesson/…` | `ChildAppShell` via `src/app/learn/layout.tsx`        |
+| `/parent`                   | `ParentAppShell` via `src/app/parent/layout.tsx`      |
+| 404, error                  | `ParentAppShell`, rendered by the page itself         |
+
+`LessonShell` is not in that table on purpose: it is chrome _inside_ `main`,
+not a landmark provider, so it nests under `ChildAppShell` without adding a
+second `header` or `footer`.
 
 `not-found.tsx` and `error.tsx` sit directly under the root layout, so they
 supply their own shell. That is why the shells are components rather than
@@ -133,6 +137,13 @@ break by accident.
 - **Nothing is communicated by colour alone.** Selection carries `aria-pressed`
   and a check icon; feedback carries an icon and a text title; progress carries
   a visible count; mission status carries a word.
+- **No remote images.** Scene illustrations in `src/components/lesson/` are
+  inline SVG built from local shapes, are always `aria-hidden`, and fall back to
+  a neutral drawing for an unknown key. Content validation rejects an
+  `illustrationKey` that looks like a URL.
+- **Review status is shown, never implied.** `ContentStatusBadge` renders the
+  real `status` from the content, and validation refuses to let a lesson claim
+  review without a named reviewer and a date.
 
 ## Components
 
@@ -228,6 +239,43 @@ technology and announces loading once via a `role="status"` sibling.
 
 The page gutter and measure. Replaces the `mx-auto max-w-5xl px-4 py-12` string
 that was copied into every page.
+
+### `ContentStatusBadge`
+
+The review state of a piece of content, shown rather than hidden — `CLAUDE.md`
+requires visible internal metadata for draft, reviewed, and published content.
+The visible label is one word; the longer explanation ("Draft content, not yet
+reviewed by a qualified human") is always present for screen readers and can be
+shown visibly with `withDescription`. Muted, not alarming: draft is information,
+not an error.
+
+### `StoryPanel`
+
+A scene: picture, title, narration, and optional children below. Takes the
+illustration as a node rather than a key, so no curriculum vocabulary reaches
+the design system. **The illustration slot is decorative by contract** — a test
+asserts the panel reads identically with the picture missing.
+
+### `ParentInsightCard`
+
+Something addressed to the adult, rendered inside a child's screen. An eyebrow
+label ("For grown-ups") and a sand tint make it obviously not addressed to the
+child. Holds a paragraph and a few concrete suggestions; parent participation
+should be useful but lightweight.
+
+### `LessonShell`
+
+Lesson chrome: title, content status, a `ProgressBar` showing position, the
+current step, and a footer for navigation. Content-agnostic — it renders what
+it is handed and knows nothing about scenes or choices.
+
+It owns one behaviour: when `stepKey` changes, focus moves to the step region,
+so a keyboard or screen-reader user is not left parked on a button at the
+bottom of a page whose content has silently been replaced. It does **not** move
+focus on first render.
+
+The only client component here besides `Dialog`, and for the same kind of
+reason: focus management needs an effect.
 
 ## What the tests do not cover
 
