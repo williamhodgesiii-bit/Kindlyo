@@ -14,19 +14,28 @@ import {
   type LessonRunState,
 } from "./lessonMachine";
 import {
-  clearLessonProgress,
-  readLessonProgress,
-  writeLessonProgress,
+  clearLessonRun,
+  readLessonRun,
+  recordCompletion,
+  writeLessonRun,
 } from "./progressStorage";
 import { buildLessonSteps, getLastStep, type LessonStep } from "./steps";
 
 /**
- * Binds the lesson reducer to a lesson and to saved demo progress.
+ * Binds the lesson reducer to a lesson, a child profile, and saved progress.
+ *
+ * Everything stored is keyed by `profileId`, so one child's run can never
+ * resume into another child's session — the storage layer enforces the
+ * scoping, and this hook simply never reads or writes without the id.
  *
  * Saved progress is read after mount, never during render: reading local
  * storage while rendering would make the server and client output disagree.
  * Until that read has happened `hydrated` is false and the page shows a
  * loading state, so a resumed lesson never flashes step one first.
+ *
+ * Reaching the completion step records a completion (with the lesson version,
+ * a product rule) via `recordCompletion`, which keeps the first completion —
+ * replaying never rewrites history.
  */
 
 export type LessonRun = {
@@ -49,7 +58,7 @@ export type LessonRun = {
   restart: () => void;
 };
 
-export function useLessonRun(lesson: Lesson): LessonRun {
+export function useLessonRun(lesson: Lesson, profileId: string): LessonRun {
   const steps = useMemo(() => buildLessonSteps(lesson), [lesson]);
   const reducer = useMemo(() => createLessonReducer(steps), [steps]);
   const [state, dispatch] = useReducer(reducer, initialLessonRunState);
@@ -57,14 +66,26 @@ export function useLessonRun(lesson: Lesson): LessonRun {
   useEffect(() => {
     dispatch({
       type: "hydrate",
-      progress: readLessonProgress(lesson.id, lesson.version),
+      progress: readLessonRun(profileId, lesson.id, lesson.version),
     });
-  }, [lesson.id, lesson.version]);
+  }, [profileId, lesson.id, lesson.version]);
 
   useEffect(() => {
     if (!state.hydrated) return;
-    writeLessonProgress(lesson.id, lesson.version, toLessonProgress(state));
-  }, [lesson.id, lesson.version, state]);
+    writeLessonRun(
+      profileId,
+      lesson.id,
+      lesson.version,
+      toLessonProgress(state),
+    );
+  }, [profileId, lesson.id, lesson.version, state]);
+
+  // The completion record is written separately from the run so it survives
+  // restarts and version bumps (see progressStorage.ts).
+  useEffect(() => {
+    if (!state.hydrated || state.completedAt === null) return;
+    recordCompletion(profileId, lesson.id, lesson.version, state.completedAt);
+  }, [profileId, lesson.id, lesson.version, state.hydrated, state.completedAt]);
 
   const choose = useCallback(
     (choiceId: string) => {
@@ -88,9 +109,11 @@ export function useLessonRun(lesson: Lesson): LessonRun {
   }, []);
 
   const restart = useCallback(() => {
-    clearLessonProgress(lesson.id);
+    // Clears the run only. A recorded completion stays: starting the story
+    // again must not lock the lessons it had unlocked.
+    clearLessonRun(profileId, lesson.id);
     dispatch({ type: "restart" });
-  }, [lesson.id]);
+  }, [profileId, lesson.id]);
 
   // The reducer clamps the index, so this fallback should be unreachable; it
   // exists so a bad restore can never render an empty screen.

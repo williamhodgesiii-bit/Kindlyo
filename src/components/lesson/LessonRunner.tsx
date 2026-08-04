@@ -1,12 +1,18 @@
 "use client";
 
 import { LessonShell } from "@/components/shells/LessonShell";
-import { Button } from "@/components/ui/Button";
+import { Button, ButtonLink } from "@/components/ui/Button";
 import { ContentStatusBadge } from "@/components/ui/ContentStatusBadge";
+import { PageContainer } from "@/components/ui/PageContainer";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { Text } from "@/components/ui/Typography";
+import { Heading, Text } from "@/components/ui/Typography";
+import { meetingPeopleModule } from "@/content/modules";
+import { getLessonBySlug } from "@/features/curriculum/catalog";
 import type { Lesson } from "@/features/curriculum/schema";
+import { buildModulePath } from "@/features/lessons/moduleProgress";
+import { readProfileProgress } from "@/features/lessons/progressStorage";
 import { useLessonRun, type LessonRun } from "@/features/lessons/useLessonRun";
+import { useFamily } from "@/features/profiles/useFamily";
 import { ChoiceStepView } from "./steps/ChoiceStepView";
 import { CoachingStepView } from "./steps/CoachingStepView";
 import { CompletionStepView } from "./steps/CompletionStepView";
@@ -75,20 +81,97 @@ function waitingHint(run: LessonRun): string | null {
   return null;
 }
 
+function LoadingLesson() {
+  return (
+    <div className="mx-auto w-full max-w-5xl px-4 py-12">
+      <Skeleton variant="block" loadingLabel="Loading your lesson" />
+      <Skeleton variant="text" lines={3} className="mt-6" />
+    </div>
+  );
+}
+
+/** A calm full-page notice with one way onward. Not an error state. */
+function LessonNotice({
+  title,
+  message,
+  actionLabel,
+}: {
+  title: string;
+  message: string;
+  actionLabel: string;
+}) {
+  return (
+    <PageContainer width="narrow">
+      <Heading level={1} size="lg">
+        {title}
+      </Heading>
+      <Text size="lg" className="mt-4 max-w-prose">
+        {message}
+      </Text>
+      <div className="mt-8">
+        <ButtonLink href="/learn" size="lg">
+          {actionLabel}
+        </ButtonLink>
+      </div>
+    </PageContainer>
+  );
+}
+
+/**
+ * The gate in front of a lesson: who is learning, and is this lesson open for
+ * them yet? Both answers come from local storage, so they are only knowable
+ * after hydration — until then, the same skeleton the lesson itself uses.
+ */
 export function LessonRunner({ lesson }: { lesson: Lesson }) {
-  const run = useLessonRun(lesson);
+  const family = useFamily();
+
+  if (!family.hydrated) return <LoadingLesson />;
+
+  if (family.selectedProfile === null) {
+    return (
+      <LessonNotice
+        title="Who is learning?"
+        message="Pick your profile first, so your progress goes to the right place."
+        actionLabel="Choose a profile"
+      />
+    );
+  }
+
+  const path = buildModulePath(
+    meetingPeopleModule,
+    getLessonBySlug,
+    readProfileProgress(family.selectedProfile.id),
+  );
+  const entry = path.lessons.find(
+    (pathLesson) => pathLesson.lesson?.id === lesson.id,
+  );
+
+  if (entry?.state === "locked") {
+    return (
+      <LessonNotice
+        title="Not this one yet"
+        message={`This lesson opens after lesson ${entry.order - 1}. Finish that one first, then come back — it will be waiting.`}
+        actionLabel="Back to your lessons"
+      />
+    );
+  }
+
+  return <LessonPlayer lesson={lesson} profileId={family.selectedProfile.id} />;
+}
+
+function LessonPlayer({
+  lesson,
+  profileId,
+}: {
+  lesson: Lesson;
+  profileId: string;
+}) {
+  const run = useLessonRun(lesson, profileId);
 
   // Saved progress is read after mount, so until then we do not know which
   // step to draw. Showing a placeholder beats flashing step one at a child who
   // was halfway through.
-  if (!run.hydrated) {
-    return (
-      <div className="mx-auto w-full max-w-5xl px-4 py-12">
-        <Skeleton variant="block" loadingLabel="Loading your lesson" />
-        <Skeleton variant="text" lines={3} className="mt-6" />
-      </div>
-    );
-  }
+  if (!run.hydrated) return <LoadingLesson />;
 
   const hint = waitingHint(run);
   const isLastStep = run.step.kind === "completion";

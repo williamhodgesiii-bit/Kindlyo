@@ -1,6 +1,13 @@
 import { parseLesson } from "@/features/curriculum/validate";
 import type { Lesson } from "@/features/curriculum/schema";
+import { introducingYourself } from "./introducing-yourself";
+import { joiningAGroup } from "./joining-a-group";
+import { leavingAConversation } from "./leaving-a-conversation";
+import { listening } from "./listening";
+import { meetingSomeoneNew } from "./meeting-someone-new";
+import { reviewChallenge } from "./review-challenge";
 import { sayingHello } from "./saying-hello";
+import { usingNames } from "./using-names";
 
 /**
  * The authored lesson registry.
@@ -15,7 +22,16 @@ import { sayingHello } from "./saying-hello";
  * principle needs a context point, reviewed content needs a named reviewer),
  * and it would not catch content arriving from a CMS later.
  */
-const authored: readonly unknown[] = [sayingHello];
+const authored: readonly unknown[] = [
+  sayingHello,
+  introducingYourself,
+  usingNames,
+  meetingSomeoneNew,
+  joiningAGroup,
+  listening,
+  leavingAConversation,
+  reviewChallenge,
+];
 
 export const lessons: readonly Lesson[] = authored
   .map(parseLesson)

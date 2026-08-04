@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { seedProfiles } from "./support/family";
 
 /**
  * Lesson one, start to finish, in a real production build.
@@ -15,10 +16,18 @@ async function next(page: Page) {
 }
 
 test.describe("lesson one", () => {
+  // A lesson needs a child to belong to. Progression and profile separation
+  // are covered in progress.spec.ts; here a seeded profile just gets us in.
+  test.beforeEach(async ({ page }) => {
+    await seedProfiles(page, ["Ada"]);
+  });
+
   test("can be started from the learning path", async ({ page }) => {
     await page.goto("/learn");
 
-    await page.getByRole("link", { name: /Start lesson 1/ }).click();
+    await page
+      .getByRole("link", { name: "Start lesson 1", exact: true })
+      .click();
 
     await expect(page).toHaveURL(new RegExp(`${lessonPath}$`));
     await expect(
