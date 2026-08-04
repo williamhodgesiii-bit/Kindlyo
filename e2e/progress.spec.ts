@@ -10,9 +10,11 @@ import { seedProfiles } from "./support/family";
  * - One child's progress never appears for another child.
  */
 
+/** Adds a child from the dashboard, once onboarding is behind us. */
 async function addProfile(page: Page, nickname: string) {
+  await page.getByRole("button", { name: "Add a child" }).click();
   await page.getByLabel("Nickname").fill(nickname);
-  await page.getByRole("button", { name: "Add profile" }).click();
+  await page.getByRole("button", { name: "Create profile" }).click();
   await expect(page.getByRole("heading", { name: nickname })).toBeVisible();
 }
 
@@ -23,7 +25,7 @@ async function addProfile(page: Page, nickname: string) {
 async function chooseProfile(page: Page, nickname: string) {
   await page.goto("/learn");
 
-  const picker = page.getByRole("heading", { name: "Who is learning today?" });
+  const picker = page.getByRole("heading", { name: "Who is learning?" });
   const learningAs = page.getByText("Learning as");
   // Both are behind hydration, so wait for whichever arrives before deciding.
   await expect(picker.or(learningAs).first()).toBeVisible();
@@ -66,11 +68,13 @@ test.describe("the parent sets up profiles", () => {
   }) => {
     await page.goto("/parent");
 
-    await expect(
-      page.getByRole("heading", { name: "No profiles yet" }),
-    ).toBeVisible();
+    // A first visit lands on onboarding, which ends by creating a child.
+    await page.getByRole("button", { name: "Get started" }).click();
+    await page.getByRole("button", { name: "Add your first child" }).click();
+    await page.getByLabel("Nickname").fill("Ada");
+    await page.getByRole("button", { name: "Create profile" }).click();
+    await expect(page.getByRole("heading", { name: "Ada" })).toBeVisible();
 
-    await addProfile(page, "Ada");
     await addProfile(page, "Ben");
 
     // Both cards show their own progress, starting at nothing.
@@ -80,7 +84,7 @@ test.describe("the parent sets up profiles", () => {
     // And the learning path now offers a choice of who is learning.
     await page.goto("/learn");
     await expect(
-      page.getByRole("heading", { name: "Who is learning today?" }),
+      page.getByRole("heading", { name: "Who is learning?" }),
     ).toBeVisible();
   });
 });

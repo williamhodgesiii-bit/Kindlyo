@@ -3,18 +3,20 @@
 import { useCallback, useEffect, useReducer } from "react";
 import { resetProfileProgress } from "@/features/lessons/progressStorage";
 import {
+  completeOnboarding,
   createProfile,
   deleteProfile,
   emptyFamilyState,
   readFamilyState,
   selectProfile,
-  type CreateProfileResult,
+  updateProfile,
   type FamilyState,
+  type ProfileWriteResult,
 } from "./profileStorage";
-import type { AgeBand, ChildProfile } from "./types";
+import type { ChildProfile, ProfileDraft } from "./types";
 
 /**
- * Client access to the local child profiles.
+ * Client access to the local prototype child profiles.
  *
  * Same hydration pattern as `useLessonRun`: storage is read after mount via a
  * single reducer transition, and `hydrated` stays false until then, so server
@@ -46,12 +48,19 @@ export type Family = {
   hydrated: boolean;
   profiles: readonly ChildProfile[];
   selectedProfile: ChildProfile | null;
-  create: (nickname: string, ageBand: AgeBand) => CreateProfileResult;
+  /** False until the parent has been through onboarding once. */
+  onboarded: boolean;
+  create: (draft: ProfileDraft) => ProfileWriteResult;
+  update: (
+    profileId: string,
+    draft: Partial<ProfileDraft>,
+  ) => ProfileWriteResult;
   select: (profileId: string | null) => void;
   /** Removes the profile AND its lesson progress. */
   remove: (profileId: string) => void;
   /** Clears the profile's lesson progress, keeping the profile. */
   resetProgress: (profileId: string) => void;
+  finishOnboarding: () => void;
 };
 
 export function useFamily(): Family {
@@ -64,9 +73,15 @@ export function useFamily(): Family {
     dispatch({ type: "hydrate", family: readFamilyState() });
   }, []);
 
-  const create = useCallback(
-    (nickname: string, ageBand: AgeBand): CreateProfileResult => {
-      const result = createProfile(nickname, ageBand);
+  const create = useCallback((draft: ProfileDraft): ProfileWriteResult => {
+    const result = createProfile(draft);
+    if (result.ok) dispatch({ type: "set", family: result.state });
+    return result;
+  }, []);
+
+  const update = useCallback(
+    (profileId: string, draft: Partial<ProfileDraft>): ProfileWriteResult => {
+      const result = updateProfile(profileId, draft);
       if (result.ok) dispatch({ type: "set", family: result.state });
       return result;
     },
@@ -88,6 +103,10 @@ export function useFamily(): Family {
     resetProfileProgress(profileId);
   }, []);
 
+  const finishOnboarding = useCallback(() => {
+    dispatch({ type: "set", family: completeOnboarding() });
+  }, []);
+
   const selectedProfile =
     state.family.profiles.find(
       (profile) => profile.id === state.family.selectedProfileId,
@@ -97,9 +116,12 @@ export function useFamily(): Family {
     hydrated: state.hydrated,
     profiles: state.family.profiles,
     selectedProfile,
+    onboarded: state.family.onboardedAt !== null,
     create,
+    update,
     select,
     remove,
     resetProgress,
+    finishOnboarding,
   };
 }

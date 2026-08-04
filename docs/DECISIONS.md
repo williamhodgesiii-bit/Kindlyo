@@ -362,3 +362,61 @@ Format:
   spaced review can be added later without unpicking it. Marking a mission
   stays with the adult who was actually there, which is also what Journey 4
   describes; a child cannot mark their own homework.
+
+## 024. Onboarding is three steps, skippable, and shown once
+
+- Date: 2026-08-04
+- Status: accepted
+- Context: A parent arriving at `/parent` for the first time previously met an
+  empty dashboard and a bare form. Journey 2 asks for a short onboarding, and
+  the honest privacy position — a nickname and an age band, no email, no legal
+  name, no birthday, no child login — is most useful to a parent _before_ they
+  type anything, not in a policy page afterwards.
+- Decision: Three steps — welcome, what we ask for and what we never ask for,
+  and the first child profile — gated on an `onboardedAt` timestamp in the
+  family store. It can be skipped from the first screen, and the third step is
+  real work rather than a "Done" button on a tour. It never reappears, not even
+  when the last profile is deleted.
+- Consequences: The parent area now has two faces, chosen after hydration, so
+  `ParentArea` owns the family state and passes it to whichever renders. Tests
+  and end-to-end specs that reach `/parent` on a fresh browser now pass through
+  onboarding or seed `onboardedAt`; the seeding helper does the latter. Showing
+  onboarding again after a profile deletion was considered and rejected: it
+  would read as having lost the account.
+
+## 025. Avatars are a closed set of local drawings
+
+- Date: 2026-08-04
+- Status: accepted
+- Context: Children recognise their own profile faster with a picture than with
+  an initial, and the brief asks for optional avatar selection. The obvious
+  implementations — an upload, or a URL field — are both routes to storing a
+  photograph of a child, which `docs/PRIVACY_AND_SAFETY.md` forbids without
+  legal review.
+- Decision: Six avatars, drawn as inline SVG from simple shapes, addressed by a
+  string union (`AvatarId`). No upload, no URL, no `img` element, no `src`
+  anywhere in the avatar code. Choosing one is optional and reversible: "No
+  picture" is a real option in the picker, and the fallback is the nickname's
+  initial.
+- Consequences: A photograph cannot be represented in the type, so it cannot be
+  stored by a form that forgets the rule — the same argument as `Avatar` having
+  no `src` prop (decision 001's lineage). The cost is six fixed choices and a
+  little hand-drawn SVG to maintain. Commissioned artwork can replace the
+  drawings without touching the data model.
+
+## 026. Prototype storage is labelled on screen, not just in the code
+
+- Date: 2026-08-04
+- Status: accepted
+- Context: Profiles and progress live in local storage while there is no
+  database. A parent typing their child's nickname into a form has no way to
+  know that, and the difference between "saved to your account" and "saved in
+  this browser until you clear it" matters to them.
+- Decision: Say it, in the interface, wherever a parent might enter or rely on
+  data — a shared `PrototypeStorageNotice` on the dashboard and inside
+  onboarding, before the first field. The storage keys say the same thing:
+  `kindlyo.prototype.profiles.v1`.
+- Consequences: The notice is a component rather than repeated copy, so it can
+  be deleted in one place when persistence lands. Renaming the key from
+  `kindlyo.demo.*` discards any profiles from the previous build, which is the
+  right trade for scaffolding and consistent with decision 021.

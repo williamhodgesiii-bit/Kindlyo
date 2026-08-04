@@ -1,12 +1,13 @@
 "use client";
 
+import Link from "next/link";
+import { Avatar } from "@/components/ui/Avatar";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { ContentStatusBadge } from "@/components/ui/ContentStatusBadge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CheckIcon, PersonIcon } from "@/components/ui/icons";
 import { PageContainer } from "@/components/ui/PageContainer";
-import { ProfileCard } from "@/components/ui/ProfileCard";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Heading, Text } from "@/components/ui/Typography";
@@ -140,23 +141,38 @@ export function LearningPath() {
   }
 
   if (family.selectedProfile === null || path === null) {
+    // The one child-facing screen a five-year-old meets before they can read
+    // much: big targets, one short line, and a name under each face.
     return (
       <PageContainer>
-        <Heading level={1}>Who is learning today?</Heading>
-        <Text size="lg" tone="secondary" className="mt-4 max-w-2xl">
-          Pick your profile to see your lessons.
-        </Text>
-        <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+        <Heading level={1} size="display">
+          Who is learning?
+        </Heading>
+        <ul className="mt-10 grid gap-6 sm:grid-cols-3">
           {family.profiles.map((profile) => (
             <li key={profile.id}>
-              <ProfileCard
-                nickname={profile.nickname}
-                ageBand={`Ages ${profile.ageBand}`}
-                onSelect={() => family.select(profile.id)}
-              />
+              <button
+                type="button"
+                onClick={() => family.select(profile.id)}
+                className="flex w-full flex-col items-center gap-4 rounded-xl border-2 border-border bg-surface p-6 transition-colors hover:bg-surface-muted"
+              >
+                <Avatar
+                  nickname={profile.nickname}
+                  {...(profile.avatarId ? { avatarId: profile.avatarId } : {})}
+                  size="xl"
+                  decorative
+                />
+                <span className="text-2xl font-bold">{profile.nickname}</span>
+              </button>
             </li>
           ))}
         </ul>
+
+        <Text tone="secondary" className="mt-12">
+          <Link href="/parent" className="underline">
+            For grown-ups
+          </Link>
+        </Text>
       </PageContainer>
     );
   }
@@ -168,6 +184,12 @@ export function LearningPath() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <Heading level={1}>Learn</Heading>
         <div className="flex items-center gap-2">
+          <Avatar
+            nickname={profile.nickname}
+            {...(profile.avatarId ? { avatarId: profile.avatarId } : {})}
+            size="sm"
+            decorative
+          />
           <Text tone="secondary" as="span">
             Learning as{" "}
             <span className="font-semibold">{profile.nickname}</span>

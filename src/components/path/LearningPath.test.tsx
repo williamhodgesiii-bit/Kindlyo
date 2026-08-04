@@ -16,7 +16,10 @@ import { LearningPath } from "./LearningPath";
  */
 
 function seedProfile(nickname: string): string {
-  const result = createProfile(nickname, "5–6", window.localStorage);
+  const result = createProfile(
+    { nickname: nickname, ageBand: "5–6" },
+    window.localStorage,
+  );
   if (!result.ok) throw new Error("could not seed a profile");
   return result.profile.id;
 }
@@ -56,7 +59,7 @@ describe("choosing who is learning", () => {
     render(<LearningPath />);
 
     expect(
-      await screen.findByRole("heading", { name: "Who is learning today?" }),
+      await screen.findByRole("heading", { name: "Who is learning?" }),
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Ada/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Ben/ })).toBeInTheDocument();
@@ -84,7 +87,7 @@ describe("choosing who is learning", () => {
     await user.click(await screen.findByRole("button", { name: "Switch" }));
 
     expect(
-      screen.getByRole("heading", { name: "Who is learning today?" }),
+      screen.getByRole("heading", { name: "Who is learning?" }),
     ).toBeInTheDocument();
   });
 });
@@ -229,5 +232,52 @@ describe("profile separation", () => {
     expect(
       within(rowFor(2)).getByText("Finish lesson 1 first"),
     ).toBeInTheDocument();
+  });
+});
+
+describe("the child-facing picker", () => {
+  it("shows a picture and a name for each child, and little else", async () => {
+    createProfile(
+      { nickname: "Ada", ageBand: "5–6", avatarId: "fox" },
+      window.localStorage,
+    );
+    seedProfile("Ben");
+    render(<LearningPath />);
+    await screen.findByRole("heading", { name: "Who is learning?" });
+
+    // One button per child, named by the child. The avatar is decorative, so
+    // it adds nothing to the accessible name. No age bands, no instructions.
+    const choices = screen.getAllByRole("button");
+    expect(choices).toHaveLength(2);
+    expect(choices[0]).toHaveAccessibleName("Ada");
+    expect(choices[1]).toHaveAccessibleName("Ben");
+    expect(screen.queryByText(/Ages/)).toBeNull();
+  });
+
+  it("keeps a way back to the parent area", async () => {
+    seedProfile("Ada");
+    render(<LearningPath />);
+    await screen.findByRole("heading", { name: "Who is learning?" });
+
+    expect(screen.getByRole("link", { name: "For grown-ups" })).toHaveAttribute(
+      "href",
+      "/parent",
+    );
+  });
+
+  it("remembers the choice, so a reload does not ask again", async () => {
+    const user = userEvent.setup();
+    seedProfile("Ada");
+    const first = render(<LearningPath />);
+
+    await user.click(await screen.findByRole("button", { name: /Ada/ }));
+    first.unmount();
+
+    render(<LearningPath />);
+
+    expect(await screen.findByText(/Learning as/)).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Who is learning?" }),
+    ).toBeNull();
   });
 });

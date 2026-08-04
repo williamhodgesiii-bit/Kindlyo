@@ -8,11 +8,12 @@ The parent or guardian owns the account. Children learn within a
 parent-controlled session and never create independent accounts.
 
 > **Status:** early-stage. The technical foundation, application shell, lesson
-> engine, and local progress system are in place — all eight "Meeting People"
-> lessons run end to end, with per-child progress and lesson unlocking. There
-> is no authentication, database, payment, or analytics integration yet:
-> profiles and progress are kept in the browser only, and all curriculum is
-> draft content awaiting review by qualified humans.
+> engine, family setup, and local progress system are in place — a parent can
+> onboard, create child profiles, and hand over all eight "Meeting People"
+> lessons, with per-child progress and lesson unlocking. There is no
+> authentication, database, payment, or analytics integration yet: profiles and
+> progress are a **local prototype kept in the browser only**, and all
+> curriculum is draft content awaiting review by qualified humans.
 
 ## Repository structure
 
@@ -57,6 +58,7 @@ kindlyo/
 | [CURRICULUM_PRINCIPLES.md](docs/CURRICULUM_PRINCIPLES.md) | How lessons teach                         |
 | [CONTENT_SCHEMA.md](docs/CONTENT_SCHEMA.md)               | Structured lesson content model           |
 | [LESSON_ENGINE.md](docs/LESSON_ENGINE.md)                 | How lessons are validated and played      |
+| [PROFILES.md](docs/PROFILES.md)                           | Family setup, child profiles, and privacy |
 | [DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)                 | Brand, tokens, components, accessibility  |
 | [PRIVACY_AND_SAFETY.md](docs/PRIVACY_AND_SAFETY.md)       | Data posture and safety rules             |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md)                   | Stack, structure, and boundaries          |

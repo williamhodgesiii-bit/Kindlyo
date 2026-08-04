@@ -26,7 +26,10 @@ const lesson = makeTestLesson({ id: "saying-hello", slug: "saying-hello" });
 let profileId = "";
 
 function seedSelectedProfile(nickname = "Ada"): string {
-  const result = createProfile(nickname, "5–6", window.localStorage);
+  const result = createProfile(
+    { nickname: nickname, ageBand: "5–6" },
+    window.localStorage,
+  );
   if (!result.ok) throw new Error("could not seed a profile");
   selectProfile(result.profile.id, window.localStorage);
   return result.profile.id;
@@ -329,7 +332,10 @@ describe("recording completion", () => {
 
   it("records nothing against any other profile", async () => {
     const user = userEvent.setup();
-    const other = createProfile("Ben", "7–9", window.localStorage);
+    const other = createProfile(
+      { nickname: "Ben", ageBand: "7–9" },
+      window.localStorage,
+    );
     if (!other.ok) throw new Error("could not seed a second profile");
 
     render(<LessonRunner lesson={lesson} />);
