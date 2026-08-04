@@ -9,6 +9,11 @@ Newest first.
 
 <!-- new-entries-below -->
 
+## 2026-08-04
+
+- Add the Kindlyo design system and component gallery
+- Keep next dev from rewriting CLAUDE.md on every run
+
 ## 2026-08-03
 
 - Scaffold Kindlyo repository structure and documentation
