@@ -21,6 +21,7 @@ export const joiningAGroup: Lesson = {
     "Ask to join in a way that is easy to say yes to.",
     "Know that a “no” or a “not yet” from a group is survivable and not shameful.",
   ],
+  skillArea: "including",
 
   scenes: [
     {

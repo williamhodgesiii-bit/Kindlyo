@@ -27,6 +27,7 @@ export const reviewChallenge: Lesson = {
     "Choose a first move with a brand-new person without being told which one.",
     "Carry one full meeting — hello to goodbye — into the real world.",
   ],
+  skillArea: "review",
 
   scenes: [
     {

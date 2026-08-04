@@ -32,8 +32,19 @@ function finishLesson(profileId: string, lessonId: string) {
   );
 }
 
+/**
+ * The dashboard shows one child at a time, so this is the panel for whoever is
+ * currently selected. `selectChild` switches.
+ */
 function panelFor(nickname: string): HTMLElement {
   return screen.getByRole("region", { name: nickname });
+}
+
+async function selectChild(
+  user: ReturnType<typeof userEvent.setup>,
+  nickname: string,
+) {
+  await user.click(await screen.findByRole("tab", { name: nickname }));
 }
 
 beforeEach(() => {
@@ -256,6 +267,7 @@ describe("editing a profile", () => {
     seedProfile("Ada");
     seedProfile("Ben");
     renderDashboard();
+    await selectChild(user, "Ben");
 
     await user.click(
       await screen.findByRole("button", { name: "Edit profile: Ben" }),
@@ -281,12 +293,14 @@ describe("prototype storage", () => {
 });
 
 describe("progress and missions", () => {
-  it("shows a calm empty state before any lesson is finished", async () => {
+  it("shows a calm empty state before any lesson is started", async () => {
     seedProfile("Ada");
     renderDashboard();
 
     expect(
-      await screen.findByRole("heading", { name: "No missions yet" }),
+      await screen.findByRole("heading", {
+        name: "Ada has not started a lesson yet",
+      }),
     ).toBeInTheDocument();
   });
 
@@ -295,14 +309,11 @@ describe("progress and missions", () => {
     finishLesson(ada, "saying-hello");
     renderDashboard();
 
-    const panel = panelFor("Ada");
     expect(
-      await within(panel).findByRole("progressbar", {
-        name: /lessons finished/i,
-      }),
+      await screen.findByRole("progressbar", { name: /lessons practised/i }),
     ).toHaveAttribute("aria-valuenow", "1");
     expect(
-      within(panel).getByRole("heading", { name: "Saying hello" }),
+      within(panelFor("Ada")).getByRole("heading", { name: "Saying hello" }),
     ).toBeInTheDocument();
   });
 
@@ -331,25 +342,41 @@ describe("progress and missions", () => {
     ).toBeUndefined();
   });
 
-  it("keeps two children's progress on separate cards", async () => {
+  it("shows one child at a time, switched by the selector", async () => {
+    const user = userEvent.setup();
     const ada = seedProfile("Ada");
     seedProfile("Ben");
     finishLesson(ada, "saying-hello");
     renderDashboard();
 
+    // Ada first, with her own progress.
     expect(
-      await within(panelFor("Ada")).findByRole("progressbar", {
-        name: /lessons finished/i,
-      }),
+      await screen.findByRole("progressbar", { name: /lessons practised/i }),
     ).toHaveAttribute("aria-valuenow", "1");
+    expect(screen.queryByRole("region", { name: "Ben" })).toBeNull();
+
+    await selectChild(user, "Ben");
+
+    // Ben's dashboard replaces it; Ada's numbers are nowhere on screen.
+    expect(panelFor("Ben")).toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Ada" })).toBeNull();
     expect(
-      within(panelFor("Ben")).getByRole("progressbar", {
-        name: /lessons finished/i,
-      }),
-    ).toHaveAttribute("aria-valuenow", "0");
-    expect(
-      within(panelFor("Ben")).getByRole("heading", { name: "No missions yet" }),
+      screen.getByRole("heading", { name: "Ben has not started a lesson yet" }),
     ).toBeInTheDocument();
+  });
+
+  it("puts no two children's numbers side by side", async () => {
+    const ada = seedProfile("Ada");
+    seedProfile("Ben");
+    finishLesson(ada, "saying-hello");
+    renderDashboard();
+    await screen.findByRole("progressbar", { name: /lessons practised/i });
+
+    // One progress bar on the page: a dashboard that shows two invites a
+    // comparison between siblings, which this product does not do.
+    expect(
+      screen.getAllByRole("progressbar", { name: /lessons practised/i }),
+    ).toHaveLength(1);
   });
 
   it("shows no streaks, rankings, or comparisons between children", async () => {
@@ -404,10 +431,10 @@ describe("resetting progress", () => {
 
     expect(readProfileProgress(ada, window.localStorage)).toEqual({});
     expect(
-      await within(panelFor("Ada")).findByRole("progressbar", {
-        name: /lessons finished/i,
+      await screen.findByRole("heading", {
+        name: "Ada has not started a lesson yet",
       }),
-    ).toHaveAttribute("aria-valuenow", "0");
+    ).toBeInTheDocument();
   });
 
   it("leaves the other child's progress alone", async () => {
@@ -431,6 +458,29 @@ describe("resetting progress", () => {
     expect(
       readProfileProgress(ben, window.localStorage)["saying-hello"],
     ).toBeDefined();
+  });
+
+  it("keeps the other child's dashboard intact", async () => {
+    const user = userEvent.setup();
+    const ada = seedProfile("Ada");
+    const ben = seedProfile("Ben");
+    finishLesson(ada, "saying-hello");
+    finishLesson(ben, "saying-hello");
+    renderDashboard();
+
+    await user.click(
+      await screen.findByRole("button", { name: /Reset progress for Ada/ }),
+    );
+    await user.click(
+      within(screen.getByRole("dialog")).getByRole("button", {
+        name: "Reset progress",
+      }),
+    );
+    await selectChild(user, "Ben");
+
+    expect(
+      screen.getByRole("progressbar", { name: /lessons practised/i }),
+    ).toHaveAttribute("aria-valuenow", "1");
   });
 
   it("keeps the profile itself", async () => {

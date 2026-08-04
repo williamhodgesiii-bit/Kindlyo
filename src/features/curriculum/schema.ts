@@ -26,6 +26,37 @@
 export type ContentStatus = "draft" | "reviewed" | "published";
 
 /**
+ * The kind of social move a lesson practises.
+ *
+ * A closed set, so the parent dashboard can group eight lessons into something
+ * a tired adult can read at a glance. These are areas of *practice*, never
+ * traits of a child: there is no "polite" or "confident" member and there must
+ * not be, because that would turn a summary of what was practised into a
+ * report card on who somebody is.
+ */
+export type SkillArea =
+  "greeting" | "introducing" | "including" | "listening" | "ending" | "review";
+
+export const skillAreas = [
+  "greeting",
+  "introducing",
+  "including",
+  "listening",
+  "ending",
+  "review",
+] as const satisfies readonly SkillArea[];
+
+/** Shown in the parent dashboard. Descriptive of the skill, not the child. */
+export const skillAreaLabels = {
+  greeting: "Greeting people",
+  introducing: "Introducing yourself",
+  including: "Including others",
+  listening: "Listening",
+  ending: "Ending conversations",
+  review: "Putting it together",
+} satisfies Record<SkillArea, string>;
+
+/**
  * How a choice tends to land.
  *
  * There is no "correct" or "incorrect" member and none may be added:
@@ -113,6 +144,8 @@ export type Lesson = {
   ageMin: number;
   ageMax: number;
   learningObjectives: string[];
+  /** Groups the lesson in the parent's skill-area summary. */
+  skillArea: SkillArea;
   scenes: LessonScene[];
   principle: LessonPrinciple;
   practice: LessonPractice;

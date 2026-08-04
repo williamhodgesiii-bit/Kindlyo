@@ -19,6 +19,7 @@
 import {
   consequenceTypes,
   contentStatuses,
+  skillAreas,
   type ConsequenceType,
   type ContentStatus,
   type Lesson,
@@ -27,6 +28,7 @@ import {
   type LessonPrinciple,
   type LessonScene,
   type PracticeOption,
+  type SkillArea,
 } from "./schema";
 
 export class LessonContentError extends Error {
@@ -370,6 +372,12 @@ export function safeParseLesson(value: unknown): LessonParseResult {
       `${label}.learningObjectives`,
       raw.learningObjectives,
       1,
+    ),
+    skillArea: readEnum<SkillArea>(
+      ctx,
+      `${label}.skillArea`,
+      raw.skillArea,
+      skillAreas,
     ),
     scenes,
     principle: parsePrinciple(ctx, `${label}.principle`, raw.principle),

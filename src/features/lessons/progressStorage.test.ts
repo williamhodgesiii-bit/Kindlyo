@@ -334,7 +334,14 @@ describe("failing safely", () => {
 
 describe("what is stored", () => {
   it("holds ids, versions, and timestamps — nothing identifying", () => {
-    writeLessonRun(ADA, "saying-hello", 1, run, storage);
+    writeLessonRun(
+      ADA,
+      "saying-hello",
+      1,
+      run,
+      storage,
+      "2026-08-04T09:00:00.000Z",
+    );
     recordCompletion(
       ADA,
       "saying-hello",
@@ -352,8 +359,76 @@ describe("what is stored", () => {
             lessonVersion: 1,
             completedAt: "2026-08-04T10:00:00.000Z",
           },
+          updatedAt: "2026-08-04T10:00:00.000Z",
         },
       },
     });
+  });
+});
+
+describe("activity timestamps", () => {
+  it("records when the child last touched a lesson", () => {
+    writeLessonRun(
+      ADA,
+      "saying-hello",
+      1,
+      run,
+      storage,
+      "2026-08-04T09:00:00.000Z",
+    );
+
+    expect(readProfileProgress(ADA, storage)["saying-hello"]?.updatedAt).toBe(
+      "2026-08-04T09:00:00.000Z",
+    );
+  });
+
+  it("moves the clock on a replay, even though the completion does not change", () => {
+    recordCompletion(
+      ADA,
+      "saying-hello",
+      1,
+      "2026-08-04T10:00:00.000Z",
+      storage,
+    );
+    recordCompletion(
+      ADA,
+      "saying-hello",
+      1,
+      "2026-08-09T10:00:00.000Z",
+      storage,
+    );
+
+    const entry = readProfileProgress(ADA, storage)["saying-hello"];
+    expect(entry?.completion?.completedAt).toBe("2026-08-04T10:00:00.000Z");
+    expect(entry?.updatedAt).toBe("2026-08-09T10:00:00.000Z");
+  });
+
+  it("is not moved by a parent marking a mission", () => {
+    writeLessonRun(
+      ADA,
+      "saying-hello",
+      1,
+      run,
+      storage,
+      "2026-08-04T09:00:00.000Z",
+    );
+
+    setMissionStatus(ADA, "saying-hello", "done", storage);
+
+    expect(readProfileProgress(ADA, storage)["saying-hello"]?.updatedAt).toBe(
+      "2026-08-04T09:00:00.000Z",
+    );
+  });
+
+  it("ignores a stored value that is not a string", () => {
+    const tampered = createStorage({
+      [lessonProgressStorageKey]: JSON.stringify({
+        [ADA]: { "saying-hello": { updatedAt: 1234, missionStatus: "done" } },
+      }),
+    });
+
+    expect(
+      readProfileProgress(ADA, tampered)["saying-hello"]?.updatedAt,
+    ).toBeUndefined();
   });
 });

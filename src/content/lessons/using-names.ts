@@ -21,6 +21,7 @@ export const usingNames: Lesson = {
     "Use a person's name in a greeting.",
     "Know that forgetting a name is normal, and asking again is fine.",
   ],
+  skillArea: "introducing",
 
   scenes: [
     {

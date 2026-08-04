@@ -21,6 +21,7 @@ export const introducingYourself: Lesson = {
     "Introduce yourself with a name and one small thing about you.",
     "Recognise that you choose what to share about yourself.",
   ],
+  skillArea: "introducing",
 
   scenes: [
     {

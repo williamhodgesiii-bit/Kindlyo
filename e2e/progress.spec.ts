@@ -10,12 +10,16 @@ import { seedProfiles } from "./support/family";
  * - One child's progress never appears for another child.
  */
 
-/** Adds a child from the dashboard, once onboarding is behind us. */
+/**
+ * Adds a child from the dashboard, once onboarding is behind us. A second
+ * child appears in the selector rather than as another panel — the dashboard
+ * shows one at a time.
+ */
 async function addProfile(page: Page, nickname: string) {
   await page.getByRole("button", { name: "Add a child" }).click();
   await page.getByLabel("Nickname").fill(nickname);
   await page.getByRole("button", { name: "Create profile" }).click();
-  await expect(page.getByRole("heading", { name: nickname })).toBeVisible();
+  await expect(page.getByRole("tab", { name: nickname })).toBeVisible();
 }
 
 /**
@@ -73,13 +77,16 @@ test.describe("the parent sets up profiles", () => {
     await page.getByRole("button", { name: "Add your first child" }).click();
     await page.getByLabel("Nickname").fill("Ada");
     await page.getByRole("button", { name: "Create profile" }).click();
-    await expect(page.getByRole("heading", { name: "Ada" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Ada", exact: true }),
+    ).toBeVisible();
 
     await addProfile(page, "Ben");
 
-    // Both cards show their own progress, starting at nothing.
+    // Both children are reachable from the selector, one panel at a time.
+    await expect(page.getByRole("tab", { name: "Ada" })).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Ben" })).toBeVisible();
     await expect(page.getByRole("region", { name: "Ada" })).toBeVisible();
-    await expect(page.getByRole("region", { name: "Ben" })).toBeVisible();
 
     // And the learning path now offers a choice of who is learning.
     await page.goto("/learn");
@@ -223,20 +230,20 @@ test.describe("the parent dashboard", () => {
 
     await page.goto("/parent");
 
-    const ada = page.getByRole("region", { name: "Ada" });
+    // The dashboard shows one child at a time, so this is Ada's.
     await expect(
-      ada.getByRole("progressbar", { name: /lessons finished/i }),
+      page.getByRole("progressbar", { name: /lessons practised/i }),
     ).toHaveAttribute("aria-valuenow", "1");
     await expect(
-      ada.getByRole("heading", { name: "Saying hello" }),
+      page
+        .getByRole("region", { name: "Ada" })
+        .getByText("Saying hello")
+        .first(),
     ).toBeVisible();
 
-    const ben = page.getByRole("region", { name: "Ben" });
+    await page.getByRole("tab", { name: "Ben" }).click();
     await expect(
-      ben.getByRole("progressbar", { name: /lessons finished/i }),
-    ).toHaveAttribute("aria-valuenow", "0");
-    await expect(
-      ben.getByRole("heading", { name: "No missions yet" }),
+      page.getByRole("heading", { name: "Ben has not started a lesson yet" }),
     ).toBeVisible();
   });
 
@@ -245,13 +252,12 @@ test.describe("the parent dashboard", () => {
     await completeLessonOne(page);
     await page.goto("/parent");
 
-    const ada = page.getByRole("region", { name: "Ada" });
-    await ada.getByRole("button", { name: /^Mark as done/ }).click();
+    await page.getByRole("button", { name: /^Mark as done/ }).click();
 
-    await expect(ada.getByText("Done")).toBeVisible();
+    await expect(page.getByText("Done", { exact: true })).toBeVisible();
     await page.reload();
     await expect(
-      ada.getByRole("button", { name: /Mark as not done yet/ }),
+      page.getByRole("button", { name: /Mark as not done yet/ }),
     ).toBeVisible();
   });
 
@@ -274,14 +280,12 @@ test.describe("the parent dashboard", () => {
 
     // Ada is back at the start; Ben is untouched.
     await expect(
-      page
-        .getByRole("region", { name: "Ada" })
-        .getByRole("progressbar", { name: /lessons finished/i }),
-    ).toHaveAttribute("aria-valuenow", "0");
+      page.getByRole("heading", { name: "Ada has not started a lesson yet" }),
+    ).toBeVisible();
+
+    await page.getByRole("tab", { name: "Ben" }).click();
     await expect(
-      page
-        .getByRole("region", { name: "Ben" })
-        .getByRole("progressbar", { name: /lessons finished/i }),
+      page.getByRole("progressbar", { name: /lessons practised/i }),
     ).toHaveAttribute("aria-valuenow", "1");
 
     // And the path agrees: lesson two is locked for Ada again.
@@ -294,13 +298,14 @@ test.describe("the parent dashboard", () => {
   test("deletes a profile behind a confirmation", async ({ page }) => {
     await page.goto("/parent");
 
+    await page.getByRole("tab", { name: "Ben" }).click();
     await page.getByRole("button", { name: "Delete profile: Ben" }).click();
     await page
       .getByRole("dialog")
       .getByRole("button", { name: "Delete profile" })
       .click();
 
-    await expect(page.getByRole("region", { name: "Ben" })).toHaveCount(0);
+    await expect(page.getByRole("tab", { name: "Ben" })).toHaveCount(0);
     await expect(page.getByRole("region", { name: "Ada" })).toBeVisible();
   });
 });

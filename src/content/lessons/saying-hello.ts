@@ -31,6 +31,7 @@ export const sayingHello: Lesson = {
     "Name more than one way to say hello, including ways without words.",
     "Recognise that a greeting never requires touch, eye contact, or speaking.",
   ],
+  skillArea: "greeting",
 
   scenes: [
     {
