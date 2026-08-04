@@ -47,6 +47,19 @@ test.describe("application shell", () => {
     ).toBeVisible();
   });
 
+  test("does not expose the component gallery outside development", async ({
+    page,
+  }) => {
+    // These specs run against `next build && next start`, so this is a real
+    // production build - exactly the case the gallery's gate exists for.
+    const response = await page.goto("/dev/gallery");
+
+    expect(response?.status()).toBe(404);
+    await expect(
+      page.getByRole("heading", { name: "Component gallery" }),
+    ).toBeHidden();
+  });
+
   test("is usable at a small viewport without horizontal scroll", async ({
     page,
   }) => {

@@ -1,27 +1,34 @@
-import Link from "next/link";
 import type { Metadata } from "next";
+import { ParentAppShell } from "@/components/shells/ParentAppShell";
+import { ButtonLink } from "@/components/ui/Button";
+import { PageContainer } from "@/components/ui/PageContainer";
+import { Heading, Text } from "@/components/ui/Typography";
 
 export const metadata: Metadata = {
   title: "Page not found",
 };
 
-/** Custom 404. Calm and non-blaming, in keeping with the product tone. */
+/**
+ * Custom 404. Calm and non-blaming, in keeping with the product tone.
+ *
+ * Renders its own shell: this page sits directly under the root layout, which
+ * no longer supplies the header, main, and footer landmarks.
+ */
 export default function NotFound() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-16">
-      <div className="max-w-xl">
-        <h1 className="text-3xl font-bold">We could not find that page</h1>
-        <p className="mt-4 text-lg text-text-secondary">
-          The link may be out of date, or the page may have moved. Nothing is
-          wrong with your account.
-        </p>
-        <Link
-          href="/"
-          className="mt-8 inline-flex items-center rounded-lg bg-brand-primary px-6 py-3 font-semibold text-white hover:bg-brand-primary-hover"
-        >
-          Go back home
-        </Link>
-      </div>
-    </div>
+    <ParentAppShell>
+      <PageContainer>
+        <div className="max-w-xl">
+          <Heading level={1}>We could not find that page</Heading>
+          <Text size="lg" tone="secondary" className="mt-4">
+            The link may be out of date, or the page may have moved. Nothing is
+            wrong with your account.
+          </Text>
+          <ButtonLink href="/" size="lg" className="mt-8">
+            Go back home
+          </ButtonLink>
+        </div>
+      </PageContainer>
+    </ParentAppShell>
   );
 }

@@ -69,6 +69,13 @@ Avoid:
 
 These are provisional and should be implemented as replaceable design tokens.
 
+Implemented in `src/styles/tokens.css`, which is now the canonical list — it
+also carries the type scale, shadows, motion defaults, and the accessible
+`-strong` colour variants. The swatches above are warm but light: as text, or
+behind white text, several of them fall below the 4.5:1 WCAG AA threshold this
+document requires, so anything carrying text uses a `-strong` variant. See
+decision 015 and `docs/COMPONENTS.md`.
+
 ## Typography
 
 Use one highly readable sans-serif family.
@@ -101,6 +108,11 @@ Initial component set:
 - Empty state
 - Error state
 - Skeleton loader
+
+Built in `src/components/ui/` and `src/components/shells/`, and documented in
+`docs/COMPONENTS.md`. Decision 016 records the two departures from this list:
+inline feedback replaces the toast, and the lesson shell, story panel, and
+parent insight card wait for the lesson-engine slice.
 
 ## Accessibility requirements
 

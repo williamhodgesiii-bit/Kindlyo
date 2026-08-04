@@ -22,6 +22,40 @@
   --color-danger: #b95858;
   --color-border: #e7ddd1;
 
+  /*
+   * Accessible counterparts, measured against both #ffffff and the cream
+   * background. The palette above is warm but light: as text or behind white
+   * text it lands between 3.1:1 and 4.2:1, which clears WCAG AA only for large
+   * text. docs/DESIGN_SYSTEM.md requires sufficient contrast, so:
+   *
+   *   - the base hues are for borders, tints, decorative fills, and the focus
+   *     ring (3.18:1 on the background, above the 3:1 non-text threshold);
+   *   - the -strong hues are for anything carrying text, in either direction.
+   *
+   * Ratios with white / with #fffaf2:
+   *   brand-primary-strong        5.47 / 5.26
+   *   brand-primary-strong-hover  6.93 / 6.67
+   *   brand-secondary-strong      6.12 / 5.89
+   *   success-strong              6.10 / 5.87
+   *   warning-strong              5.90 / 5.68
+   *   danger (unchanged)          4.57 / 4.40
+   */
+  --color-brand-primary-strong: #b0492f;
+  --color-brand-primary-strong-hover: #983d27;
+  --color-brand-secondary-strong: #3f6a5d;
+  --color-success-strong: #3d6b58;
+  --color-warning-strong: #8a5a1c;
+
+  /* Foreground for filled brand surfaces, so components never hardcode white. */
+  --color-on-brand: #ffffff;
+
+  /* Tints for avatars and status chips. Deliberately low-saturation: the
+     design system avoids neon palettes and badge clutter. */
+  --color-tint-clay: #f4ded6;
+  --color-tint-sage: #dde9e5;
+  --color-tint-honey: #f7e7c8;
+  --color-tint-sand: #ece2d4;
+
   --radius-sm: 0.5rem;
   --radius-md: 0.875rem;
   --radius-lg: 1.25rem;
@@ -35,10 +69,49 @@
   --spacing-8: 2rem;
   --spacing-12: 3rem;
 
-  /* One highly readable sans-serif family, per the design system. */
+  /* One highly readable sans-serif family, per the design system.
+     Kept as a system stack rather than a downloaded webfont: it already meets
+     the legibility requirements, and it costs no network request on a device
+     a child may be sharing over a slow connection. */
   --font-sans:
     ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
+
+  /*
+   * Type scale. Nudged above Tailwind's defaults throughout: this interface is
+   * read by children aged 5-9, often on a phone held at arm's length, and
+   * frequently read aloud by an adult sitting beside them.
+   */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.5;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.55;
+  --text-base: 1.0625rem;
+  --text-base--line-height: 1.6;
+  --text-lg: 1.1875rem;
+  --text-lg--line-height: 1.6;
+  --text-xl: 1.375rem;
+  --text-xl--line-height: 1.45;
+  --text-2xl: 1.625rem;
+  --text-2xl--line-height: 1.35;
+  --text-3xl: 2rem;
+  --text-3xl--line-height: 1.25;
+  --text-4xl: 2.5rem;
+  --text-4xl--line-height: 1.15;
+  --text-5xl: 3.25rem;
+  --text-5xl--line-height: 1.1;
+
+  /* Soft shadows, used sparingly (docs/DESIGN_SYSTEM.md). */
+  --shadow-soft:
+    0 1px 2px rgb(47 41 37 / 0.04), 0 4px 12px rgb(47 41 37 / 0.06);
+  --shadow-lifted: 0 8px 32px rgb(47 41 37 / 0.14);
+
+  /* Gentle movement only. Tailwind has no `--duration-*` theme namespace, so
+     these override the defaults behind every `transition-*` utility rather
+     than inventing tokens that would generate nothing. The reduced-motion
+     block in globals.css collapses them for anyone who asks for less. */
+  --default-transition-duration: 160ms;
+  --default-transition-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
 
   /* Minimum interactive target size (44x44 CSS px). */
   --size-touch-target: 2.75rem;

@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { PageContainer } from "@/components/ui/PageContainer";
+import { Heading, Text } from "@/components/ui/Typography";
 
 export const metadata: Metadata = {
   title: "For parents",
@@ -12,20 +15,18 @@ export const metadata: Metadata = {
  */
 export default function ParentPage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
-      <h1 className="text-3xl font-bold">For parents</h1>
-      <p className="mt-4 max-w-2xl text-lg text-text-secondary">
+    <PageContainer>
+      <Heading level={1}>For parents</Heading>
+      <Text size="lg" tone="secondary" className="mt-4 max-w-2xl">
         This is where you will see how your child is getting on and which
         real-world mission to try next.
-      </p>
+      </Text>
 
-      <div className="mt-8 rounded-lg border border-border bg-surface-muted p-6">
-        <h2 className="text-lg font-semibold">Not built yet</h2>
-        <p className="mt-2 text-text-secondary">
-          Accounts, child profiles, and progress are still to come. Nothing is
-          collected or stored at this stage.
-        </p>
-      </div>
-    </div>
+      <EmptyState
+        className="mt-8"
+        title="Not built yet"
+        description="Accounts, child profiles, and progress are still to come. Nothing is collected or stored at this stage."
+      />
+    </PageContainer>
   );
 }

@@ -160,3 +160,69 @@ Format:
   variable, and fails the build on malformed values.
 - Consequences: One fewer dependency for a small surface. If validation needs
   grow substantially (nested config, many services), reconsider adding a library.
+
+## 013. Base components are hand-rolled, with no class-merging dependency
+
+- Date: 2026-08-04
+- Status: accepted
+- Context: The component set needs variants and a `className` passthrough. The
+  usual answer is `clsx` plus `tailwind-merge`, often with `cva` and a headless
+  library on top. `CLAUDE.md` asks us to avoid unnecessary dependencies, and
+  decision 012 set the precedent of hand-rolling a small surface.
+- Decision: No `clsx`, `tailwind-merge`, `cva`, or Radix. `src/lib/cn.ts`
+  concatenates class names and drops falsy values, nothing more. Variants are
+  props backed by `satisfies Record<Union, string>` lookups; `className` is
+  additive and callers own layout while components own appearance.
+- Consequences: Conflicting Tailwind utilities are not deduped, so `className`
+  is not an override channel — documented in `docs/COMPONENTS.md`. If overrides
+  become routine, add `tailwind-merge` and supersede this record.
+
+## 014. Dialog is hand-rolled rather than the native element
+
+- Date: 2026-08-04
+- Status: accepted
+- Context: A modal could use the native `<dialog>` element and get focus
+  containment from the browser. But jsdom 30.0.1 implements
+  `HTMLDialogElement` with only the `open` attribute reflection — no
+  `showModal`, `show`, or `close` — so the behaviours that matter most (focus
+  moving in, staying trapped, and returning to the trigger) would be
+  unverifiable in the unit suite.
+- Decision: Hand-roll `role="dialog" aria-modal="true"` with our own focus
+  trap, Escape handling, focus restore, and scroll lock. Render inline rather
+  than through a portal.
+- Consequences: The trap is our code and is unit-tested. A Dialog must not be
+  nested under a transformed or filtered ancestor; portalling is the documented
+  upgrade path if that becomes a real constraint.
+
+## 015. The palette gains accessible `-strong` variants
+
+- Date: 2026-08-04
+- Status: accepted
+- Context: The provisional palette in `docs/DESIGN_SYSTEM.md` is warm and
+  light. Measured against white and the `#fffaf2` background, `brand-primary`
+  is 3.31:1, `brand-secondary` 3.11:1, `warning` 3.57:1, and `success` 4.18:1 —
+  all below the 4.5:1 WCAG AA threshold for normal text. Every primary call to
+  action in the app was affected, while the same document requires sufficient
+  contrast.
+- Decision: Keep the base hues for borders, tints, decorative fills, and the
+  focus ring (3.18:1 against the background, above the 3:1 non-text threshold).
+  Add `brand-primary-strong`, `brand-secondary-strong`, `success-strong`, and
+  `warning-strong` at 5.4:1 or better, and use them wherever text is involved.
+- Consequences: Filled buttons and accent labels are visibly deeper than the
+  original swatches. Ratios are recorded beside the tokens so a future palette
+  change can be checked against the same bar.
+
+## 016. Toast dropped; three components deferred
+
+- Date: 2026-08-04
+- Status: accepted
+- Context: `docs/DESIGN_SYSTEM.md` lists a Toast, a Lesson shell, a Story
+  panel, and a Parent insight card in the initial component set.
+- Decision: Ship inline feedback instead of a toast — lesson feedback should
+  stay on screen beside what it describes rather than time out while a
+  six-year-old is reading. Realise "Profile selector" as `ProfileCard`. Defer
+  `LessonShell`, `StoryPanel`, and `ParentInsightCard` to the lesson-engine
+  slice, where the content model exists to shape them.
+- Consequences: The design system covers everything the lesson engine needs to
+  start, without inventing two lesson components blind. Revisit a toast only
+  when something genuinely transient needs announcing.

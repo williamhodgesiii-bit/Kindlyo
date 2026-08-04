@@ -1,6 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
+import { ParentAppShell } from "@/components/shells/ParentAppShell";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { PageContainer } from "@/components/ui/PageContainer";
+import { Heading } from "@/components/ui/Typography";
 
 /**
  * Route-level error boundary.
@@ -22,21 +26,20 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-16">
-      <div className="max-w-xl">
-        <h1 className="text-3xl font-bold">Something went wrong</h1>
-        <p className="mt-4 text-lg text-text-secondary">
-          This one is on us, not on you. You can try again, and your progress is
-          safe.
-        </p>
-        <button
-          type="button"
-          onClick={reset}
-          className="mt-8 inline-flex items-center rounded-lg bg-brand-primary px-6 py-3 font-semibold text-white hover:bg-brand-primary-hover"
-        >
-          Try again
-        </button>
-      </div>
-    </div>
+    <ParentAppShell>
+      <PageContainer>
+        <div className="max-w-xl">
+          <Heading level={1}>Something went wrong</Heading>
+          <ErrorState
+            live
+            className="mt-6"
+            headingLevel={2}
+            title="We could not load this page"
+            description="This one is on us, not on you. You can try again, and your progress is safe."
+            onRetry={reset}
+          />
+        </div>
+      </PageContainer>
+    </ParentAppShell>
   );
 }

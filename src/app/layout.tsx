@@ -1,6 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { SiteFooter } from "@/components/SiteFooter";
-import { SiteHeader } from "@/components/SiteHeader";
 import { SkipLink } from "@/components/SkipLink";
 import "@/styles/globals.css";
 
@@ -18,6 +16,14 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+/**
+ * Root layout: the document, and the skip link that must precede everything.
+ *
+ * The header, main, and footer landmarks belong to the app shells
+ * (ChildAppShell, ParentAppShell) rather than here, so that the child and
+ * parent surfaces can have genuinely different chrome without ever nesting two
+ * banners or two mains on one page.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -25,11 +31,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="flex min-h-screen flex-col">
         <SkipLink />
-        <SiteHeader />
-        <main id="main-content" className="flex-1">
-          {children}
-        </main>
-        <SiteFooter />
+        {children}
       </body>
     </html>
   );
