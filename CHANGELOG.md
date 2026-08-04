@@ -11,6 +11,10 @@ Newest first.
 
 ## 2026-08-04
 
+- Build the parent dashboard around five questions
+
+## 2026-08-04
+
 - Add the parent onboarding and child-profile prototype flow
 
 ## 2026-08-04
