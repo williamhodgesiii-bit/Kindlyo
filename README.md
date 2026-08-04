@@ -23,6 +23,8 @@ kindlyo/
 ├── src/
 │   ├── app/            App Router routes, error and not-found pages
 │   ├── components/     Shared UI
+│   │   ├── ui/         Design system primitives
+│   │   └── shells/     Page chrome for the child and parent surfaces
 │   ├── features/       Domain modules (business logic lives here, not in pages)
 │   ├── lib/            Cross-cutting helpers, including environment validation
 │   └── styles/         Design tokens and global styles
@@ -99,12 +101,13 @@ PLAYWRIGHT_CHROMIUM_EXECUTABLE=/path/to/chromium npm run test:e2e
 
 ### Routes
 
-| Route         | Purpose                                    |
-| ------------- | ------------------------------------------ |
-| `/`           | Public marketing page                      |
-| `/learn`      | Placeholder learning area (module outline) |
-| `/parent`     | Placeholder parent area                    |
-| `/api/health` | Health check for uptime monitoring         |
+| Route          | Purpose                                              |
+| -------------- | ---------------------------------------------------- |
+| `/`            | Public marketing page                                |
+| `/learn`       | Placeholder learning area (module outline)           |
+| `/parent`      | Placeholder parent area                              |
+| `/api/health`  | Health check for uptime monitoring                   |
+| `/dev/gallery` | Component gallery (development only; 404s elsewhere) |
 
 ## Daily workflow
 

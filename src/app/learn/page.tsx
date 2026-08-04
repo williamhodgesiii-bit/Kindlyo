@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { Card } from "@/components/ui/Card";
+import { PageContainer } from "@/components/ui/PageContainer";
+import { Heading, Text } from "@/components/ui/Typography";
 import { placeholderModule } from "@/features/curriculum/placeholder";
 
 export const metadata: Metadata = {
@@ -13,17 +16,19 @@ export const metadata: Metadata = {
  */
 export default function LearnPage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
-      <h1 className="text-3xl font-bold">Learn</h1>
-      <p className="mt-4 max-w-2xl text-lg text-text-secondary">
+    <PageContainer>
+      <Heading level={1}>Learn</Heading>
+      <Text size="lg" tone="secondary" className="mt-4 max-w-2xl">
         The first module is being built. Here is what it will cover.
-      </p>
+      </Text>
 
       <section aria-labelledby="module-heading" className="mt-8">
         <div className="flex flex-wrap items-center gap-3">
-          <h2 id="module-heading" className="text-2xl font-bold">
+          <Heading level={2} id="module-heading">
             {placeholderModule.title}
-          </h2>
+          </Heading>
+          {/* Content status is a product requirement, not decoration
+              (CLAUDE.md, "Content status"). Deliberately not alarm-coloured. */}
           <span className="rounded-md bg-surface-muted px-3 py-1 text-sm font-semibold text-text-secondary">
             Draft
           </span>
@@ -31,24 +36,23 @@ export default function LearnPage() {
 
         <ol className="mt-6 grid gap-3 sm:grid-cols-2">
           {placeholderModule.lessons.map((lesson) => (
-            <li
-              key={lesson.order}
-              className="flex items-center gap-4 rounded-lg border border-border bg-surface p-4"
-            >
-              <span
-                aria-hidden="true"
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-muted font-semibold text-text-secondary"
-              >
-                {lesson.order}
-              </span>
-              <span>
-                <span className="sr-only">Lesson {lesson.order}: </span>
-                {lesson.title}
-              </span>
-            </li>
+            <Card as="li" key={lesson.order} padding="sm">
+              <div className="flex items-center gap-4">
+                <span
+                  aria-hidden="true"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-muted font-semibold text-text-secondary"
+                >
+                  {lesson.order}
+                </span>
+                <span>
+                  <span className="sr-only">Lesson {lesson.order}: </span>
+                  {lesson.title}
+                </span>
+              </div>
+            </Card>
           ))}
         </ol>
       </section>
-    </div>
+    </PageContainer>
   );
 }

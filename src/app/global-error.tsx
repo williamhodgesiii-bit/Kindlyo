@@ -7,6 +7,12 @@ import { useEffect } from "react";
  *
  * Only used when the root layout itself fails, so it must render its own
  * <html> and <body> and cannot rely on shared styles.
+ *
+ * This is the one file that may hardcode colours. It cannot import design
+ * system components or read tokens, because the stylesheet may never have
+ * loaded. The literals below mirror --color-background, --color-text-primary,
+ * --color-brand-primary-strong, and --radius-md in src/styles/tokens.css; if
+ * those change, change these by hand.
  */
 export default function GlobalError({
   error,
@@ -46,7 +52,7 @@ export default function GlobalError({
               padding: "0.75rem 1.5rem",
               borderRadius: "0.875rem",
               border: "none",
-              backgroundColor: "#d96f52",
+              backgroundColor: "#b0492f",
               color: "#ffffff",
               fontSize: "1rem",
               fontWeight: 600,
