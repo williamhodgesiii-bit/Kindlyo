@@ -52,6 +52,12 @@ export type LessonProgressEntry = {
   run?: { lessonVersion: number; state: LessonProgress };
   completion?: LessonCompletion;
   missionStatus?: MissionStatus;
+  /**
+   * ISO timestamp of the last thing the CHILD did on this lesson. A parent
+   * marking a mission does not touch it — "when did my child last use the app"
+   * should not be answered by the parent's own visit to the dashboard.
+   */
+  updatedAt?: string;
 };
 
 /** One profile's validated progress, keyed by lesson id. */
@@ -110,6 +116,7 @@ function parseEntry(value: unknown): LessonProgressEntry | null {
   }
 
   if (value.missionStatus === "done") entry.missionStatus = "done";
+  if (typeof value.updatedAt === "string") entry.updatedAt = value.updatedAt;
 
   return Object.keys(entry).length > 0 ? entry : null;
 }
@@ -200,10 +207,12 @@ export function writeLessonRun(
   lessonVersion: number,
   state: LessonProgress,
   storage: Storage | null = getBrowserStorage(),
+  now: string = new Date().toISOString(),
 ): void {
   updateEntry(profileId, lessonId, storage, (entry) => ({
     ...entry,
     run: { lessonVersion, state },
+    updatedAt: now,
   }));
 }
 
@@ -230,11 +239,13 @@ export function recordCompletion(
   completedAt: string,
   storage: Storage | null = getBrowserStorage(),
 ): void {
-  updateEntry(profileId, lessonId, storage, (entry) =>
-    entry.completion !== undefined
-      ? entry
-      : { ...entry, completion: { lessonVersion, completedAt } },
-  );
+  updateEntry(profileId, lessonId, storage, (entry) => ({
+    // First completion wins, but the activity clock still moves: playing a
+    // lesson again is a visit, even though it is not a new achievement.
+    ...entry,
+    completion: entry.completion ?? { lessonVersion, completedAt },
+    updatedAt: completedAt,
+  }));
 }
 
 /** Parent-marked, from the dashboard. Passing null returns it to suggested. */

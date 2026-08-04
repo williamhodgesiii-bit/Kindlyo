@@ -21,6 +21,7 @@ export const meetingSomeoneNew: Lesson = {
     "Notice how a new person might be feeling.",
     "Know that warming up slowly to new people is allowed.",
   ],
+  skillArea: "including",
 
   scenes: [
     {

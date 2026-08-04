@@ -59,6 +59,7 @@ kindlyo/
 | [CONTENT_SCHEMA.md](docs/CONTENT_SCHEMA.md)               | Structured lesson content model           |
 | [LESSON_ENGINE.md](docs/LESSON_ENGINE.md)                 | How lessons are validated and played      |
 | [PROFILES.md](docs/PROFILES.md)                           | Family setup, child profiles, and privacy |
+| [PARENT_DASHBOARD.md](docs/PARENT_DASHBOARD.md)           | What parents see, and what it never says  |
 | [DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)                 | Brand, tokens, components, accessibility  |
 | [PRIVACY_AND_SAFETY.md](docs/PRIVACY_AND_SAFETY.md)       | Data posture and safety rules             |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md)                   | Stack, structure, and boundaries          |

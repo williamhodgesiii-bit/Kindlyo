@@ -126,7 +126,9 @@ test.describe("managing profiles", () => {
       await page.getByRole("button", { name: "Add a child" }).click();
       await fillProfile(page, { nickname });
       await page.getByRole("button", { name: "Create profile" }).click();
-      await expect(page.getByRole("region", { name: nickname })).toBeVisible();
+      // The dashboard shows one child at a time, so a new one appears in the
+      // selector rather than as another panel.
+      await expect(page.getByRole("tab", { name: nickname })).toBeVisible();
     }
 
     await expect(page.getByText("Three profiles is the maximum")).toBeVisible();

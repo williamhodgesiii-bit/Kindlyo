@@ -21,6 +21,7 @@ export const listening: Lesson = {
     "Let a speaker finish before adding your own story.",
     "Know that listening does not require looking at someone's eyes.",
   ],
+  skillArea: "listening",
 
   scenes: [
     {

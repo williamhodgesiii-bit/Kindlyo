@@ -420,3 +420,57 @@ Format:
   be deleted in one place when persistence lands. Renaming the key from
   `kindlyo.demo.*` discards any profiles from the previous build, which is the
   right trade for scaffolding and consistent with decision 021.
+
+## 027. The dashboard answers five questions and refuses to score
+
+- Date: 2026-08-04
+- Status: accepted
+- Context: A parent dashboard is the most likely place in this product for
+  moral scoring to appear. Every instinct of the format — a number, a
+  percentage, a comparison between siblings, a streak — pulls towards telling a
+  parent how good their child is, which `docs/CURRICULUM_PRINCIPLES.md`
+  forbids and which we have no basis to claim anyway.
+- Decision: Scope the dashboard to five explicit questions (practised, next,
+  mission, context, last used) and derive all of them in one pure module,
+  `childDashboard.ts`. Limit the vocabulary to a closed `PracticeStatus` union
+  — practised, exploring, ready to review, not started yet — so there is
+  nowhere in the type to put "good". Show one child at a time. Assert the
+  absence of scoring language in both unit and end-to-end tests.
+- Consequences: Adding a new dashboard fact means adding a question to that
+  list deliberately, rather than dropping another number onto a card. The
+  single-child view costs a click when a parent has two children, and buys the
+  guarantee that no sibling comparison can render. If a future stakeholder asks
+  for a percentage, this record is the argument against it.
+
+## 028. Lessons carry a skill area; the dashboard groups by it
+
+- Date: 2026-08-04
+- Status: accepted
+- Context: "What has my child practised?" is unreadable as a list of eight
+  lesson titles, and a parent wants the shape rather than the inventory.
+  Deriving groupings from `learningObjectives` prose would be guesswork.
+- Decision: Add a required `skillArea` field to the lesson schema, as a closed
+  union of six practice areas. Areas describe the skill being practised, never
+  a trait of a child — there is no "polite" or "confident" member, and adding
+  one would defeat the point.
+- Consequences: Every lesson must declare an area, checked by the content
+  validator, so a new lesson cannot quietly fall outside the summary. The six
+  areas are a curriculum decision as much as a technical one and should be
+  revisited when a second module is authored.
+
+## 029. Activity is timestamped by the child's actions, not the parent's
+
+- Date: 2026-08-04
+- Status: accepted
+- Context: "When did my child last use the app?" needs a clock. The obvious
+  place — the completion timestamp — misses a child who opened a lesson and did
+  not finish, and the obvious implementation would also tick when a parent
+  marks a mission from the dashboard.
+- Decision: Add `updatedAt` to each progress entry, written when the child
+  plays (`writeLessonRun`, `recordCompletion`) and deliberately not when a
+  parent marks a mission. Replaying a finished lesson moves the clock but
+  leaves the original completion untouched, keeping decision 022 intact.
+- Consequences: The answer reflects the child's use rather than the parent's
+  visit. It is an additive field, so no store version bump and no lost
+  prototype progress; entries written before this change simply have no
+  timestamp and are omitted from recent activity.

@@ -21,6 +21,7 @@ export const leavingAConversation: Lesson = {
     "Use a short goodbye that points to next time.",
     "Know that you may leave any situation that feels wrong, goodbye or no goodbye.",
   ],
+  skillArea: "ending",
 
   scenes: [
     {

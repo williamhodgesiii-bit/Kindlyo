@@ -22,6 +22,7 @@ export function makeTestLesson(overrides: Partial<Lesson> = {}): Lesson {
     ageMin: 5,
     ageMax: 9,
     learningObjectives: ["Do the thing."],
+    skillArea: "greeting",
     scenes: [
       {
         id: "opening",
