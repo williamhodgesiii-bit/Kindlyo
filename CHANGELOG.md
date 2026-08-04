@@ -1,9 +1,10 @@
 # Changelog
 
 A record of what reached `main`, one section per shipping day. Each entry is
-written by `scripts/day.sh ship`, which lists the commits merged that day. Every
-shipping day is also tagged `ship/YYYY-MM-DD`, so a day's exact state stays
-recoverable after its branch is deleted.
+written by `scripts/day.sh ship`, which lists the commits merged that day and
+the commit the day shipped from, so a day's exact state stays recoverable after
+its branch is deleted. Shipping days are also tagged `ship/YYYY-MM-DD` where the
+host allows it — see `docs/DAILY_WORKFLOW.md`.
 
 Newest first.
 
@@ -11,22 +12,12 @@ Newest first.
 
 ## 2026-08-04
 
+- Make the release marker survive hosts that refuse tags
+- Shipped from `a85225a` (`claude/lesson-engine-vertical-slice-kv7bi3`)
 - Build the parent dashboard around five questions
-
-## 2026-08-04
-
 - Add the parent onboarding and child-profile prototype flow
-
-## 2026-08-04
-
 - Add the local progress system for the Meeting People module
-
-## 2026-08-04
-
 - Build the lesson-engine vertical slice with lesson one
-
-## 2026-08-04
-
 - Add the Kindlyo design system and component gallery
 - Keep next dev from rewriting CLAUDE.md on every run
 

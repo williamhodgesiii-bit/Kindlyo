@@ -140,6 +140,10 @@ cmd_save() {
 }
 
 # Inserts a dated section immediately after the changelog marker.
+#
+# Shipping twice in one day extends that day's existing section rather than
+# adding a second heading for the same date: the file promises one section per
+# shipping day, and five "## 2026-08-04" headings in a row is not that.
 write_changelog_entry() {
   local body_file="$1"
   local tmp
@@ -148,27 +152,47 @@ write_changelog_entry() {
     die "$CHANGELOG is missing the '$CHANGELOG_MARKER' marker"
 
   tmp="$(mktemp)"
-  awk -v date="$(today)" -v bodyfile="$body_file" -v marker="$CHANGELOG_MARKER" '
-    { print }
-    index($0, marker) && !inserted {
-      print ""
-      print "## " date
-      print ""
-      while ((getline line < bodyfile) > 0) print line
-      close(bodyfile)
-      inserted = 1
-    }
-  ' "$CHANGELOG" >"$tmp"
+  if grep -q "^## $(today)$" "$CHANGELOG"; then
+    # Append to today's section, immediately under its heading.
+    awk -v heading="## $(today)" -v bodyfile="$body_file" '
+      { print }
+      $0 == heading && !inserted {
+        # The blank line after the heading, then the new lines on top.
+        if ((getline blank) > 0) print blank
+        while ((getline line < bodyfile) > 0) if (line != "") print line
+        close(bodyfile)
+        inserted = 1
+      }
+    ' "$CHANGELOG" >"$tmp"
+  else
+    awk -v date="$(today)" -v bodyfile="$body_file" -v marker="$CHANGELOG_MARKER" '
+      { print }
+      index($0, marker) && !inserted {
+        print ""
+        print "## " date
+        print ""
+        while ((getline line < bodyfile) > 0) print line
+        close(bodyfile)
+        inserted = 1
+      }
+    ' "$CHANGELOG" >"$tmp"
+  fi
   mv "$tmp" "$CHANGELOG"
 }
 
 cmd_ship() {
-  local branch
+  local branch shipped_sha
   branch="$(require_daily_branch)"
   require_clean_tree
 
   info "Fetching origin/$MAIN_BRANCH"
   git fetch origin "$MAIN_BRANCH"
+
+  # The work being shipped, recorded before the merge so it goes into the
+  # changelog commit itself. This is the durable marker: it is pushed with
+  # everything else, so it survives hosts that refuse tags and branch deletion
+  # alike.
+  shipped_sha="$(git rev-parse --short HEAD)"
 
   local commits_file
   commits_file="$(mktemp)"
@@ -176,10 +200,15 @@ cmd_ship() {
     "origin/$MAIN_BRANCH..HEAD" >"$commits_file"
   printf '\n' >>"$commits_file"
 
+  # Checked before the shipped-from line is added, so an empty day is still
+  # recognised as empty.
   if [ ! -s "$commits_file" ] || [ -z "$(tr -d '[:space:]' <"$commits_file")" ]; then
     rm -f "$commits_file"
     die "nothing to ship: $branch has no commits beyond origin/$MAIN_BRANCH"
   fi
+
+  printf -- '- Shipped from `%s` (`%s`)\n' "$shipped_sha" "$branch" \
+    >>"$commits_file"
 
   if [ "${SKIP_CHECKS:-0}" = "1" ]; then
     info "Skipping checks (SKIP_CHECKS=1)"
@@ -213,23 +242,29 @@ cmd_ship() {
   # failure here must not leave the merge sitting unpushed on your machine.
   push_with_retry origin "$MAIN_BRANCH"
 
-  local tag="ship/$(today)"
-  if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
-    note "tag $tag already exists locally; leaving it alone"
-  else
-    git tag -a "$tag" -m "Shipped $branch"
-  fi
+  # One tag per ship, not per day: shipping twice in a day used to skip the
+  # second tag entirely because the name was already taken.
+  local tag="ship/$(today)" suffix=2
+  while git rev-parse -q --verify "refs/tags/$tag" >/dev/null; do
+    tag="ship/$(today).$suffix"
+    suffix=$((suffix + 1))
+  done
+  git tag -a "$tag" -m "Shipped $branch ($shipped_sha)"
 
-  # Best effort: some hosts refuse tag creation. The release is already out, so
-  # this is a warning, never a failure.
+  # Best effort: some hosts refuse tag creation. The release is already pushed,
+  # so this is a warning, never a failure — and the shipped commit is recorded
+  # in the changelog either way, which is what makes the state recoverable.
   if git push origin "$tag" >/dev/null 2>&1; then
     note "pushed tag $tag"
   elif direct_push "$tag" >/dev/null 2>&1; then
     note "pushed tag $tag directly to GitHub"
-  elif [ -n "${GH_PAT:-}" ]; then
-    note "could not push tag $tag even with GH_PAT; it still exists locally"
   else
-    note "could not push tag $tag; set GH_PAT to push tags from here"
+    # Do not leave an unpushable tag behind pretending to be a release marker:
+    # it is invisible to everyone else, and it would take the name that the
+    # next ship on an unrestricted host wants.
+    git tag -d "$tag" >/dev/null
+    note "this host refuses tag pushes, so no tag was kept"
+    note "the shipped commit $shipped_sha is recorded in $CHANGELOG"
   fi
 
   git checkout "$branch"
