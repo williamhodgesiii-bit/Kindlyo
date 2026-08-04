@@ -226,3 +226,81 @@ Format:
 - Consequences: The design system covers everything the lesson engine needs to
   start, without inventing two lesson components blind. Revisit a toast only
   when something genuinely transient needs announcing.
+
+## 017. The content model gains four richer fields
+
+- Date: 2026-08-04
+- Status: accepted
+- Context: The proposed model in `docs/CONTENT_SCHEMA.md` carried `principle`
+  and `practicePrompt` as bare strings, and left the parent coaching prompt and
+  the completion screen to the UI. Authoring lesson one showed all four to be
+  too thin: `CURRICULUM_PRINCIPLES.md` requires every explanation to carry its
+  context, consent, and safety qualifiers, and the brief asks for a rehearsal
+  interaction rather than a sentence.
+- Decision: `principle` becomes `{ title, body, points[] }`; `practicePrompt`
+  becomes `practice` — a prompt plus two or more genuinely acceptable options,
+  each with its own encouragement. Add `parentCoaching` and `completion` as
+  authored content. `docs/CONTENT_SCHEMA.md` is updated to match rather than
+  left describing something we did not build.
+- Consequences: Coaching and completion copy is specific to the skill instead
+  of generic UI text, and the safety qualifiers live in content where a
+  reviewer can see them. The cost is four more fields to author per lesson.
+
+## 018. Lesson content is validated at runtime, on import
+
+- Date: 2026-08-04
+- Status: accepted
+- Context: Content is authored in TypeScript, so shapes are already checked at
+  compile time. But the rules that matter are curriculum rules — a decision
+  needs two or more options, a principle needs a context point, nothing may
+  claim review without a named reviewer — and those are invisible to the type
+  system. Content may also arrive from a CMS later.
+- Decision: Hand-roll a validator (`src/features/curriculum/validate.ts`) and
+  run it over every lesson when `src/content/lessons` is imported. Because the
+  lesson pages import that registry, malformed content fails `next build`. It
+  collects every issue rather than throwing on the first. No schema library:
+  the surface is small and the useful rules are ours, following decisions 012
+  and 013.
+- Consequences: A content mistake is caught before deploy, with a path to each
+  problem. There is no separate content build step to remember. The validator
+  is code we maintain; if content moves to a CMS with its own schema tooling,
+  revisit this.
+
+## 019. Lesson progression is a pure reducer, and demo progress is local only
+
+- Date: 2026-08-04
+- Status: accepted
+- Context: The lesson engine needs progression rules (you cannot skip a
+  decision), and the slice has no database. Both could have lived in the
+  renderer with `useState`.
+- Decision: Progression is a pure reducer over a step list derived from
+  content (`src/features/lessons/`), so the rules can be tested without
+  rendering and no page can invent a different rule. `hydrated` is part of the
+  machine rather than a `useState` beside it, so restoring saved progress is
+  one transition. Refresh-safe progress is written to one local-storage key,
+  holding only step index, option ids, and a completion timestamp — never a
+  name, age, or free text — and tagged with the lesson version so a revision
+  cannot silently resume into a different lesson.
+- Consequences: Progression is covered by fast unit tests, and the renderer
+  only decides what to draw. Local storage is scaffolding: it is per-device,
+  per-browser, and shared by everyone using that device, which is acceptable
+  for demo progress and not acceptable for real progress. Real progress belongs
+  to a child profile in the database, and replaces this.
+
+## 020. Draft content is visible, and labelled, until accounts exist
+
+- Date: 2026-08-04
+- Status: accepted
+- Context: `docs/CONTENT_SCHEMA.md` requires that draft lessons not appear to
+  normal users. Every authored lesson is draft — nothing has been reviewed by a
+  qualified human — and there is no user to check against yet, so enforcing the
+  rule literally would leave the lesson engine unreachable.
+- Decision: `canViewDraftContent()` in `src/features/curriculum/catalog.ts`
+  returns `true` for now, and every surface that shows a lesson also shows a
+  `ContentStatusBadge` reading "Draft", with the longer explanation available to
+  screen readers. That function is the single place the rule changes.
+- Consequences: The slice is usable and honest about what it is showing. When
+  accounts land, `canViewDraftContent` becomes a role check and
+  `getLessonBySlug` starts returning `undefined` for drafts — which the lesson
+  route already turns into a 404 through the same path as an unknown slug, so
+  the URL cannot be used to probe for unreleased content.

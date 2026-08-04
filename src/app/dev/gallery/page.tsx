@@ -1,16 +1,23 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
+import {
+  illustrationKeys,
+  SceneIllustration,
+} from "@/components/lesson/illustrations";
 import { ParentAppShell } from "@/components/shells/ParentAppShell";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { ContentStatusBadge } from "@/components/ui/ContentStatusBadge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { IconButton } from "@/components/ui/IconButton";
 import { CloseIcon, SparkIcon } from "@/components/ui/icons";
 import { InlineFeedback } from "@/components/ui/InlineFeedback";
 import { PageContainer } from "@/components/ui/PageContainer";
+import { ParentInsightCard } from "@/components/ui/ParentInsightCard";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+import { StoryPanel } from "@/components/ui/StoryPanel";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Heading, Text } from "@/components/ui/Typography";
 import { isDevRouteEnabled } from "@/lib/devOnly";
@@ -217,6 +224,67 @@ export default function GalleryPage() {
             <InlineFeedback tone="problem">
               We could not save that just now.
             </InlineFeedback>
+          </div>
+        </Section>
+
+        <Section
+          title="ContentStatusBadge"
+          intent="Review state, shown rather than hidden. Draft is information, not an error, so it is muted rather than alarming."
+        >
+          <div className="flex flex-wrap items-center gap-3">
+            <ContentStatusBadge status="draft" />
+            <ContentStatusBadge status="reviewed" />
+            <ContentStatusBadge status="published" />
+            <ContentStatusBadge status="draft" withDescription />
+          </div>
+        </Section>
+
+        <Section
+          title="StoryPanel"
+          intent="A scene: picture, title, narration. The illustration is decorative — the narration must read the same without it."
+        >
+          <StoryPanel
+            title="The first morning at art club"
+            narration="Maya is already at the long table, laying out paintbrushes. She looks up when you come in."
+            illustration={
+              <SceneIllustration
+                illustrationKey="art-table-morning"
+                className="h-auto w-full"
+              />
+            }
+          />
+        </Section>
+
+        <Section
+          title="ParentInsightCard"
+          intent="Addressed to the adult, inside a child's screen. Visually distinct so nobody has to work out who it is for."
+        >
+          <ParentInsightCard
+            title="How to help"
+            body="Children copy greetings long before they can explain them."
+            points={[
+              "Greet someone in front of your child, then say what you did.",
+              "Let them pick the form. A wave counts.",
+            ]}
+          />
+        </Section>
+
+        <Section
+          title="Scene illustrations"
+          intent="Local shapes only — no remote images anywhere. An unknown key falls back to a neutral drawing rather than throwing."
+        >
+          <div className="grid gap-4 sm:grid-cols-3">
+            {[...illustrationKeys, "no-such-key"].map((key) => (
+              <figure key={key}>
+                <SceneIllustration
+                  illustrationKey={key}
+                  className="h-auto w-full"
+                />
+                <figcaption className="mt-2 text-sm text-text-secondary">
+                  {key}
+                </figcaption>
+              </figure>
+            ))}
           </div>
         </Section>
 

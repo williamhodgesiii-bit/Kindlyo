@@ -7,9 +7,11 @@ interactive stories and real-world missions.
 The parent or guardian owns the account. Children learn within a
 parent-controlled session and never create independent accounts.
 
-> **Status:** early-stage. The technical foundation and application shell are in
-> place. There is no authentication, database, payment, or analytics integration
-> yet, and no real curriculum — only placeholder module data.
+> **Status:** early-stage. The technical foundation, application shell, and the
+> first lesson-engine slice are in place — lesson one, "Saying hello", runs end
+> to end from local content. There is no authentication, database, payment, or
+> analytics integration yet, progress is kept in the browser only, and all
+> curriculum is draft content awaiting review by qualified humans.
 
 ## Repository structure
 
@@ -24,7 +26,9 @@ kindlyo/
 │   ├── app/            App Router routes, error and not-found pages
 │   ├── components/     Shared UI
 │   │   ├── ui/         Design system primitives
+│   │   ├── lesson/     The lesson renderer and its step views
 │   │   └── shells/     Page chrome for the child and parent surfaces
+│   ├── content/        Authored curriculum (draft until humans review it)
 │   ├── features/       Domain modules (business logic lives here, not in pages)
 │   ├── lib/            Cross-cutting helpers, including environment validation
 │   └── styles/         Design tokens and global styles
@@ -49,6 +53,7 @@ kindlyo/
 | [USER_JOURNEYS.md](docs/USER_JOURNEYS.md)                 | Primary paths through the product         |
 | [CURRICULUM_PRINCIPLES.md](docs/CURRICULUM_PRINCIPLES.md) | How lessons teach                         |
 | [CONTENT_SCHEMA.md](docs/CONTENT_SCHEMA.md)               | Structured lesson content model           |
+| [LESSON_ENGINE.md](docs/LESSON_ENGINE.md)                 | How lessons are validated and played      |
 | [DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)                 | Brand, tokens, components, accessibility  |
 | [PRIVACY_AND_SAFETY.md](docs/PRIVACY_AND_SAFETY.md)       | Data posture and safety rules             |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md)                   | Stack, structure, and boundaries          |

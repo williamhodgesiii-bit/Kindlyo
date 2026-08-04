@@ -110,9 +110,11 @@ Initial component set:
 - Skeleton loader
 
 Built in `src/components/ui/` and `src/components/shells/`, and documented in
-`docs/COMPONENTS.md`. Decision 016 records the two departures from this list:
-inline feedback replaces the toast, and the lesson shell, story panel, and
-parent insight card wait for the lesson-engine slice.
+`docs/COMPONENTS.md`. Decision 016 records the one standing departure from this
+list: inline feedback replaces the toast, because lesson feedback should stay on
+screen rather than time out while a six-year-old is reading it. The lesson
+shell, story panel, and parent insight card that decision deferred shipped with
+the lesson-engine slice, alongside `ContentStatusBadge`.
 
 ## Accessibility requirements
 
