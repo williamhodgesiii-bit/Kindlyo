@@ -12,6 +12,8 @@ Newest first.
 
 ## 2026-08-04
 
+- Make the release marker survive hosts that refuse tags
+- Shipped from `a85225a` (`claude/lesson-engine-vertical-slice-kv7bi3`)
 - Build the parent dashboard around five questions
 - Add the parent onboarding and child-profile prototype flow
 - Add the local progress system for the Meeting People module
