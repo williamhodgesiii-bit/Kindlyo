@@ -54,10 +54,16 @@ The end-of-day release. In order:
    `Ship claude/YYYY-MM-DD` commit per day.
 5. Pushes `main`, then tags the release `ship/YYYY-MM-DD` and pushes the tag.
 
+Shipping twice in one day extends that day's changelog section rather than
+adding a second heading for the same date, and the second tag is
+`ship/YYYY-MM-DD.2`.
+
 `main` is pushed before the tag on purpose. Some hosts restrict who may create
 tags, and a blocked tag must never leave a finished release sitting unpushed on
-your machine. If the tag cannot be pushed you get a warning, the tag still
-exists locally, and the release is unaffected.
+your machine. If the tag cannot be pushed, the tag is **deleted locally** rather
+than kept: a tag nobody else can see is not a release marker, and leaving it
+behind would take the name the next ship wants. The release is unaffected, and
+the shipped commit is in the changelog either way.
 
 `SKIP_CHECKS=1` exists for emergencies. Reaching for it routinely defeats the
 purpose of the command.
@@ -79,14 +85,18 @@ deleted.
 Deleting a branch never loses anything, because every shipping day leaves three
 durable records:
 
-| Record                | What it gives you                            |
-| --------------------- | -------------------------------------------- |
-| `CHANGELOG.md` entry  | Plain-language list of what shipped that day |
-| `Ship claude/…` merge | The exact commits, grouped by day, in `main` |
-| `ship/YYYY-MM-DD` tag | An immutable pointer to that day's state     |
+| Record                | What it gives you                                     |
+| --------------------- | ----------------------------------------------------- |
+| `CHANGELOG.md` entry  | What shipped that day, and the commit it shipped from |
+| `Ship claude/…` merge | The exact commits, grouped by day, in `main`          |
+| `ship/YYYY-MM-DD` tag | An immutable pointer, where the host allows tags      |
 
-To see a past day: `git show ship/2026-08-03`, or
-`git log ship/2026-08-02..ship/2026-08-03` for everything between two days.
+The changelog's **"Shipped from"** line is the record that always survives: it
+is an ordinary commit, so it is pushed with everything else and does not depend
+on tags being permitted or on the branch still existing.
+
+To see a past day: `git show <shipped-from sha>`, or `git show ship/2026-08-03`
+where tags were pushed.
 
 ## Automated cleanup
 
@@ -104,11 +114,25 @@ untick "dry run" to delete.
 
 ## Pushing tags and deleting branches from a hosted session
 
-Hosted agent sessions route git through a proxy that allows pushing commits and
-branches but refuses **tag creation** and **branch deletion**. Day-to-day work is
-unaffected; only `ship`'s tag step and `cleanup`'s deletions hit it.
+Hosted agent sessions route git through a gateway that allows pushing commits
+and branches but refuses **tag creation** and **branch deletion**. Day-to-day
+work is unaffected; only `ship`'s tag step and `cleanup`'s deletions hit it.
 
-To lift the restriction, give the session a GitHub token:
+**A `GH_PAT` alone may not be enough.** On sessions where the gateway itself
+mediates GitHub access, tag pushes and the GitHub REST API are refused whatever
+token you supply, with:
+
+```text
+GitHub access is not enabled for this session.
+An org admin must connect the Claude GitHub App for this organization.
+```
+
+That is a workspace setting, not a repository permission — an admin connects the
+GitHub App in the Claude GitHub settings. Until then `ship` simply skips the
+tag, and the changelog's "Shipped from" line is the record of the release.
+
+Where the gateway does allow it, a token is still what enables the two
+restricted operations:
 
 1. Create a **fine-grained personal access token** on GitHub
    (Settings → Developer settings → Personal access tokens → Fine-grained).
