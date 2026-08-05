@@ -1,14 +1,35 @@
 import type { Metadata, Viewport } from "next";
 import { SkipLink } from "@/components/SkipLink";
+import { absoluteUrl, siteDescription, siteName } from "@/lib/seo";
 import "@/styles/globals.css";
 
+/**
+ * `metadataBase` is what makes the relative image path in `openGraph` resolve
+ * to an absolute URL, which social previews require. It comes from
+ * `NEXT_PUBLIC_APP_URL`, so a deployment that leaves that unset will publish
+ * localhost URLs — see `.env.example`.
+ */
 export const metadata: Metadata = {
+  metadataBase: new URL(absoluteUrl("/")),
   title: {
-    default: "Kindlyo",
-    template: "%s | Kindlyo",
+    default: siteName,
+    template: `%s | ${siteName}`,
   },
-  description:
-    "Kindlyo helps children ages 5 to 9 practice kindness, communication, and social confidence through short stories and real-world missions.",
+  description: siteDescription,
+  applicationName: siteName,
+  openGraph: {
+    type: "website",
+    siteName,
+    locale: "en_GB",
+    title: siteName,
+    description: siteDescription,
+    url: absoluteUrl("/"),
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteName,
+    description: siteDescription,
+  },
 };
 
 export const viewport: Viewport = {

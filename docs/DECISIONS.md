@@ -474,3 +474,68 @@ Format:
   visit. It is an additive field, so no store version bump and no lost
   prototype progress; entries written before this change simply have no
   timestamp and are omitted from recent activity.
+
+## 030. The waitlist records to a server log until there is a database
+
+- Date: 2026-08-05
+- Status: accepted
+- Context: `prompts/07-marketing-site.md` requires a working waitlist that
+  validates input, and `docs/MVP_SCOPE.md` lists it in the marketing
+  experience. There is no database, no auth, and no email provider in the
+  repository — persistence arrives in `prompts/09-database.md`. The options
+  were to add a dependency and a secret now, to ship a `mailto:` link that
+  validates nothing, or to build the endpoint against a seam.
+- Decision: Add `POST /api/waitlist` with hand-rolled validation shared with
+  the browser form, behind a `WaitlistSink` interface. The only implementation
+  writes one structured JSON line to the server log, named with the
+  dot-notation event vocabulary from `docs/ANALYTICS.md`. No new dependency and
+  no new secret.
+- Consequences: The endpoint, its validation, and the form are all real and
+  tested, and swapping in real storage is a new module plus one line in
+  `getWaitlistSink`. **Log retention is not a mailing list**: this sink must be
+  replaced before the site is promoted publicly, because collecting an address
+  that cannot be retrieved is worse than not collecting it. The confirmation
+  copy is written to match what the sink actually does. The in-memory rate
+  limit is per-process and is not a security control.
+
+## 031. Marketing navigation lives in the shared header, behind a native disclosure
+
+- Date: 2026-08-05
+- Status: accepted
+- Context: The public site grew from one page to nine. The three-item header
+  no longer covered it, and the alternative was a second app shell with its own
+  header and footer, which would mean two sets of landmarks to keep correct
+  (see the note in `ParentAppShell`).
+- Decision: Keep one `SiteHeader`, give it the five marketing links plus a
+  waitlist call to action, and collapse it into a native `<details>` disclosure
+  below `md`. The links therefore appear twice in the markup, inside a single
+  `<nav>`, with CSS choosing which copy is displayed. `SiteFooter` gains link
+  groups for the legal placeholders and the two product previews, and a
+  `navigation` prop that `ChildAppShell` sets to false.
+- Consequences: One banner and one contentinfo per page, as before. No
+  JavaScript is needed for the menu and it works with scripting unavailable.
+  The duplicate list is invisible in a browser but visible to jsdom, which
+  loads no CSS, so unit tests use `getAllByRole` and the real behaviour is
+  pinned in `e2e/marketing.spec.ts`. A child never sees the marketing links,
+  because the learning area's footer has none.
+
+## 032. The public sample scenario composes the step views rather than reusing LessonRunner
+
+- Date: 2026-08-05
+- Status: accepted
+- Context: The marketing site needs a scenario playable with no account, and
+  `prompts/07-marketing-site.md` requires that it neither require nor collect
+  child personal data. `LessonRunner` gates on `useFamily()`, reads saved
+  progress, and writes every step to local storage — all correct for the
+  learning area and all wrong for an anonymous visitor.
+- Decision: Build a small `SampleScenario` client component holding two
+  `useState` values and nothing else, rendering the real `ChoiceStepView` and
+  `PrincipleStepView` with real authored content. `ChoiceStepView` and
+  `PrincipleStepView` gain a `headingLevel` prop so they can sit inside a
+  marketing section without skipping a level. A server component picks the
+  scene out of the lesson so the catalogue stays out of the browser bundle.
+- Consequences: A visitor sees the actual product rather than a mock-up, and
+  playing it writes nothing — asserted in both the unit test and the e2e spec.
+  The demo calls `getLessonBySlug(slug, true)` with the draft flag passed
+  explicitly, so it keeps working when `canViewDraftContent()` becomes a role
+  check; the draft badge is shown alongside, as CLAUDE.md requires.

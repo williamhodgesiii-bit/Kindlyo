@@ -1,7 +1,12 @@
 import { ChoiceCard, ChoiceList } from "@/components/ui/ChoiceCard";
 import { InlineFeedback } from "@/components/ui/InlineFeedback";
 import { StoryPanel } from "@/components/ui/StoryPanel";
-import { Heading, Text } from "@/components/ui/Typography";
+import {
+  Heading,
+  nextHeadingLevel,
+  Text,
+  type HeadingLevel,
+} from "@/components/ui/Typography";
 import { feedbackToneForConsequence } from "../consequenceTone";
 import { SceneIllustration } from "../illustrations";
 import type { ChoiceScene } from "@/features/lessons/steps";
@@ -20,12 +25,18 @@ export type ChoiceStepViewProps = {
   scene: ChoiceScene;
   selectedChoiceId: string | undefined;
   onChoose: (choiceId: string) => void;
+  /**
+   * The scene title's level. Defaults to the `h2` a lesson page wants; the
+   * marketing sample nests this inside a section and passes something deeper.
+   */
+  headingLevel?: HeadingLevel;
 };
 
 export function ChoiceStepView({
   scene,
   selectedChoiceId,
   onChoose,
+  headingLevel = 2,
 }: ChoiceStepViewProps) {
   const selected = scene.choices.find(
     (choice) => choice.id === selectedChoiceId,
@@ -38,6 +49,7 @@ export function ChoiceStepView({
     <StoryPanel
       title={scene.title}
       narration={scene.narration}
+      headingLevel={headingLevel}
       illustration={
         <SceneIllustration
           illustrationKey={scene.illustrationKey}
@@ -45,7 +57,7 @@ export function ChoiceStepView({
         />
       }
     >
-      <Heading level={3}>{prompt}</Heading>
+      <Heading level={nextHeadingLevel(headingLevel)}>{prompt}</Heading>
 
       <ChoiceList label={prompt} className="mt-4">
         {scene.choices.map((choice) => (
