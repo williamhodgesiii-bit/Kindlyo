@@ -10,6 +10,11 @@ Newest first.
 
 <!-- new-entries-below -->
 
+## 2026-08-05
+
+- Build the public marketing site
+- Shipped from `2c26d22` (`claude/kindlyo-marketing-site-z87nm4`)
+
 ## 2026-08-04
 
 - Make the release marker survive hosts that refuse tags
