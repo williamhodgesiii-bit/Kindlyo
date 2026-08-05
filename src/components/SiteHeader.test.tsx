@@ -53,6 +53,26 @@ describe("SiteHeader", () => {
     ).toHaveAttribute("href", "/waitlist");
   });
 
+  it("offers a way to sign in", () => {
+    render(<SiteHeader />);
+    expect(screen.getByRole("link", { name: "Sign in" })).toHaveAttribute(
+      "href",
+      "/login",
+    );
+  });
+
+  it("drops the sign-in and waitlist actions in the app variant", () => {
+    // A signed-in parent needs neither; the account bar carries sign-out.
+    render(<SiteHeader variant="app" />);
+    expect(screen.queryByRole("link", { name: "Sign in" })).toBeNull();
+    expect(
+      screen.queryByRole("link", { name: "Join the waitlist" }),
+    ).toBeNull();
+    expect(
+      screen.getByRole("navigation", { name: "Main" }),
+    ).toBeInTheDocument();
+  });
+
   it("says the product is in private beta", () => {
     render(<SiteHeader />);
     expect(screen.getByText("Private beta")).toBeInTheDocument();

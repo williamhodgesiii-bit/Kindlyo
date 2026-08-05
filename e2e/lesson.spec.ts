@@ -1,5 +1,9 @@
 import { expect, test, type Page } from "@playwright/test";
+import { STORAGE_STATE } from "./support/auth";
 import { seedProfiles } from "./support/family";
+
+// The parent and learning areas are gated: reuse the signed-in parent session.
+test.use({ storageState: STORAGE_STATE });
 
 /**
  * Lesson one, start to finish, in a real production build.

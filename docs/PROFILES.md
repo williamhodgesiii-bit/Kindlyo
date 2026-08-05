@@ -3,9 +3,12 @@
 How a family is set up, and what is stored about a child. The lesson machinery
 lives in `LESSON_ENGINE.md`; this file covers who the lessons belong to.
 
-**This phase is a local prototype.** There is no account and no database:
-profiles live in one browser, on one device, visible to anyone using it, and
-gone when site data is cleared. Every parent-facing screen says so. The
+**The parent account is now real; the child profiles are not yet.** A parent
+signs in with a real, authenticated account (see `docs/AUTH.md`), and both
+`/parent` and `/learn` are reachable only from that session. But the child
+profiles themselves still live in one browser, on one device, and are gone when
+site data is cleared — they were deliberately **not** migrated to the database
+in the authentication slice. Every parent-facing screen still says so. The
 persistence slice replaces the store wholesale.
 
 ## What a profile is

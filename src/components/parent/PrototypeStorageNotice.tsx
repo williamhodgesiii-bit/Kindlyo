@@ -9,8 +9,9 @@ import { InlineFeedback } from "@/components/ui/InlineFeedback";
  * not in a settings page afterwards.
  *
  * It is a neutral notice, not an alarm. Nothing is going wrong; the honest
- * facts are simply that there is no account yet, the data never leaves the
- * browser, and clearing site data clears it.
+ * facts are simply that your account is real now, but your children's profiles
+ * and their progress still live only in this browser, and clearing site data
+ * clears them.
  */
 export function PrototypeStorageNotice({ className }: { className?: string }) {
   return (
@@ -19,9 +20,10 @@ export function PrototypeStorageNotice({ className }: { className?: string }) {
       title="Prototype — stored on this device only"
       className={className}
     >
-      Profiles and progress are kept in this browser while we build. There are
-      no accounts yet, nothing is sent anywhere, and anything saved here
-      disappears if you clear your browser data.
+      Your account is real, but your children&rsquo;s profiles and their
+      progress are still kept only in this browser while we build. Nothing about
+      a child is sent anywhere, and anything saved here disappears if you clear
+      your browser data.
     </InlineFeedback>
   );
 }
