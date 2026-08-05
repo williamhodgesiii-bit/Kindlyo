@@ -11,7 +11,7 @@ import { PageContainer } from "@/components/ui/PageContainer";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Heading, Text } from "@/components/ui/Typography";
 import { PersonIcon } from "@/components/ui/icons";
-import { setMissionStatus } from "@/features/lessons/progressStorage";
+import { getFamilyClient } from "@/features/families/familyClient";
 import { useChildDashboard } from "@/features/lessons/useChildDashboard";
 import type { Family } from "@/features/profiles/useFamily";
 import { maxProfiles, type ChildProfile } from "@/features/profiles/types";
@@ -23,8 +23,8 @@ import {
   SkillAreaSummary,
   TalkingPoints,
 } from "./ChildDashboardPanels";
+import { AccountStorageNotice } from "./AccountStorageNotice";
 import { ProfileForm } from "./ProfileForm";
-import { PrototypeStorageNotice } from "./PrototypeStorageNotice";
 
 /**
  * The parent dashboard.
@@ -114,8 +114,12 @@ function ChildPanel({
   const dashboard = useChildDashboard(profile.id, progressVersion);
 
   const toggleMission = useCallback(
-    (lessonId: string, done: boolean) => {
-      setMissionStatus(profile.id, lessonId, done ? null : "done");
+    async (lessonId: string, done: boolean) => {
+      await getFamilyClient().setMissionStatus(
+        profile.id,
+        lessonId,
+        done ? null : "done",
+      );
       onChanged();
     },
     [profile.id, onChanged],
@@ -194,8 +198,8 @@ function ChildPanel({
           profile={profile}
           submitLabel="Save changes"
           onCancel={() => setDialog(null)}
-          onSubmit={(draft) => {
-            const result = family.update(profile.id, draft);
+          onSubmit={async (draft) => {
+            const result = await family.update(profile.id, draft);
             if (!result.ok) {
               return { ok: false, reason: "Please enter a nickname." };
             }
@@ -218,9 +222,8 @@ function ChildPanel({
             <Button
               variant="danger"
               onClick={() => {
-                family.resetProgress(profile.id);
-                onChanged();
                 setDialog(null);
+                void family.resetProgress(profile.id).then(onChanged);
               }}
             >
               Reset progress
@@ -233,7 +236,7 @@ function ChildPanel({
         open={dialog === "delete"}
         onClose={() => setDialog(null)}
         title={`Delete ${profile.nickname}'s profile?`}
-        description="The profile and all of its progress are removed from this device. This cannot be undone."
+        description="The profile and all of its progress are removed from your account. This cannot be undone."
         footer={
           <div className="flex flex-wrap justify-end gap-3">
             <Button variant="secondary" onClick={() => setDialog(null)}>
@@ -242,9 +245,8 @@ function ChildPanel({
             <Button
               variant="danger"
               onClick={() => {
-                family.remove(profile.id);
-                onChanged();
                 setDialog(null);
+                void family.remove(profile.id);
               }}
             >
               Delete profile
@@ -277,7 +279,7 @@ export function ParentDashboard({ family }: { family: Family }) {
         talk about together.
       </Text>
 
-      <PrototypeStorageNotice className="mt-6" />
+      <AccountStorageNotice className="mt-6" />
 
       <section aria-labelledby="children" className="mt-12">
         <div className="flex flex-wrap items-center justify-between gap-4">
@@ -309,8 +311,8 @@ export function ParentDashboard({ family }: { family: Family }) {
               <ProfileForm
                 submitLabel="Create profile"
                 onCancel={() => setAdding(false)}
-                onSubmit={(draft) => {
-                  const result = family.create(draft);
+                onSubmit={async (draft) => {
+                  const result = await family.create(draft);
                   if (!result.ok) {
                     return {
                       ok: false,

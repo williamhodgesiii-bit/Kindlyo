@@ -1,12 +1,25 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { recordCompletion } from "@/features/lessons/progressStorage";
 import {
   createProfile,
   selectProfile,
 } from "@/features/profiles/profileStorage";
 import { LearningPath } from "./LearningPath";
+
+// Offline, the async family client resolves to the prototype stores backed by
+// this browser's local storage, so these specs seed and assert through
+// `window.localStorage` and mock only the client in between.
+vi.mock("@/features/families/familyClient", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@/features/families/familyClient")>();
+  return {
+    ...actual,
+    getFamilyClient: () =>
+      actual.createLocalFamilyClient(() => window.localStorage),
+  };
+});
 
 /**
  * The path screen, driven the way a family would drive it.
@@ -73,7 +86,8 @@ describe("choosing who is learning", () => {
 
     await user.click(await screen.findByRole("button", { name: /Ada/ }));
 
-    expect(screen.getByText(/Learning as/)).toBeInTheDocument();
+    // The path loads from the server after the child is chosen.
+    expect(await screen.findByText(/Learning as/)).toBeInTheDocument();
     expect(screen.getByText("Saying hello")).toBeInTheDocument();
   });
 
@@ -87,7 +101,7 @@ describe("choosing who is learning", () => {
     await user.click(await screen.findByRole("button", { name: "Switch" }));
 
     expect(
-      screen.getByRole("heading", { name: "Who is learning?" }),
+      await screen.findByRole("heading", { name: "Who is learning?" }),
     ).toBeInTheDocument();
   });
 });
@@ -217,16 +231,16 @@ describe("profile separation", () => {
     // Ada has finished one lesson.
     await user.click(await screen.findByRole("button", { name: /Ada/ }));
     expect(
-      screen.getByRole("progressbar", { name: "Lessons finished" }),
+      await screen.findByRole("progressbar", { name: "Lessons finished" }),
     ).toHaveAttribute("aria-valuenow", "1");
     expect(within(rowFor(1)).getByText("Done")).toBeInTheDocument();
 
     // Ben has not, and lesson two is still locked for him.
-    await user.click(screen.getByRole("button", { name: "Switch" }));
-    await user.click(screen.getByRole("button", { name: /Ben/ }));
+    await user.click(await screen.findByRole("button", { name: "Switch" }));
+    await user.click(await screen.findByRole("button", { name: /Ben/ }));
 
     expect(
-      screen.getByRole("progressbar", { name: "Lessons finished" }),
+      await screen.findByRole("progressbar", { name: "Lessons finished" }),
     ).toHaveAttribute("aria-valuenow", "0");
     expect(within(rowFor(1)).queryByText("Done")).toBeNull();
     expect(

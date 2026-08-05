@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useReducer } from "react";
+import { getFamilyClient } from "@/features/families/familyClient";
 import type { Lesson } from "@/features/curriculum/schema";
 import {
   canAdvance as canAdvanceFrom,
@@ -13,12 +14,6 @@ import {
   toLessonProgress,
   type LessonRunState,
 } from "./lessonMachine";
-import {
-  clearLessonRun,
-  readLessonRun,
-  recordCompletion,
-  writeLessonRun,
-} from "./progressStorage";
 import { buildLessonSteps, getLastStep, type LessonStep } from "./steps";
 
 /**
@@ -64,15 +59,28 @@ export function useLessonRun(lesson: Lesson, profileId: string): LessonRun {
   const [state, dispatch] = useReducer(reducer, initialLessonRunState);
 
   useEffect(() => {
-    dispatch({
-      type: "hydrate",
-      progress: readLessonRun(profileId, lesson.id, lesson.version),
-    });
+    let active = true;
+    void getFamilyClient()
+      .loadProgress(profileId)
+      .then((progress) => {
+        if (!active) return;
+        // Version-strict, like the local store was: a run saved against a
+        // different lesson version is discarded rather than resumed.
+        const run = progress[lesson.id]?.run;
+        const saved =
+          run !== undefined && run.lessonVersion === lesson.version
+            ? run.state
+            : null;
+        dispatch({ type: "hydrate", progress: saved });
+      });
+    return () => {
+      active = false;
+    };
   }, [profileId, lesson.id, lesson.version]);
 
   useEffect(() => {
     if (!state.hydrated) return;
-    writeLessonRun(
+    void getFamilyClient().saveRun(
       profileId,
       lesson.id,
       lesson.version,
@@ -81,10 +89,15 @@ export function useLessonRun(lesson: Lesson, profileId: string): LessonRun {
   }, [profileId, lesson.id, lesson.version, state]);
 
   // The completion record is written separately from the run so it survives
-  // restarts and version bumps (see progressStorage.ts).
+  // restarts and version bumps (see the family store).
   useEffect(() => {
     if (!state.hydrated || state.completedAt === null) return;
-    recordCompletion(profileId, lesson.id, lesson.version, state.completedAt);
+    void getFamilyClient().recordCompletion(
+      profileId,
+      lesson.id,
+      lesson.version,
+      state.completedAt,
+    );
   }, [profileId, lesson.id, lesson.version, state.hydrated, state.completedAt]);
 
   const choose = useCallback(
@@ -111,7 +124,7 @@ export function useLessonRun(lesson: Lesson, profileId: string): LessonRun {
   const restart = useCallback(() => {
     // Clears the run only. A recorded completion stays: starting the story
     // again must not lock the lessons it had unlocked.
-    clearLessonRun(profileId, lesson.id);
+    void getFamilyClient().clearRun(profileId, lesson.id);
     dispatch({ type: "restart" });
   }, [profileId, lesson.id]);
 

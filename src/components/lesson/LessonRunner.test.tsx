@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { makeTestLesson } from "@/features/curriculum/fixtures";
 import { readProfileProgress } from "@/features/lessons/progressStorage";
 import {
@@ -8,6 +8,19 @@ import {
   selectProfile,
 } from "@/features/profiles/profileStorage";
 import { LessonRunner } from "./LessonRunner";
+
+// Offline, the async family client resolves to the prototype stores backed by
+// this browser's local storage, so these specs seed and assert through
+// `window.localStorage` and mock only the client in between.
+vi.mock("@/features/families/familyClient", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@/features/families/familyClient")>();
+  return {
+    ...actual,
+    getFamilyClient: () =>
+      actual.createLocalFamilyClient(() => window.localStorage),
+  };
+});
 
 /**
  * The renderer, driven the way a child would drive it.

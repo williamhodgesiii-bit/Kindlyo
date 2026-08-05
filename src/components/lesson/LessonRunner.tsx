@@ -6,12 +6,9 @@ import { ContentStatusBadge } from "@/components/ui/ContentStatusBadge";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Heading, Text } from "@/components/ui/Typography";
-import { meetingPeopleModule } from "@/content/modules";
-import { getLessonBySlug } from "@/features/curriculum/catalog";
 import type { Lesson } from "@/features/curriculum/schema";
-import { buildModulePath } from "@/features/lessons/moduleProgress";
-import { readProfileProgress } from "@/features/lessons/progressStorage";
 import { useLessonRun, type LessonRun } from "@/features/lessons/useLessonRun";
+import { useModulePath } from "@/features/lessons/useModulePath";
 import { useFamily } from "@/features/profiles/useFamily";
 import { ChoiceStepView } from "./steps/ChoiceStepView";
 import { CoachingStepView } from "./steps/CoachingStepView";
@@ -119,11 +116,14 @@ function LessonNotice({
 
 /**
  * The gate in front of a lesson: who is learning, and is this lesson open for
- * them yet? Both answers come from local storage, so they are only knowable
- * after hydration — until then, the same skeleton the lesson itself uses.
+ * them yet? Both answers come from the server, so they are only knowable after
+ * the family and this child's progress have loaded — until then, the same
+ * skeleton the lesson itself uses.
  */
 export function LessonRunner({ lesson }: { lesson: Lesson }) {
   const family = useFamily();
+  const profileId = family.selectedProfile?.id ?? null;
+  const path = useModulePath(profileId);
 
   if (!family.hydrated) return <LoadingLesson />;
 
@@ -137,11 +137,9 @@ export function LessonRunner({ lesson }: { lesson: Lesson }) {
     );
   }
 
-  const path = buildModulePath(
-    meetingPeopleModule,
-    getLessonBySlug,
-    readProfileProgress(family.selectedProfile.id),
-  );
+  // Profile chosen, but its progress is still loading.
+  if (path === null) return <LoadingLesson />;
+
   const entry = path.lessons.find(
     (pathLesson) => pathLesson.lesson?.id === lesson.id,
   );

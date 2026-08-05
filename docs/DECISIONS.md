@@ -407,7 +407,8 @@ Format:
 ## 026. Prototype storage is labelled on screen, not just in the code
 
 - Date: 2026-08-04
-- Status: accepted
+- Status: superseded by 034 (data now lives in the account; the on-screen notice
+  says so instead)
 - Context: Profiles and progress live in local storage while there is no
   database. A parent typing their child's nickname into a form has no way to
   know that, and the difference between "saved to your account" and "saved in
@@ -567,3 +568,63 @@ Format:
   rate-limiter backs up Supabase's own and is not itself a security boundary.
   The Supabase-path code is integration-level and covered by types, the build,
   and the gateway interface rather than offline unit tests.
+
+## 034. Family data moves to PostgreSQL behind a store seam; local storage becomes the offline stand-in
+
+- Date: 2026-08-05
+- Status: accepted
+- Context: `prompts/23-database.md` asks to migrate families, child profiles,
+  lesson progress, and mission completions from local browser storage to
+  PostgreSQL, with every protected query scoped to the authenticated parent and
+  no `familyId` or `childProfileId` ever trusted from the client. Local storage
+  was always scaffolding (decisions 019, 021, 026): per-device, shared by
+  everyone on the device, and unfit for real progress. Parent authentication
+  already exists (decision 033); child profiles were deliberately left local
+  there.
+- Decision: Add five tables — `families`, `family_memberships`,
+  `child_profiles`, `lesson_progress`, `mission_completions` — with database
+  constraints, indexes for the family/child access patterns, and RLS policies as
+  a backstop. Introduce a server-side `FamilyStore` port with a real PostgreSQL
+  adapter and an in-memory stand-in, chosen by configuration exactly as the auth
+  gateway is (decision 033); `assertLocalPersistenceAllowed` keeps the stand-in
+  out of preview and production, where env validation now requires the database.
+  A `FamilyService` is the sole authorization boundary: it resolves the parent's
+  family from their user id alone, re-checks any client-supplied child id against
+  that family, and answers `not-found` for anything outside it. The browser
+  reaches all of this over an async `FamilyClient` (HTTP to the new routes), so
+  the hooks keep their shapes and the data shapes are unchanged — the migration
+  is a move, not a redesign. The in-memory stand-in reuses the prototype stores'
+  own validation, so their unit tests still earn their keep. No local data is
+  migrated: a one-time reset (`resetLegacyLocalData`) clears the old keys once,
+  per the prompt. Subscriptions are explicitly out of scope for this task.
+- Consequences: Progress is now real, private, and portable across a parent's
+  devices, and cross-family access is denied and proved by authorization tests
+  against the service. The PostgreSQL adapter is integration-level like the
+  Supabase auth path — covered by types, the build, and the shared `FamilyStore`
+  interface its in-memory sibling is tested against, not by offline unit tests,
+  since there is no database in CI. The stand-in loses data on restart, which is
+  right for a development convenience and is why it is barred from deployed
+  environments. Supersedes the storage aspects of decisions 019, 021, and 026.
+
+## 035. Deleting a child profile is a hard cascade, not an archive
+
+- Date: 2026-08-05
+- Status: accepted
+- Context: `prompts/23-database.md` requires that deleting a child profile
+  cascade or archive "safely according to a documented decision". The two
+  options are a soft archive (hide the profile, keep the rows for possible undo)
+  or a hard delete that removes the profile and everything under it.
+- Decision: Hard delete, cascaded at the database. `child_profiles` deletes
+  cascade to `lesson_progress` and `mission_completions` via `ON DELETE CASCADE`,
+  and a family's `selected_profile_id` clears via `ON DELETE SET NULL`. The
+  in-memory stand-in and the family client do the same in application code so
+  both backends behave identically.
+- Consequences: A parent's "Delete profile" removes the child's data outright,
+  which is what the control says and what `docs/PRIVACY_AND_SAFETY.md`'s deletion
+  right and data-minimisation posture ask for. It also preserves the prototype's
+  rule that a deleted child leaves no orphaned progress behind (decision 021's
+  lineage). Archive was rejected: retaining a deleted child's learning records
+  for possible undo conflicts with minimising children's data, and there is no
+  product need for undo here. If a recycle-bin or account-level export is ever
+  wanted, it needs its own deliberate decision, not a silent softening of this
+  one.
