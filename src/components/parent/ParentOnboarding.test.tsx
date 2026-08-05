@@ -1,12 +1,25 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   completeOnboarding,
   createProfile,
   readFamilyState,
 } from "@/features/profiles/profileStorage";
 import { ParentArea } from "./ParentArea";
+
+// Offline, the async family client resolves to the prototype stores backed by
+// this browser's local storage, so these specs seed and assert through
+// `window.localStorage` and mock only the client in between.
+vi.mock("@/features/families/familyClient", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@/features/families/familyClient")>();
+  return {
+    ...actual,
+    getFamilyClient: () =>
+      actual.createLocalFamilyClient(() => window.localStorage),
+  };
+});
 
 /**
  * The parent's first run.
@@ -98,14 +111,12 @@ describe("the steps", () => {
     }
   });
 
-  it("says the storage is a local prototype before asking for anything", async () => {
+  it("says where a child's data is saved before asking for anything", async () => {
     const user = userEvent.setup();
     render(<ParentArea />);
     await toStep(user, "how-it-works");
 
-    expect(
-      screen.getByText(/Prototype — stored on this device only/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Saved to your account/)).toBeInTheDocument();
   });
 });
 

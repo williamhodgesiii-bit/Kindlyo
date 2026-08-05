@@ -6,6 +6,12 @@ const validPair = {
   NEXT_PUBLIC_SUPABASE_ANON_KEY: "anon-key",
 };
 
+/** A fully-configured deployed environment: auth pair plus the database key. */
+const validDeployed = {
+  ...validPair,
+  SUPABASE_SERVICE_ROLE_KEY: "service-role-key",
+};
+
 describe("parseEnv", () => {
   it("falls back to local defaults when nothing is set", () => {
     expect(parseEnv({})).toEqual({
@@ -13,14 +19,18 @@ describe("parseEnv", () => {
       NEXT_PUBLIC_APP_URL: "http://localhost:3000",
       NEXT_PUBLIC_SUPABASE_URL: null,
       NEXT_PUBLIC_SUPABASE_ANON_KEY: null,
+      SUPABASE_SERVICE_ROLE_KEY: null,
       authConfigured: false,
+      databaseConfigured: false,
     });
   });
 
   it("accepts each valid APP_ENV value", () => {
     for (const value of ["local", "preview", "production"] as const) {
-      // preview/production require the Supabase pair, so supply it.
-      expect(parseEnv({ APP_ENV: value, ...validPair }).APP_ENV).toBe(value);
+      // preview/production require the Supabase pair and the database key.
+      expect(parseEnv({ APP_ENV: value, ...validDeployed }).APP_ENV).toBe(
+        value,
+      );
     }
   });
 
@@ -44,14 +54,16 @@ describe("parseEnv", () => {
       NEXT_PUBLIC_APP_URL: "http://localhost:3000",
       NEXT_PUBLIC_SUPABASE_URL: null,
       NEXT_PUBLIC_SUPABASE_ANON_KEY: null,
+      SUPABASE_SERVICE_ROLE_KEY: null,
       authConfigured: false,
+      databaseConfigured: false,
     });
   });
 
   it("trims surrounding whitespace", () => {
-    expect(parseEnv({ APP_ENV: "  production  ", ...validPair }).APP_ENV).toBe(
-      "production",
-    );
+    expect(
+      parseEnv({ APP_ENV: "  production  ", ...validDeployed }).APP_ENV,
+    ).toBe("production");
   });
 
   it("rejects an unknown APP_ENV", () => {
@@ -127,15 +139,17 @@ describe("parseEnv", () => {
       );
     });
 
-    it("requires the pair in production", () => {
+    it("requires the auth pair and the database key in production", () => {
       try {
         parseEnv({ APP_ENV: "production" });
         expect.unreachable("parseEnv should have thrown");
       } catch (error) {
         const issues = (error as EnvValidationError).issues;
-        expect(issues).toHaveLength(2);
-        expect(issues.join("\n")).toMatch(/NEXT_PUBLIC_SUPABASE_URL/);
-        expect(issues.join("\n")).toMatch(/NEXT_PUBLIC_SUPABASE_ANON_KEY/);
+        expect(issues).toHaveLength(3);
+        const joined = issues.join("\n");
+        expect(joined).toMatch(/NEXT_PUBLIC_SUPABASE_URL/);
+        expect(joined).toMatch(/NEXT_PUBLIC_SUPABASE_ANON_KEY/);
+        expect(joined).toMatch(/SUPABASE_SERVICE_ROLE_KEY/);
       }
     });
 
@@ -143,10 +157,38 @@ describe("parseEnv", () => {
       expect(() =>
         parseEnv({
           APP_ENV: "production",
+          ...validDeployed,
           NEXT_PUBLIC_SUPABASE_URL: "http://project.supabase.co",
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: "anon-key",
         }),
       ).toThrow(/must use https/);
+    });
+  });
+
+  describe("database configuration", () => {
+    it("marks the database configured when the service key and URL are present", () => {
+      const env = parseEnv(validDeployed);
+      expect(env.SUPABASE_SERVICE_ROLE_KEY).toBe("service-role-key");
+      expect(env.databaseConfigured).toBe(true);
+    });
+
+    it("leaves the database unconfigured with only the auth pair (local)", () => {
+      const env = parseEnv(validPair);
+      expect(env.SUPABASE_SERVICE_ROLE_KEY).toBeNull();
+      expect(env.databaseConfigured).toBe(false);
+      // Auth still stands on its own — the two are configured independently.
+      expect(env.authConfigured).toBe(true);
+    });
+
+    it("requires a project URL when only the service key is set (local)", () => {
+      expect(() =>
+        parseEnv({ SUPABASE_SERVICE_ROLE_KEY: "service-role-key" }),
+      ).toThrow(/NEXT_PUBLIC_SUPABASE_URL/);
+    });
+
+    it("requires the service key in preview", () => {
+      expect(() => parseEnv({ APP_ENV: "preview", ...validPair })).toThrow(
+        /SUPABASE_SERVICE_ROLE_KEY is required when APP_ENV is preview/,
+      );
     });
   });
 });

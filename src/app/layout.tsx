@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { SkipLink } from "@/components/SkipLink";
+import { LegacyLocalDataReset } from "@/components/system/LegacyLocalDataReset";
 import { absoluteUrl, siteDescription, siteName } from "@/lib/seo";
 import "@/styles/globals.css";
 
@@ -52,6 +53,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="flex min-h-screen flex-col">
         <SkipLink />
+        <LegacyLocalDataReset />
         {children}
       </body>
     </html>

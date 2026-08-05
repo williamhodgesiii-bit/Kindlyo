@@ -7,8 +7,8 @@ import { PageContainer } from "@/components/ui/PageContainer";
 import { Heading, Text } from "@/components/ui/Typography";
 import type { Family } from "@/features/profiles/useFamily";
 import { maxProfiles } from "@/features/profiles/types";
+import { AccountStorageNotice } from "./AccountStorageNotice";
 import { ProfileForm } from "./ProfileForm";
-import { PrototypeStorageNotice } from "./PrototypeStorageNotice";
 
 /**
  * The parent's first run: welcome, what we do and do not collect, and the
@@ -100,7 +100,7 @@ export function ParentOnboarding({ family }: { family: Family }) {
             </ul>
           </Card>
 
-          <PrototypeStorageNotice className="mt-6" />
+          <AccountStorageNotice className="mt-6" />
 
           <div className="mt-10 flex flex-wrap gap-3">
             <Button size="lg" onClick={() => setStep("first-profile")}>
@@ -131,8 +131,8 @@ export function ParentOnboarding({ family }: { family: Family }) {
             <ProfileForm
               submitLabel="Create profile"
               hint="A first name or nickname — whatever your child would recognise as theirs."
-              onSubmit={(draft) => {
-                const result = family.create(draft);
+              onSubmit={async (draft) => {
+                const result = await family.create(draft);
                 if (!result.ok) {
                   return {
                     ok: false,

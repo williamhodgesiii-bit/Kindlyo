@@ -1,32 +1,29 @@
 "use client";
 
 import { useCallback, useEffect, useReducer } from "react";
-import { resetProfileProgress } from "@/features/lessons/progressStorage";
+import { getFamilyClient } from "@/features/families/familyClient";
 import {
-  completeOnboarding,
-  createProfile,
-  deleteProfile,
   emptyFamilyState,
-  readFamilyState,
-  selectProfile,
-  updateProfile,
   type FamilyState,
   type ProfileWriteResult,
 } from "./profileStorage";
 import type { ChildProfile, ProfileDraft } from "./types";
 
 /**
- * Client access to the local prototype child profiles.
+ * Client access to the signed-in parent's family.
  *
- * Same hydration pattern as `useLessonRun`: storage is read after mount via a
- * single reducer transition, and `hydrated` stays false until then, so server
- * and client markup never disagree and a page can show a loading state instead
- * of flashing "no profiles".
+ * The data now lives in the database and is reached over the family client
+ * (`src/features/families`), not in this browser's local storage — but the
+ * hydration pattern is unchanged: the family is loaded after mount, `hydrated`
+ * stays false until it arrives, and a page shows a loading state rather than
+ * flashing "no profiles" (before, that guarded server/client markup agreement;
+ * now it also covers the round-trip). Every mutation goes through the client,
+ * which is scoped on the server to this parent, and the resulting family state
+ * is dispatched back so the UI stays in step.
  *
- * Each page root uses this hook and passes data down as props. There is no
- * context provider on purpose: the two surfaces that need profiles (`/learn`,
- * `/parent`) are separate routes with separate roots, and a provider would be
- * machinery without a second consumer.
+ * There is no context provider on purpose: the two surfaces that need profiles
+ * (`/learn`, `/parent`) are separate routes with separate roots, and a provider
+ * would be machinery without a second consumer.
  */
 
 type State = { family: FamilyState; hydrated: boolean };
@@ -50,16 +47,16 @@ export type Family = {
   selectedProfile: ChildProfile | null;
   /** False until the parent has been through onboarding once. */
   onboarded: boolean;
-  create: (draft: ProfileDraft) => ProfileWriteResult;
+  create: (draft: ProfileDraft) => Promise<ProfileWriteResult>;
   update: (
     profileId: string,
     draft: Partial<ProfileDraft>,
-  ) => ProfileWriteResult;
+  ) => Promise<ProfileWriteResult>;
   select: (profileId: string | null) => void;
-  /** Removes the profile AND its lesson progress. */
-  remove: (profileId: string) => void;
+  /** Removes the profile AND its lesson progress (a database cascade). */
+  remove: (profileId: string) => Promise<void>;
   /** Clears the profile's lesson progress, keeping the profile. */
-  resetProgress: (profileId: string) => void;
+  resetProgress: (profileId: string) => Promise<void>;
   finishOnboarding: () => void;
 };
 
@@ -70,18 +67,32 @@ export function useFamily(): Family {
   });
 
   useEffect(() => {
-    dispatch({ type: "hydrate", family: readFamilyState() });
+    let active = true;
+    void getFamilyClient()
+      .loadFamily()
+      .then((family) => {
+        if (active) dispatch({ type: "hydrate", family });
+      });
+    return () => {
+      active = false;
+    };
   }, []);
 
-  const create = useCallback((draft: ProfileDraft): ProfileWriteResult => {
-    const result = createProfile(draft);
-    if (result.ok) dispatch({ type: "set", family: result.state });
-    return result;
-  }, []);
+  const create = useCallback(
+    async (draft: ProfileDraft): Promise<ProfileWriteResult> => {
+      const result = await getFamilyClient().createProfile(draft);
+      if (result.ok) dispatch({ type: "set", family: result.state });
+      return result;
+    },
+    [],
+  );
 
   const update = useCallback(
-    (profileId: string, draft: Partial<ProfileDraft>): ProfileWriteResult => {
-      const result = updateProfile(profileId, draft);
+    async (
+      profileId: string,
+      draft: Partial<ProfileDraft>,
+    ): Promise<ProfileWriteResult> => {
+      const result = await getFamilyClient().updateProfile(profileId, draft);
       if (result.ok) dispatch({ type: "set", family: result.state });
       return result;
     },
@@ -89,22 +100,28 @@ export function useFamily(): Family {
   );
 
   const select = useCallback((profileId: string | null) => {
-    dispatch({ type: "set", family: selectProfile(profileId) });
+    void getFamilyClient()
+      .selectProfile(profileId)
+      .then((family) => dispatch({ type: "set", family }));
   }, []);
 
-  const remove = useCallback((profileId: string) => {
-    // Progress goes with the profile: an orphaned progress node would be
-    // exactly the stale data this store promises to never resurrect.
-    resetProfileProgress(profileId);
-    dispatch({ type: "set", family: deleteProfile(profileId) });
+  const remove = useCallback(async (profileId: string): Promise<void> => {
+    // Progress cascades away with the profile on the server; the returned
+    // family already omits it.
+    const family = await getFamilyClient().deleteProfile(profileId);
+    dispatch({ type: "set", family });
   }, []);
 
-  const resetProgress = useCallback((profileId: string) => {
-    resetProfileProgress(profileId);
-  }, []);
+  const resetProgress = useCallback(
+    (profileId: string): Promise<void> =>
+      getFamilyClient().resetProgress(profileId),
+    [],
+  );
 
   const finishOnboarding = useCallback(() => {
-    dispatch({ type: "set", family: completeOnboarding() });
+    void getFamilyClient()
+      .completeOnboarding()
+      .then((family) => dispatch({ type: "set", family }));
   }, []);
 
   const selectedProfile =

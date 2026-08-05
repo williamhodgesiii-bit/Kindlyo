@@ -3,13 +3,14 @@
 How a family is set up, and what is stored about a child. The lesson machinery
 lives in `LESSON_ENGINE.md`; this file covers who the lessons belong to.
 
-**The parent account is now real; the child profiles are not yet.** A parent
-signs in with a real, authenticated account (see `docs/AUTH.md`), and both
-`/parent` and `/learn` are reachable only from that session. But the child
-profiles themselves still live in one browser, on one device, and are gone when
-site data is cleared — they were deliberately **not** migrated to the database
-in the authentication slice. Every parent-facing screen still says so. The
-persistence slice replaces the store wholesale.
+**The parent account and the child profiles are now real.** A parent signs in
+with an authenticated account (see `docs/AUTH.md`), and both `/parent` and
+`/learn` are reachable only from that session. Child profiles and their progress
+now live in the database, scoped to the parent's family and reachable only from
+their session — the persistence slice replaced the local prototype store
+wholesale (see `docs/DATABASE.md`). Local development without a database, CI, and
+the e2e suite run against an in-memory stand-in with the same behaviour, so a
+fresh clone still works offline.
 
 ## What a profile is
 
@@ -38,22 +39,27 @@ surface is reached from the parent's own session (decision 001).
 ```text
 src/features/profiles/
 ├── types.ts            the profile, the age bands, the avatar ids
-├── profileStorage.ts   create / update / select / delete, capped at three
-└── useFamily.ts        client access, hydrated after mount
+├── profileStorage.ts   validation + rules; now backs the in-memory stand-in
+└── useFamily.ts        client access over the family client, hydrated on load
+
+src/server/families/    the store, the authorization service, the routes
+src/features/families/  the browser's async family client (see docs/DATABASE.md)
 
 src/components/parent/
 ├── ParentArea.tsx              onboarding on a first visit, dashboard after
 ├── ParentOnboarding.tsx        welcome → what we collect → first child
 ├── ParentDashboard.tsx         profiles, progress, missions, edit/reset/delete
 ├── ProfileForm.tsx             the one form, for creating and editing
-└── PrototypeStorageNotice.tsx  where the data lives, said plainly
+└── AccountStorageNotice.tsx    where the data lives, said plainly
 
 src/components/path/LearningPath.tsx   the child-facing "who is learning?"
 ```
 
 Every rule that matters — the three-profile cap, nickname trimming, valid age
-bands and avatars — is enforced in `profileStorage.ts` rather than in a form, so
-hand-edited storage cannot widen them either.
+bands and avatars — is enforced in `profileStorage.ts` (the validation the
+in-memory store reuses) and, for the real database, in `child_profiles`
+constraints and the `FamilyService`, rather than in a form, so neither
+hand-edited storage nor hand-written SQL can widen them.
 
 ## The flows
 

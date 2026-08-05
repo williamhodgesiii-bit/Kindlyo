@@ -12,6 +12,8 @@ Newest first.
 
 ## 2026-08-05
 
+- Migrate family and progress data from local storage to PostgreSQL
+- Shipped from `0c3d839` (`claude/database-migration-postgres-6395pe`)
 - Add real parent authentication (Supabase Auth) with route gating
 - Shipped from `6623b9b` (`claude/parent-authentication-k2e8bx`)
 - Build the public marketing site

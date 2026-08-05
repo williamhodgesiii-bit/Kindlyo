@@ -140,7 +140,7 @@ export function LearningPath() {
     );
   }
 
-  if (family.selectedProfile === null || path === null) {
+  if (family.selectedProfile === null) {
     // The one child-facing screen a five-year-old meets before they can read
     // much: big targets, one short line, and a name under each face.
     return (
@@ -173,6 +173,16 @@ export function LearningPath() {
             For grown-ups
           </Link>
         </Text>
+      </PageContainer>
+    );
+  }
+
+  // A child is chosen, but their path is still loading from the server.
+  if (path === null) {
+    return (
+      <PageContainer>
+        <Skeleton variant="block" loadingLabel="Loading the learning path" />
+        <Skeleton variant="text" lines={3} className="mt-6" />
       </PageContainer>
     );
   }

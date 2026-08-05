@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   readProfileProgress,
   recordCompletion,
@@ -11,6 +11,20 @@ import {
   readFamilyState,
 } from "@/features/profiles/profileStorage";
 import { ParentArea } from "./ParentArea";
+
+// The data now lives server-side, reached over the async family client. Offline
+// (here, in CI, on a fresh clone) that resolves to the same prototype stores,
+// backed by this browser's local storage — so these specs still seed and assert
+// through `window.localStorage`, and only the client in between is mocked.
+vi.mock("@/features/families/familyClient", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@/features/families/familyClient")>();
+  return {
+    ...actual,
+    getFamilyClient: () =>
+      actual.createLocalFamilyClient(() => window.localStorage),
+  };
+});
 
 /** Seeded through the real stores, so the wiring is covered too. */
 function seedProfile(nickname: string): string {
@@ -282,12 +296,12 @@ describe("editing a profile", () => {
   });
 });
 
-describe("prototype storage", () => {
+describe("account storage notice", () => {
   it("says plainly where the data is kept", async () => {
     renderDashboard();
 
     expect(
-      await screen.findByText(/Prototype — stored on this device only/),
+      await screen.findByText(/Saved to your account/),
     ).toBeInTheDocument();
   });
 });
@@ -327,14 +341,15 @@ describe("progress and missions", () => {
       await screen.findByRole("button", { name: /Mark as done/ }),
     );
 
+    // The mission mark is written to storage, and the dashboard re-reads it.
     expect(
       readProfileProgress(ada, window.localStorage)["saying-hello"]
         ?.missionStatus,
     ).toBe("done");
-    expect(screen.getByText("Done")).toBeInTheDocument();
+    expect(await screen.findByText("Done")).toBeInTheDocument();
 
     await user.click(
-      screen.getByRole("button", { name: /Mark as not done yet/ }),
+      await screen.findByRole("button", { name: /Mark as not done yet/ }),
     );
     expect(
       readProfileProgress(ada, window.localStorage)["saying-hello"]

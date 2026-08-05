@@ -35,9 +35,9 @@ export type ProfileFormProps = {
   /** Present when editing; absent when creating. */
   profile?: ChildProfile;
   submitLabel: string;
-  onSubmit: (draft: ProfileDraft) => { ok: boolean; reason?: string };
+  onSubmit: (draft: ProfileDraft) => Promise<{ ok: boolean; reason?: string }>;
   onCancel?: () => void;
-  /** Rendered under the nickname field; a place for the prototype notice. */
+  /** Rendered under the nickname field; a place for the storage notice. */
   hint?: string;
 };
 
@@ -62,18 +62,24 @@ export function ProfileForm({
     profile?.avatarId ?? null,
   );
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   return (
     <form
       className="grid gap-6"
       onSubmit={(event) => {
         event.preventDefault();
-        const result = onSubmit({ nickname, ageBand, avatarId });
-        if (!result.ok) {
-          setError(result.reason ?? "That did not save. Please try again.");
-          return;
-        }
-        setError(null);
+        if (submitting) return;
+        setSubmitting(true);
+        void onSubmit({ nickname, ageBand, avatarId })
+          .then((result) => {
+            setError(
+              result.ok
+                ? null
+                : (result.reason ?? "That did not save. Please try again."),
+            );
+          })
+          .finally(() => setSubmitting(false));
       }}
     >
       <div>
@@ -164,7 +170,9 @@ export function ProfileForm({
       ) : null}
 
       <div className="flex flex-wrap gap-3">
-        <Button type="submit">{submitLabel}</Button>
+        <Button type="submit" disabled={submitting}>
+          {submitLabel}
+        </Button>
         {onCancel ? (
           <Button type="button" variant="secondary" onClick={onCancel}>
             Cancel

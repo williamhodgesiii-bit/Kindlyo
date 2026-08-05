@@ -29,11 +29,23 @@ export type Env = {
   /** Client-safe Supabase anon key, or null when auth is not configured. */
   NEXT_PUBLIC_SUPABASE_ANON_KEY: string | null;
   /**
+   * Server-only Supabase service-role key, or null when the database is not
+   * configured. Full access — it never reaches the browser and backs the
+   * family data store (see `src/server/families`).
+   */
+  SUPABASE_SERVICE_ROLE_KEY: string | null;
+  /**
    * True when both Supabase values are present. When false, the app falls back
    * to the local development auth stand-in (see `src/features/auth`), which is
    * only permitted in the `local` environment.
    */
   authConfigured: boolean;
+  /**
+   * True when the service-role key and project URL are present. When false, the
+   * app falls back to the in-memory family store (see `src/server/families`),
+   * only permitted in the `local` environment. Required in preview/production.
+   */
+  databaseConfigured: boolean;
 };
 
 export class EnvValidationError extends Error {
@@ -128,6 +140,10 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
   const anonKey =
     rawAnonKey !== undefined && rawAnonKey !== "" ? rawAnonKey : null;
 
+  const rawServiceKey = source.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  const serviceRoleKey =
+    rawServiceKey !== undefined && rawServiceKey !== "" ? rawServiceKey : null;
+
   const supabaseUrlPresent =
     rawSupabaseUrl !== undefined && rawSupabaseUrl !== "";
 
@@ -143,6 +159,13 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
         `NEXT_PUBLIC_SUPABASE_ANON_KEY is required when APP_ENV is ${appEnv}.`,
       );
     }
+    // A deployed app must have a real database; the in-memory stand-in is
+    // forbidden outside local (assertLocalPersistenceAllowed).
+    if (serviceRoleKey === null) {
+      issues.push(
+        `SUPABASE_SERVICE_ROLE_KEY is required when APP_ENV is ${appEnv}.`,
+      );
+    }
   } else {
     // Local: both or neither. A half-configured client cannot talk to Supabase,
     // and silently falling back to the local stand-in would hide the mistake.
@@ -156,6 +179,13 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
         "NEXT_PUBLIC_SUPABASE_URL is required when NEXT_PUBLIC_SUPABASE_ANON_KEY is set.",
       );
     }
+    // A service-role key with no project URL cannot reach a database. (Deployed
+    // environments already require the URL above, so this only adds locally.)
+    if (serviceRoleKey !== null && !supabaseUrlPresent) {
+      issues.push(
+        "NEXT_PUBLIC_SUPABASE_URL is required when SUPABASE_SERVICE_ROLE_KEY is set.",
+      );
+    }
   }
 
   if (issues.length > 0) {
@@ -163,13 +193,16 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
   }
 
   const authConfigured = supabaseUrl !== null && anonKey !== null;
+  const databaseConfigured = supabaseUrl !== null && serviceRoleKey !== null;
 
   return {
     APP_ENV: appEnv,
     NEXT_PUBLIC_APP_URL: appUrl,
     NEXT_PUBLIC_SUPABASE_URL: supabaseUrl,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: anonKey,
+    SUPABASE_SERVICE_ROLE_KEY: serviceRoleKey,
     authConfigured,
+    databaseConfigured,
   };
 }
 
