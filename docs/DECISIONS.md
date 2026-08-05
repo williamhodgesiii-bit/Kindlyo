@@ -539,3 +539,31 @@ Format:
   The demo calls `getLessonBySlug(slug, true)` with the draft flag passed
   explicitly, so it keeps working when `canViewDraftContent()` becomes a role
   check; the draft badge is shown alongside, as CLAUDE.md requires.
+
+## 033. Real parent authentication with Supabase Auth; child profiles stay local
+
+- Date: 2026-08-05
+- Status: accepted
+- Context: `prompts/22-authentication.md` asks to replace the local
+  parent-account prototype with real parent authentication, and to recommend an
+  already-approved solution. `ARCHITECTURE.md` and decision 003 name Supabase;
+  `.env.example` already carried its placeholders. The prompt also says
+  explicitly **not** to migrate child profiles to the database in this task.
+- Decision: Use **Supabase Auth** (`@supabase/ssr`), parent email + password
+  with an emailed reset. The app depends on an `AuthGateway` interface (the seam
+  pattern of decision 030), with two implementations: the Supabase gateway, and
+  a local signed-cookie **development stand-in** selected only when Supabase is
+  unconfigured. `/parent` and `/learn` are gated by middleware and re-checked in
+  each server layout. No child login and no social login (decision 001). Child
+  profiles are untouched — still local prototype storage (`PROFILES.md`). Full
+  write-up in `docs/AUTH.md`.
+- Consequences: The parent account is now real, but the only new stored personal
+  datum is a parent email held by Supabase; no child data moves server-side. The
+  service-role key is deliberately unused (least privilege). Env validation now
+  requires the Supabase pair in preview/production and forbids the stand-in
+  there (`assertLocalAuthAllowed`), so a fresh clone, CI, and the e2e suite still
+  run offline against the stand-in exactly as the waitlist runs against its log
+  sink. Errors are generic to prevent account enumeration; an in-process
+  rate-limiter backs up Supabase's own and is not itself a security boundary.
+  The Supabase-path code is integration-level and covered by types, the build,
+  and the gateway interface rather than offline unit tests.

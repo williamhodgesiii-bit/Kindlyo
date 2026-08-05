@@ -1,4 +1,9 @@
 import { expect, test } from "@playwright/test";
+import { STORAGE_STATE } from "./support/auth";
+
+// This spec follows the footer links into the gated product surfaces, so it
+// runs as a signed-in parent. The unauthenticated gate itself is auth.spec.ts.
+test.use({ storageState: STORAGE_STATE });
 
 test.describe("application shell", () => {
   test("renders the marketing page with one h1 and shared landmarks", async ({

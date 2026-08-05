@@ -10,6 +10,13 @@ const baseURL = `http://127.0.0.1:${PORT}`;
  */
 const chromiumExecutable = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE;
 
+const chromeUse = {
+  ...devices["Desktop Chrome"],
+  ...(chromiumExecutable
+    ? { launchOptions: { executablePath: chromiumExecutable } }
+    : {}),
+};
+
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
@@ -22,14 +29,15 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   projects: [
+    // Signs in once and saves the session; the gated specs depend on it.
+    { name: "setup", testMatch: /.*\.setup\.ts/, use: chromeUse },
     {
       name: "chromium",
-      use: {
-        ...devices["Desktop Chrome"],
-        ...(chromiumExecutable
-          ? { launchOptions: { executablePath: chromiumExecutable } }
-          : {}),
-      },
+      dependencies: ["setup"],
+      // No storageState here: specs are unauthenticated by default (marketing,
+      // health, shell, and the auth spec itself). The specs behind the gate opt
+      // in per file with `test.use({ storageState })`.
+      use: chromeUse,
     },
   ],
   webServer: {

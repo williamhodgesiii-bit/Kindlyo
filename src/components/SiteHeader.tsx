@@ -47,7 +47,20 @@ function NavigationList({ className }: { className?: string }) {
   );
 }
 
-export function SiteHeader() {
+export type SiteHeaderVariant = "marketing" | "app";
+
+export function SiteHeader({
+  variant = "marketing",
+}: {
+  /**
+   * "marketing" (default) offers the sign-in and waitlist calls to action;
+   * "app" hides them, because a signed-in parent needs neither — the sign-out
+   * control lives in the parent account bar instead.
+   */
+  variant?: SiteHeaderVariant;
+} = {}) {
+  const showAuthCtas = variant === "marketing";
+
   return (
     <header className="border-b border-border bg-surface">
       <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-4">
@@ -89,7 +102,21 @@ export function SiteHeader() {
             </details>
           </nav>
 
-          <ButtonLink href="/waitlist">Join the waitlist</ButtonLink>
+          {showAuthCtas ? (
+            <>
+              {/* Layout (responsive visibility) is the caller's job, so the
+                  button keeps its own display and a wrapper hides it on the
+                  narrowest screens where the waitlist CTA already fills the
+                  row. */}
+              <span className="hidden sm:inline-block">
+                <ButtonLink href="/login" variant="quiet">
+                  Sign in
+                </ButtonLink>
+              </span>
+
+              <ButtonLink href="/waitlist">Join the waitlist</ButtonLink>
+            </>
+          ) : null}
         </div>
       </div>
     </header>

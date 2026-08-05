@@ -8,12 +8,14 @@ The parent or guardian owns the account. Children learn within a
 parent-controlled session and never create independent accounts.
 
 > **Status:** early-stage. The technical foundation, application shell, lesson
-> engine, family setup, and local progress system are in place — a parent can
-> onboard, create child profiles, and hand over all eight "Meeting People"
-> lessons, with per-child progress and lesson unlocking. There is no
-> authentication, database, payment, or analytics integration yet: profiles and
-> progress are a **local prototype kept in the browser only**, and all
-> curriculum is draft content awaiting review by qualified humans.
+> engine, family setup, local progress system, and **real parent
+> authentication** are in place — a parent signs in, onboards, creates child
+> profiles, and hands over all eight "Meeting People" lessons, with per-child
+> progress and lesson unlocking. Authentication is Supabase Auth
+> ([`docs/AUTH.md`](docs/AUTH.md)); there is no database, payment, or analytics
+> integration yet, and **child profiles and progress are still a local prototype
+> kept in the browser only**. All curriculum is draft content awaiting review by
+> qualified humans.
 
 ## Repository structure
 
@@ -59,6 +61,7 @@ kindlyo/
 | [CONTENT_SCHEMA.md](docs/CONTENT_SCHEMA.md)               | Structured lesson content model           |
 | [LESSON_ENGINE.md](docs/LESSON_ENGINE.md)                 | How lessons are validated and played      |
 | [PROFILES.md](docs/PROFILES.md)                           | Family setup, child profiles, and privacy |
+| [AUTH.md](docs/AUTH.md)                                   | Parent authentication and its security    |
 | [PARENT_DASHBOARD.md](docs/PARENT_DASHBOARD.md)           | What parents see, and what it never says  |
 | [DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)                 | Brand, tokens, components, accessibility  |
 | [PRIVACY_AND_SAFETY.md](docs/PRIVACY_AND_SAFETY.md)       | Data posture and safety rules             |
@@ -90,6 +93,13 @@ defaults. Nothing is required to run locally — `APP_ENV` defaults to `local` a
 a named error. Keep server-only secrets out of client code; only `NEXT_PUBLIC_*`
 values reach the browser.
 
+Authentication also needs no setup locally: with Supabase unconfigured, the app
+uses a non-secure, local-only development stand-in, so you can sign up and in
+with any email and any 8+ character password. To use real Supabase auth locally,
+or to deploy, set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+— they are required in preview and production. See
+[`docs/AUTH.md`](docs/AUTH.md).
+
 ### Checks
 
 ```bash
@@ -112,13 +122,14 @@ PLAYWRIGHT_CHROMIUM_EXECUTABLE=/path/to/chromium npm run test:e2e
 
 ### Routes
 
-| Route          | Purpose                                              |
-| -------------- | ---------------------------------------------------- |
-| `/`            | Public marketing page                                |
-| `/learn`       | Placeholder learning area (module outline)           |
-| `/parent`      | Placeholder parent area                              |
-| `/api/health`  | Health check for uptime monitoring                   |
-| `/dev/gallery` | Component gallery (development only; 404s elsewhere) |
+| Route              | Purpose                                              |
+| ------------------ | ---------------------------------------------------- |
+| `/`                | Public marketing page                                |
+| `/login` `/signup` | Parent sign-in and account creation                  |
+| `/learn`           | Child learning area (requires a parent session)      |
+| `/parent`          | Parent area (requires a parent session)              |
+| `/api/health`      | Health check for uptime monitoring                   |
+| `/dev/gallery`     | Component gallery (development only; 404s elsewhere) |
 
 ## Daily workflow
 

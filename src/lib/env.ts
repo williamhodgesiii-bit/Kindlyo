@@ -7,8 +7,10 @@
  * Rules:
  * - Fail loudly and early on malformed configuration.
  * - Only `NEXT_PUBLIC_*` values may ever reach the browser.
- * - No secrets are required yet; auth, database, and payments arrive in later
- *   slices and will extend this module.
+ * - A fresh clone runs with no `.env` file: everything is optional in `local`.
+ * - Deployed environments (`preview`, `production`) must be fully configured for
+ *   the services they use, so those are required there and the build fails
+ *   without them.
  */
 
 export type AppEnvironment = "local" | "preview" | "production";
@@ -22,6 +24,16 @@ const APP_ENVIRONMENTS: readonly AppEnvironment[] = [
 export type Env = {
   APP_ENV: AppEnvironment;
   NEXT_PUBLIC_APP_URL: string;
+  /** Client-safe Supabase project URL, or null when auth is not configured. */
+  NEXT_PUBLIC_SUPABASE_URL: string | null;
+  /** Client-safe Supabase anon key, or null when auth is not configured. */
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: string | null;
+  /**
+   * True when both Supabase values are present. When false, the app falls back
+   * to the local development auth stand-in (see `src/features/auth`), which is
+   * only permitted in the `local` environment.
+   */
+  authConfigured: boolean;
 };
 
 export class EnvValidationError extends Error {
@@ -51,11 +63,20 @@ function isValidHttpUrl(value: string): boolean {
   }
 }
 
+function isHttpsUrl(value: string): boolean {
+  try {
+    return new URL(value).protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Validates a raw environment record and returns typed values.
  *
- * Both fields are optional and fall back to local defaults, so a fresh clone
- * runs with no `.env` file. Values that are present but malformed are rejected.
+ * The application fields fall back to local defaults, so a fresh clone runs with
+ * no `.env` file. Values that are present but malformed are rejected, and the
+ * Supabase pair is required once the environment is `preview` or `production`.
  */
 export function parseEnv(source: Record<string, string | undefined>): Env {
   const issues: string[] = [];
@@ -84,11 +105,72 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
     }
   }
 
+  // Deployed environments must have real authentication; local may run without.
+  const deployed = appEnv === "preview" || appEnv === "production";
+
+  const rawSupabaseUrl = source.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  let supabaseUrl: string | null = null;
+  if (rawSupabaseUrl !== undefined && rawSupabaseUrl !== "") {
+    if (!isValidHttpUrl(rawSupabaseUrl)) {
+      issues.push(
+        `NEXT_PUBLIC_SUPABASE_URL must be a valid http(s) URL (received "${rawSupabaseUrl}")`,
+      );
+    } else if (deployed && !isHttpsUrl(rawSupabaseUrl)) {
+      issues.push(
+        "NEXT_PUBLIC_SUPABASE_URL must use https in preview and production.",
+      );
+    } else {
+      supabaseUrl = rawSupabaseUrl;
+    }
+  }
+
+  const rawAnonKey = source.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+  const anonKey =
+    rawAnonKey !== undefined && rawAnonKey !== "" ? rawAnonKey : null;
+
+  const supabaseUrlPresent =
+    rawSupabaseUrl !== undefined && rawSupabaseUrl !== "";
+
+  if (deployed) {
+    // Deployed environments require the full pair; the message names the env.
+    if (!supabaseUrlPresent) {
+      issues.push(
+        `NEXT_PUBLIC_SUPABASE_URL is required when APP_ENV is ${appEnv}.`,
+      );
+    }
+    if (anonKey === null) {
+      issues.push(
+        `NEXT_PUBLIC_SUPABASE_ANON_KEY is required when APP_ENV is ${appEnv}.`,
+      );
+    }
+  } else {
+    // Local: both or neither. A half-configured client cannot talk to Supabase,
+    // and silently falling back to the local stand-in would hide the mistake.
+    if (supabaseUrl !== null && anonKey === null) {
+      issues.push(
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY is required when NEXT_PUBLIC_SUPABASE_URL is set.",
+      );
+    }
+    if (anonKey !== null && !supabaseUrlPresent) {
+      issues.push(
+        "NEXT_PUBLIC_SUPABASE_URL is required when NEXT_PUBLIC_SUPABASE_ANON_KEY is set.",
+      );
+    }
+  }
+
   if (issues.length > 0) {
     throw new EnvValidationError(issues);
   }
 
-  return { APP_ENV: appEnv, NEXT_PUBLIC_APP_URL: appUrl };
+  const authConfigured = supabaseUrl !== null && anonKey !== null;
+
+  return {
+    APP_ENV: appEnv,
+    NEXT_PUBLIC_APP_URL: appUrl,
+    NEXT_PUBLIC_SUPABASE_URL: supabaseUrl,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: anonKey,
+    authConfigured,
+  };
 }
 
 export const env: Env = parseEnv(process.env);
