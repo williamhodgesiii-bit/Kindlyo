@@ -12,10 +12,15 @@ test.describe("application shell", () => {
     await expect(page.getByRole("contentinfo")).toBeVisible();
   });
 
-  test("navigates to the placeholder routes", async ({ page }) => {
+  test("navigates to the product surfaces from the footer", async ({
+    page,
+  }) => {
+    // Both app surfaces are reached from the footer rather than the header:
+    // the header nav belongs to the marketing pages, and these two are
+    // labelled "preview" because they run on prototype local storage.
     await page.goto("/");
 
-    await page.getByRole("link", { name: "Learn", exact: true }).click();
+    await page.getByRole("link", { name: "Learning area preview" }).click();
     await expect(page.getByRole("heading", { name: "Learn" })).toBeVisible();
     // With no child profile on this device, the learning area asks a grown-up
     // to set one up rather than showing the module. Progression itself is
@@ -28,7 +33,8 @@ test.describe("application shell", () => {
 
     // A browser with no profiles is a parent's first visit, so the parent area
     // opens on onboarding. The flow itself is covered in profiles.spec.ts.
-    await page.getByRole("link", { name: "For parents" }).click();
+    await page.goto("/");
+    await page.getByRole("link", { name: "Parent area preview" }).click();
     await expect(
       page.getByRole("heading", { name: "Welcome to Kindlyo", level: 1 }),
     ).toBeVisible();

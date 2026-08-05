@@ -97,10 +97,16 @@ Every route passes through exactly one shell:
 
 | Route                       | Shell                                                 |
 | --------------------------- | ----------------------------------------------------- |
-| `/`                         | `ParentAppShell` via `src/app/(marketing)/layout.tsx` |
+| Every marketing page        | `ParentAppShell` via `src/app/(marketing)/layout.tsx` |
 | `/learn`, `/learn/lesson/…` | `ChildAppShell` via `src/app/learn/layout.tsx`        |
 | `/parent`                   | `ParentAppShell` via `src/app/parent/layout.tsx`      |
 | 404, error                  | `ParentAppShell`, rendered by the page itself         |
+
+The marketing site adds eight more routes to that first row rather than a
+second shell, which is why `SiteHeader` carries the marketing navigation.
+`SiteFooter` takes a `navigation` prop that `ChildAppShell` sets to `false`, so
+a child never sees the marketing links — `AppShell.test.tsx` asserts the child
+shell exposes no `navigation` landmark at all.
 
 `LessonShell` is not in that table on purpose: it is chrome _inside_ `main`,
 not a landmark provider, so it nests under `ChildAppShell` without adding a
@@ -262,6 +268,30 @@ Something addressed to the adult, rendered inside a child's screen. An eyebrow
 label ("For grown-ups") and a sand tint make it obviously not addressed to the
 child. Holds a paragraph and a few concrete suggestions; parent participation
 should be useful but lightweight.
+
+### Marketing components — `src/components/marketing/`
+
+Public-site pieces, kept out of `ui/` because they carry product voice rather
+than being neutral primitives. See `docs/MARKETING_SITE.md`.
+
+- `MarketingSection` — one labelled band of a page: heading, optional lead, and
+  a full-bleed tint. Every public section is labelled by its own heading so a
+  long page has a usable outline.
+- `SampleScenarioSection` (server) and `SampleScenario` (client) — the playable
+  demo. Composes `ChoiceStepView` and `PrincipleStepView` rather than reusing
+  `LessonRunner`, and **stores nothing**: no local storage, no cookie, no
+  request. Tests in both suites assert that.
+- `WaitlistForm` — one email field, an optional age band, and nowhere to type a
+  name. Validates with the same function the route handler uses.
+- `Faq` — native `<details>` disclosures, so the browser supplies the keyboard
+  behaviour and the answers are reachable with scripting unavailable.
+- `BetaBadge` — the private-beta label, shown beside the wordmark on every page.
+- `JsonLd` — emits a schema.org block.
+
+`ChoiceStepView` and `PrincipleStepView` gained a `headingLevel` prop so they
+can be embedded in a marketing section without skipping a level.
+`nextHeadingLevel` in `Typography.tsx` is the helper for a component that
+renders a heading and a sub-heading at a depth its author does not know.
 
 ### `LessonShell`
 

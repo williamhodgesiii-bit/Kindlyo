@@ -1,5 +1,10 @@
 import { Card } from "@/components/ui/Card";
-import { Heading, Text } from "@/components/ui/Typography";
+import {
+  Heading,
+  nextHeadingLevel,
+  Text,
+  type HeadingLevel,
+} from "@/components/ui/Typography";
 import type { LessonPrinciple } from "@/features/curriculum/schema";
 
 /**
@@ -11,18 +16,21 @@ import type { LessonPrinciple } from "@/features/curriculum/schema";
  */
 export function PrincipleStepView({
   principle,
+  headingLevel = 2,
 }: {
   principle: LessonPrinciple;
+  /** Defaults to a lesson page's `h2`; deeper when embedded in a section. */
+  headingLevel?: HeadingLevel;
 }) {
   return (
     <section>
-      <Heading level={2}>{principle.title}</Heading>
+      <Heading level={headingLevel}>{principle.title}</Heading>
       <Text size="lg" className="mt-3 max-w-prose">
         {principle.body}
       </Text>
 
       <Card elevation="soft" className="mt-6">
-        <Heading level={3} size="sm">
+        <Heading level={nextHeadingLevel(headingLevel)} size="sm">
           Worth remembering
         </Heading>
         <ul className="mt-3 grid gap-3">

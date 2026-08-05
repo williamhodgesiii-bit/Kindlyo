@@ -31,6 +31,25 @@ const defaultSizeForLevel = {
   4: "sm",
 } satisfies Record<HeadingLevel, HeadingSize>;
 
+const nextLevels = {
+  1: 2,
+  2: 3,
+  3: 4,
+  4: 4,
+} satisfies Record<HeadingLevel, HeadingLevel>;
+
+/**
+ * One level deeper, stopping at `h4`.
+ *
+ * For components that render a heading and a sub-heading and are embedded at a
+ * depth their author does not know — a lesson step shown inside a marketing
+ * section sits lower than the same step shown on its own page. Lets a caller
+ * pass one `headingLevel` instead of two that could be set inconsistently.
+ */
+export function nextHeadingLevel(level: HeadingLevel): HeadingLevel {
+  return nextLevels[level];
+}
+
 export type HeadingProps = ComponentPropsWithoutRef<"h2"> & {
   level: HeadingLevel;
   size?: HeadingSize;

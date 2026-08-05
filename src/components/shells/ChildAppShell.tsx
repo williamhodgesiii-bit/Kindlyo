@@ -43,7 +43,8 @@ export function ChildAppShell({ children }: ChildAppShellProps) {
       <main id="main-content" className="flex-1 text-lg">
         {children}
       </main>
-      <SiteFooter />
+      {/* No footer links here: see the `navigation` note in SiteFooter. */}
+      <SiteFooter navigation={false} />
     </div>
   );
 }
