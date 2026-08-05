@@ -12,6 +12,8 @@ Newest first.
 
 ## 2026-08-05
 
+- Add real parent authentication (Supabase Auth) with route gating
+- Shipped from `6623b9b` (`claude/parent-authentication-k2e8bx`)
 - Build the public marketing site
 - Shipped from `2c26d22` (`claude/kindlyo-marketing-site-z87nm4`)
 
