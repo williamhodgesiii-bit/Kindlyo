@@ -50,6 +50,29 @@ li a {
 }
 
 /*
+ * "Breathe once": the neighborhood map's current node greets you on arrival
+ * with a single calm pulse, then rests (docs/design/COMPONENT_STATES.md §03).
+ * Built from the Little Motions tokens; the reduced-motion block below collapses
+ * it to stillness, and the node's meaning lives in its "Current" chip regardless.
+ */
+@keyframes llc-breathe-once {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.llc-breathe-once {
+  animation: llc-breathe-once var(--llc-motion-intro) var(--llc-ease-calm-scene)
+    1;
+}
+
+/*
  * Reduced-motion support: honour the OS preference globally rather than
  * relying on each component to remember.
  */
