@@ -231,6 +231,28 @@ describe("LessonRunner", () => {
     expect(screen.queryByRole("button", { name: "Next" })).toBeNull();
   });
 
+  it("celebrates finishing, replayably and without a score", async () => {
+    const user = userEvent.setup();
+    render(<LessonRunner lesson={lesson} />);
+    await screen.findByRole("heading", { name: "The opening" });
+
+    await goTo(user, "completion");
+
+    // The celebration is a burst the child can ask to see again — not a loop,
+    // and not a score, streak, or points readout.
+    expect(
+      screen.getByRole("button", { name: "Play the celebration again" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/points|score|streak/i)).not.toBeInTheDocument();
+  });
+
+  it("themes the lesson with its module world", async () => {
+    const { container } = render(<LessonRunner lesson={lesson} />);
+    await screen.findByRole("heading", { name: "The opening" });
+
+    expect(container.querySelector("[data-module]")).not.toBeNull();
+  });
+
   it("starts the lesson over on request", async () => {
     const user = userEvent.setup();
     render(<LessonRunner lesson={lesson} />);

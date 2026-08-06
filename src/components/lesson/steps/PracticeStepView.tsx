@@ -37,19 +37,26 @@ export function PracticeStepView({
       ) : null}
 
       <ChoiceList label={practice.prompt} className="mt-6">
-        {practice.options.map((option) => (
+        {practice.options.map((option, index) => (
           <ChoiceCard
             key={option.id}
             label={option.text}
             selected={option.id === selectedOptionId}
             onClick={() => onPractise(option.id)}
+            className="llc-card-enter"
+            style={{ "--llc-enter-index": index } as React.CSSProperties}
           />
         ))}
       </ChoiceList>
 
       {selected ? (
         <>
-          <InlineFeedback className="mt-6" tone="helpful" title="Nice practice">
+          <InlineFeedback
+            key={selected.id}
+            className="mt-6 llc-reaction-enter"
+            tone="helpful"
+            title="Nice practice"
+          >
             {selected.encouragement}
           </InlineFeedback>
           <Text className="mt-4 max-w-prose">{practice.closing}</Text>

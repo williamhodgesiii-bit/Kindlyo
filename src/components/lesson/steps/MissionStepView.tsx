@@ -17,7 +17,7 @@ import type { OfflineMission } from "@/features/curriculum/schema";
  */
 export function MissionStepView({ mission }: { mission: OfflineMission }) {
   return (
-    <section>
+    <section className="llc-mission-enter">
       <Heading level={2}>Your mission away from the screen</Heading>
       <Text tone="secondary" className="mt-3 max-w-prose">
         One small thing to try before the next lesson.
