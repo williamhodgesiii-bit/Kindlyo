@@ -1,5 +1,6 @@
 import { useId } from "react";
 import { cn } from "@/lib/cn";
+import { CharacterRig } from "@/components/character/CharacterRig";
 import { motifPath } from "./motifs";
 
 /**
@@ -156,57 +157,26 @@ export function SceneStage({
             strokeWidth="2"
           />
 
-          {/* 5 · Characters — kit figures on the ground band (2px ink) */}
-          {/* Near child */}
-          <g stroke={INK} strokeWidth="2" strokeLinejoin="round">
-            <rect
-              x={isConsequence ? "134" : "128"}
-              y="118"
-              width="26"
-              height="30"
-              rx="12"
-              fill="var(--module-accent)"
-            />
-            <circle
-              cx={isConsequence ? "147" : "141"}
-              cy="110"
-              r="12"
-              fill="var(--llc-skin-2)"
-            />
-            {/* Arm: at rest, or raised in a hello for the consequence */}
-            {isConsequence ? (
-              <rect
-                x="158"
-                y="96"
-                width="8"
-                height="22"
-                rx="4"
-                fill="var(--llc-skin-2)"
-                transform="rotate(28 162 107)"
-              />
-            ) : (
-              <rect
-                x="126"
-                y="122"
-                width="8"
-                height="20"
-                rx="4"
-                fill="var(--llc-skin-2)"
-              />
-            )}
-          </g>
-          {/* Far child */}
-          <g stroke={INK} strokeWidth="2" strokeLinejoin="round">
-            <rect
-              x="182"
-              y="120"
-              width="26"
-              height="28"
-              rx="12"
-              fill="var(--llc-cast-maya)"
-            />
-            <circle cx="195" cy="112" r="12" fill="var(--llc-skin-4)" />
-          </g>
+          {/* 5 · Characters — the cast on the ground band, drawn by the
+              parametric rig (step 5) and themed by their own cast colours. The
+              far child watches; the near child greets a newcomer once a choice
+              is made — the same warm hello whatever the choice was. */}
+          <CharacterRig
+            character="theo"
+            state="idle"
+            x={176}
+            y={122}
+            width={52}
+            height={(52 * 152) / 132}
+          />
+          <CharacterRig
+            character="maya"
+            state={isConsequence ? "greet" : "idle"}
+            x={84}
+            y={110}
+            width={66}
+            height={(66 * 152) / 132}
+          />
 
           {/* 6 · Motif decoration — the module shape, drifting (<= 5 instances) */}
           <g fill="var(--module-accent-soft)" opacity="0.9">
