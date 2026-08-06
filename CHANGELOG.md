@@ -12,6 +12,9 @@ Newest first.
 
 ## 2026-08-06
 
+- test(e2e): isolate the shell footer spec with its own parent
+- feat(design): character rig & Glim (handoff step 5)
+- Shipped from `3ae03f8` (`claude/step-4-lesson-runner-p4qtf9`)
 - feat(design): lesson runner — scene stage & celebration (handoff step 4)
 - Shipped from `be3642d` (`claude/step-4-lesson-runner-p4qtf9`)
 - chore(design): add Little Learner's Club design handoff bundle
