@@ -46,6 +46,27 @@ export type Env = {
    * only permitted in the `local` environment. Required in preview/production.
    */
   databaseConfigured: boolean;
+  /** Client-safe Stripe publishable key, or null. Never a secret. */
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: string | null;
+  /** Server-only Stripe secret key, or null when billing is not configured. */
+  STRIPE_SECRET_KEY: string | null;
+  /** Server-only Stripe webhook signing secret, or null. */
+  STRIPE_WEBHOOK_SECRET: string | null;
+  /** Server-only Stripe Price ID for the monthly family plan, or null. */
+  STRIPE_PRICE_ID_MONTHLY: string | null;
+  /** Server-only Stripe Price ID for the annual family plan, or null. */
+  STRIPE_PRICE_ID_ANNUAL: string | null;
+  /**
+   * True when the secret key, webhook secret, and both plan price IDs are all
+   * present. When false, subscriptions are off: entitlement resolves to the free
+   * plan for everyone and checkout/portal report that billing is unavailable.
+   *
+   * Unlike auth and the database, billing is optional even in preview and
+   * production — the subscription flow is intentionally not launched yet (it
+   * must not be used until families have tested the learning experience), so an
+   * environment may deploy without it. Set the four values together to turn on.
+   */
+  billingConfigured: boolean;
 };
 
 export class EnvValidationError extends Error {
@@ -81,6 +102,12 @@ function isHttpsUrl(value: string): boolean {
   } catch {
     return false;
   }
+}
+
+/** Trims a raw value and treats empty (or unset) as null. */
+function readOptional(value: string | undefined): string | null {
+  const trimmed = value?.trim();
+  return trimmed !== undefined && trimmed !== "" ? trimmed : null;
 }
 
 /**
@@ -188,12 +215,41 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
     }
   }
 
+  // --- Stripe / billing ---
+  // Optional in every environment: the subscription flow is not launched yet, so
+  // an app may run and deploy without it. The values are read together and the
+  // feature is "configured" only when all four are present.
+  const publishableKey = readOptional(
+    source.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+  );
+  const stripeSecretKey = readOptional(source.STRIPE_SECRET_KEY);
+  const stripeWebhookSecret = readOptional(source.STRIPE_WEBHOOK_SECRET);
+  const priceMonthly = readOptional(source.STRIPE_PRICE_ID_MONTHLY);
+  const priceAnnual = readOptional(source.STRIPE_PRICE_ID_ANNUAL);
+
+  // A secret key placed in the client-safe publishable slot would leak to the
+  // browser; refuse it loudly (CLAUDE.md: keep server-only secrets out of client
+  // code). Stripe secret keys start with `sk_` or `rk_`.
+  if (
+    publishableKey !== null &&
+    (publishableKey.startsWith("sk_") || publishableKey.startsWith("rk_"))
+  ) {
+    issues.push(
+      "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY looks like a secret key; it is exposed to the browser and must be a publishable (pk_) key.",
+    );
+  }
+
   if (issues.length > 0) {
     throw new EnvValidationError(issues);
   }
 
   const authConfigured = supabaseUrl !== null && anonKey !== null;
   const databaseConfigured = supabaseUrl !== null && serviceRoleKey !== null;
+  const billingConfigured =
+    stripeSecretKey !== null &&
+    stripeWebhookSecret !== null &&
+    priceMonthly !== null &&
+    priceAnnual !== null;
 
   return {
     APP_ENV: appEnv,
@@ -203,6 +259,12 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
     SUPABASE_SERVICE_ROLE_KEY: serviceRoleKey,
     authConfigured,
     databaseConfigured,
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: publishableKey,
+    STRIPE_SECRET_KEY: stripeSecretKey,
+    STRIPE_WEBHOOK_SECRET: stripeWebhookSecret,
+    STRIPE_PRICE_ID_MONTHLY: priceMonthly,
+    STRIPE_PRICE_ID_ANNUAL: priceAnnual,
+    billingConfigured,
   };
 }
 

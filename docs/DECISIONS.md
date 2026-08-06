@@ -628,3 +628,50 @@ Format:
   product need for undo here. If a recycle-bin or account-level export is ever
   wanted, it needs its own deliberate decision, not a silent softening of this
   one.
+
+## 036. Web subscriptions on Stripe, behind seams, and off until families have tested
+
+- Date: 2026-08-06
+- Status: accepted
+- Context: `prompts/10-payments.md` asks for family subscriptions and
+  entitlements via Stripe: a pricing/checkout flow, webhook handling with
+  verification and idempotency, subscription-state persistence, billing
+  management and cancellation, and tested state helpers — never storing card
+  data and keeping secrets server-side. The payments prompt also carries an
+  explicit instruction that this must not be used until families have tested the
+  learning experience.
+- Decision: Build the foundation as the same seam pattern as auth (decision 033)
+  and family data (decision 034), so nothing new is invented for payments. A
+  pure `subscriptions` domain holds the state machine (Stripe status → a small
+  closed set), entitlement (`hasPaidAccess`), the plan catalogue, and HMAC-SHA256
+  webhook-signature verification. A `BillingGateway` port has a real Stripe
+  adapter (fetch) for the two outbound calls (Checkout, Billing Portal); a
+  `SubscriptionStore` port has a PostgreSQL adapter and an in-memory stand-in,
+  chosen by configuration and barred from deployed environments by the shared
+  `assertLocalPersistenceAllowed`. A `BillingService` is the sole authorization
+  boundary, resolving the family from the user id exactly as `FamilyService`
+  does. Two tables are added — `family_subscriptions` (one per family) and
+  `processed_webhook_events` (the idempotency ledger) — with the same
+  check-constraint-and-RLS posture as the family tables. The webhook route
+  verifies the signature on the raw body before parsing, and `applyStripeEvent`
+  records each event id before acting (releasing it on failure) so redeliveries
+  are no-ops and retries still work. Past-due deliberately keeps access during
+  Stripe's dunning grace (no punitive mid-lesson lockout); cancel-at-period-end
+  keeps access until the period actually ends. The Stripe integration is
+  hand-rolled rather than adding the Stripe SDK, matching the codebase's
+  avoid-dependencies posture and keeping the security-critical pieces (signature,
+  state machine, dispatch) pure and unit-tested offline. Billing is optional in
+  every environment — including production — and defaults off: when unconfigured,
+  entitlement is the free plan for everyone, checkout/portal report unavailable,
+  and the app behaves exactly as before. Local development gets a dev-only
+  simulator that feeds synthesised Stripe events through the real dispatcher, so
+  the states can be built and reviewed with no Stripe and no card.
+- Consequences: A parent can subscribe, manage billing, and cancel; state
+  transitions and entitlement are proven by offline tests; card data is never
+  stored and secrets stay server-only. The Stripe adapter is integration-level
+  like the PostgreSQL and Supabase paths — covered by types and the shared
+  interface, not offline unit tests. Because the flow is not launched, the free
+  introductory lessons are not yet gated behind entitlement and lifecycle
+  analytics events are left for launch, so this foundation does not change how
+  the app behaves for the families currently testing it. Turning it on is four
+  environment variables. See docs/BILLING.md.

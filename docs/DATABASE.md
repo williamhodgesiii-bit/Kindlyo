@@ -50,6 +50,12 @@ The at-most-three-profiles rule is a count in the service rather than a
 constraint — a `CHECK` cannot count sibling rows without a trigger, and a
 trigger is more machinery than the rule earns.
 
+A family's subscription lives in its own tables added by
+`supabase/migrations/0002_subscriptions.sql` (`family_subscriptions`, one per
+family, and `processed_webhook_events`, the webhook idempotency ledger). They
+follow the same store-seam and RLS posture described here; the whole billing
+design is in `docs/BILLING.md` (decision 036).
+
 ## Relationships
 
 ```text
