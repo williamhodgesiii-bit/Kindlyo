@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button, ButtonLink } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Typography";
 
 /**
@@ -20,11 +20,16 @@ export function ParentAccountBar({ email }: { email: string }) {
           Signed in as{" "}
           <span className="font-medium text-text-primary">{email}</span>
         </Text>
-        <form action="/auth/signout" method="post">
-          <Button type="submit" variant="quiet" size="md">
-            Sign out
-          </Button>
-        </form>
+        <div className="flex items-center gap-1">
+          <ButtonLink href="/parent/billing" variant="quiet" size="md">
+            Membership
+          </ButtonLink>
+          <form action="/auth/signout" method="post">
+            <Button type="submit" variant="quiet" size="md">
+              Sign out
+            </Button>
+          </form>
+        </div>
       </div>
     </div>
   );

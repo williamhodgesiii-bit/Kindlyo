@@ -22,6 +22,12 @@ describe("parseEnv", () => {
       SUPABASE_SERVICE_ROLE_KEY: null,
       authConfigured: false,
       databaseConfigured: false,
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: null,
+      STRIPE_SECRET_KEY: null,
+      STRIPE_WEBHOOK_SECRET: null,
+      STRIPE_PRICE_ID_MONTHLY: null,
+      STRIPE_PRICE_ID_ANNUAL: null,
+      billingConfigured: false,
     });
   });
 
@@ -57,6 +63,12 @@ describe("parseEnv", () => {
       SUPABASE_SERVICE_ROLE_KEY: null,
       authConfigured: false,
       databaseConfigured: false,
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: null,
+      STRIPE_SECRET_KEY: null,
+      STRIPE_WEBHOOK_SECRET: null,
+      STRIPE_PRICE_ID_MONTHLY: null,
+      STRIPE_PRICE_ID_ANNUAL: null,
+      billingConfigured: false,
     });
   });
 
@@ -189,6 +201,48 @@ describe("parseEnv", () => {
       expect(() => parseEnv({ APP_ENV: "preview", ...validPair })).toThrow(
         /SUPABASE_SERVICE_ROLE_KEY is required when APP_ENV is preview/,
       );
+    });
+  });
+
+  describe("billing configuration", () => {
+    const allBillingValues = {
+      STRIPE_SECRET_KEY: "sk_test_123",
+      STRIPE_WEBHOOK_SECRET: "whsec_123",
+      STRIPE_PRICE_ID_MONTHLY: "price_monthly",
+      STRIPE_PRICE_ID_ANNUAL: "price_annual",
+    };
+
+    it("marks billing configured only when all four values are present", () => {
+      expect(parseEnv(allBillingValues).billingConfigured).toBe(true);
+    });
+
+    it("leaves billing unconfigured when a value is missing", () => {
+      expect(
+        parseEnv({
+          STRIPE_SECRET_KEY: "sk_test_123",
+          STRIPE_PRICE_ID_MONTHLY: "price_monthly",
+          STRIPE_PRICE_ID_ANNUAL: "price_annual",
+        }).billingConfigured,
+      ).toBe(false);
+    });
+
+    it("is optional in production (the flow is not launched yet)", () => {
+      expect(
+        parseEnv({ APP_ENV: "production", ...validDeployed }).APP_ENV,
+      ).toBe("production");
+    });
+
+    it("rejects a secret key placed in the public publishable slot", () => {
+      expect(() =>
+        parseEnv({ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "sk_live_leak" }),
+      ).toThrow(/NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY/);
+    });
+
+    it("accepts a genuine publishable key", () => {
+      expect(
+        parseEnv({ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "pk_test_ok" })
+          .NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+      ).toBe("pk_test_ok");
     });
   });
 });

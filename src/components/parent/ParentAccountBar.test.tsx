@@ -23,4 +23,12 @@ describe("ParentAccountBar", () => {
       "submit",
     );
   });
+
+  it("links to the family membership page", () => {
+    render(<ParentAccountBar email="parent@example.com" />);
+    expect(screen.getByRole("link", { name: "Membership" })).toHaveAttribute(
+      "href",
+      "/parent/billing",
+    );
+  });
 });
