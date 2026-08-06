@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;padding:0;background:#ECE8DF;}
+  a{color:#A03F27;} a:hover{color:#7E301D;}
+</style>
+</helmet>
+<div style="padding:56px 64px 96px;font-family:'Source Sans 3',sans-serif;color:#31281C;width:1460px;min-width:1460px;box-sizing:content-box;">
+  <div style="margin-bottom:32px;max-width:900px;">
+    <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#8A8375;">Little Learner's Club — Phase 5 · character bible</div>
+    <h1 style="font:600 34px/1.2 'Source Serif 4',Georgia,serif;margin:10px 0 12px;">The cast &amp; Glim</h1>
+    <p style="font-size:15px;line-height:1.6;color:#6E6252;margin:0;">Five kids and one clubhouse companion, all drawn by <strong>one parametric rig</strong> on the design-system grid (2.6 heads, 2px ink line, six-step skin ramp) — so every expression and pose below is a rig state, not a new drawing. These are working sketches at final proportions; a human illustrator refines surface detail without touching the grid.</p>
+  </div>
+
+  <div data-screen-label="Construction and wardrobe rules" style="background:#FFF;border:1px solid #E0DACC;border-radius:20px;padding:24px 28px;margin-bottom:24px;display:flex;gap:36px;align-items:flex-start;">
+    <div style="flex:1;">
+      <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#8A8375;margin-bottom:8px;">Shared construction</div>
+      <div style="font-size:13px;line-height:1.7;color:#5C554A;">Circle head · block body · capsule limbs · dot eyes · one 2px mouth stroke · optional 2px brows &amp; blush. Emotion = eyes + brows + mouth + pose only. Kids are 2.6 heads; Glim is 1.6. Every character can be recognized by silhouette alone.</div>
+    </div>
+    <div style="flex:1;">
+      <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#8A8375;margin-bottom:8px;">Clothing system</div>
+      <div style="font-size:13px;line-height:1.7;color:#5C554A;">Signature top in the character's cast color — constant everywhere. Bottoms in shared neutral <span style="font:11px ui-monospace,monospace;">#6E6252</span>. One accessory slot (Maya's hair ties, Theo's glasses, Amara's beads, Jun's cowlick clip, Nora's card lanyard) may take the <em>module accent</em> in scenes, so kids visibly belong to the place they're visiting.</div>
+    </div>
+    <div style="flex:1;">
+      <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#8A8375;margin-bottom:8px;">Cast color tokens</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div><div style="width:44px;height:30px;border-radius:8px;background:#B85C48;"></div><div style="font:9px/1.5 ui-monospace,monospace;color:#8A8375;">maya</div></div>
+        <div><div style="width:44px;height:30px;border-radius:8px;background:#587F70;"></div><div style="font:9px/1.5 ui-monospace,monospace;color:#8A8375;">theo</div></div>
+        <div><div style="width:44px;height:30px;border-radius:8px;background:#D8A24C;"></div><div style="font:9px/1.5 ui-monospace,monospace;color:#8A8375;">amara</div></div>
+        <div><div style="width:44px;height:30px;border-radius:8px;background:#5D6FAE;"></div><div style="font:9px/1.5 ui-monospace,monospace;color:#8A8375;">jun</div></div>
+        <div><div style="width:44px;height:30px;border-radius:8px;background:#5B7086;"></div><div style="font:9px/1.5 ui-monospace,monospace;color:#8A8375;">nora</div></div>
+        <div><div style="width:44px;height:30px;border-radius:8px;background:#C98F2E;"></div><div style="font:9px/1.5 ui-monospace,monospace;color:#8A8375;">glim</div></div>
+      </div>
+      <div style="font-size:11.5px;color:#8A8375;margin-top:6px;">New tokens <span style="font:10px ui-monospace,monospace;">llc.cast.*</span> — same warm family, no two alike, none impersonating brand or feedback colors.</div>
+    </div>
+  </div>
+
+  <sc-for list="{{ cast }}" as="c" hint-placeholder-count="5">
+    <div data-screen-label="Character card" style="background:#FFF;border:1px solid #E0DACC;border-radius:20px;padding:28px;margin-bottom:24px;">
+      <div style="display:grid;grid-template-columns:200px 1fr 1fr 300px;gap:28px;">
+        <div>
+          <div style="display:flex;gap:14px;align-items:flex-end;">
+            <div>{{ c.portrait }}</div>
+            <div>{{ c.silfig }}</div>
+          </div>
+          <div style="font:10px/1.5 ui-monospace,monospace;color:#8A8375;margin-top:8px;">portrait · silhouette test</div>
+          <div style="display:flex;gap:6px;margin-top:12px;align-items:center;">
+            <div style="width:26px;height:26px;border-radius:8px;background:{{ c.main }};"></div>
+            <div style="width:26px;height:26px;border-radius:8px;background:{{ c.soft }};"></div>
+            <div style="width:26px;height:26px;border-radius:8px;background:{{ c.skin }};"></div>
+            <div style="width:26px;height:26px;border-radius:8px;background:{{ c.hairColor }};"></div>
+            <div style="font:9.5px/1.4 ui-monospace,monospace;color:#8A8375;margin-left:4px;">{{ c.main }}</div>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex;align-items:baseline;gap:10px;">
+            <h2 style="font:600 26px/1.2 'Source Serif 4',Georgia,serif;margin:0;">{{ c.name }}</h2>
+            <div style="font-size:13px;color:#6E6252;">age {{ c.age }}</div>
+          </div>
+          <div style="font-size:13.5px;line-height:1.6;color:#31281C;margin-top:8px;">{{ c.persona }}</div>
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:7px;">
+            <div style="font-size:12.5px;line-height:1.55;color:#5C554A;"><strong style="color:#3D6B58;">Strengths:</strong> {{ c.strengths }}</div>
+            <div style="font-size:12.5px;line-height:1.55;color:#5C554A;"><strong style="color:#8A5A1C;">Growing in:</strong> {{ c.growth }}</div>
+            <div style="font-size:12.5px;line-height:1.55;color:#5C554A;"><strong>Communicates:</strong> {{ c.comm }}</div>
+            <div style="font-size:12.5px;line-height:1.55;color:#5C554A;"><strong>Loves:</strong> {{ c.interests }}</div>
+            <div style="font-size:12.5px;line-height:1.55;color:#5C554A;"><strong>Home:</strong> {{ c.family }}</div>
+          </div>
+        </div>
+        <div>
+          <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A8375;">Design notes</div>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:7px;">
+            <div style="font-size:12.5px;line-height:1.55;color:#5C554A;"><strong>Silhouette:</strong> {{ c.sil }}</div>
+            <div style="font-size:12.5px;line-height:1.55;color:#5C554A;"><strong>Shape language:</strong> {{ c.shape }}</div>
+            <div style="font-size:12.5px;line-height:1.55;color:#5C554A;"><strong>Wardrobe:</strong> {{ c.clothing }}</div>
+            <div style="font-size:12.5px;line-height:1.55;color:#5C554A;"><strong>Problem-solving:</strong> {{ c.solving }}</div>
+          </div>
+          <div style="background:#F6EBD3;border-radius:10px;padding:10px 12px;margin-top:12px;font-size:12px;line-height:1.55;color:#8A5A1C;"><strong>Never write:</strong> {{ c.avoid }}</div>
+        </div>
+        <sc-if value="{{ showExpressionSheets }}" hint-placeholder-val="{{ true }}">
+          <div>
+            <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A8375;">Expression sheet</div>
+            <div style="margin-top:8px;">{{ c.expr }}</div>
+          </div>
+        </sc-if>
+      </div>
+      <div style="border-top:1px solid #EFE3CC;margin-top:20px;padding-top:16px;">
+        <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A8375;margin-bottom:10px;">Pose sheet — the eight required states</div>
+        <div>{{ c.poseRow }}</div>
+      </div>
+    </div>
+  </sc-for>
+
+  <div data-screen-label="Glim the clubhouse lantern" style="background:#FFF;border:1px solid #E0DACC;border-radius:20px;padding:28px;margin-bottom:24px;">
+    <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:32px;">
+      <div>
+        <div style="display:flex;align-items:baseline;gap:10px;">
+          <h2 style="font:600 26px/1.2 'Source Serif 4',Georgia,serif;margin:0;">Glim</h2>
+          <div style="font-size:13px;color:#6E6252;">the clubhouse lantern · companion, not judge</div>
+        </div>
+        <div style="font-size:13.5px;line-height:1.65;color:#31281C;margin-top:10px;">An old brass lantern that has hung by the clubhouse door long enough to get curious. Glim can't talk — it notices, wonders, glows, and lights the way. It asks questions with a tilt and a wonder-bubble; it never declares anyone good or bad, and it never dims because of a child's choice.</div>
+        <div style="margin-top:14px;display:flex;flex-direction:column;gap:7px;">
+          <div style="font-size:12.5px;line-height:1.55;color:#5C554A;"><strong>Guide rules:</strong> asks, never grades · models curiosity first ("I wonder…") · reacts gently and briefly · carries transitions (its light leads to the next place) · works with zero spoken dialogue — wonder-bubbles hold an icon plus narrated text.</div>
+          <div style="font-size:12.5px;line-height:1.55;color:#5C554A;"><strong>Form rules:</strong> 1.6 heads tall · the only sanctioned glow in the system · dot eyes in the glass, one mouth stroke · no limbs — expression lives in tilt, hop, and glow intensity.</div>
+          <div style="font-size:12.5px;line-height:1.55;color:#5C554A;"><strong>Unique states:</strong> glow_notice · wonder_tilt · path_light · dim_rest (never triggered by a choice) · plus the shared library where body allows.</div>
+        </div>
+        <div style="background:#F6EBD3;border-radius:10px;padding:10px 12px;margin-top:12px;font-size:12px;line-height:1.55;color:#8A5A1C;"><strong>Never:</strong> a bird, an owl, a scorekeeper, a nag. Glim never blocks the screen, never repeats a prompt more than once, and never celebrates louder than the child's own moment.</div>
+      </div>
+      <div>
+        <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A8375;margin-bottom:10px;">State sheet</div>
+        <div>{{ glimRow }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div data-screen-label="Rotation rule" style="background:#FFF;border:1px solid #E0DACC;border-radius:20px;padding:28px;margin-bottom:24px;">
+    <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#8A8375;">Writing rule — everyone does everything</div>
+    <p style="font-size:13.5px;line-height:1.6;color:#6E6252;margin:10px 0 14px;max-width:860px;">No character is the permanent mistake-maker, and no character is the permanent example. Story roles rotate across the cast; the authoring checklist below must be satisfied by <strong>every</strong> character across each module's eight lessons.</p>
+    <div style="display:grid;grid-template-columns:170px 1fr;gap:0;border-top:1px solid #E4D7BF;max-width:1100px;">
+      <sc-for list="{{ roles }}" as="r" hint-placeholder-count="7">
+        <div style="padding:9px 8px;border-bottom:1px solid #F2EADA;font:600 12.5px/1.5 'Source Sans 3',sans-serif;">{{ r.role }}</div>
+        <div style="padding:9px 8px;border-bottom:1px solid #F2EADA;font-size:12.5px;line-height:1.55;color:#5C554A;">{{ r.ex }}</div>
+      </sc-for>
+    </div>
+  </div>
+
+  <sc-if value="{{ showAnimationLibrary }}" hint-placeholder-val="{{ true }}">
+  <div data-screen-label="Animation-state library" style="background:#FFF;border:1px solid #E0DACC;border-radius:20px;padding:28px;">
+    <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#8A8375;">Shared animation-state library — one rig, 31 states, every character</div>
+    <p style="font-size:13px;line-height:1.6;color:#6E6252;margin:10px 0 14px;max-width:860px;">State names are engineering-stable. Scene feedback uses <span style="font:11.5px ui-monospace,monospace;">helpful_choice · mixed_choice · needs_context</span> — these are <strong>scene states, never character states</strong>: no rig state expresses a verdict about the child, and no state is ever named correct, wrong, failure, bad, or rude.</p>
+    <div style="display:grid;grid-template-columns:190px 110px 1fr 210px 230px;gap:0;border-top:1px solid #E4D7BF;">
+      <div style="padding:8px;font:600 10.5px/1.4 'Source Sans 3',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#8A8375;border-bottom:1px solid #E4D7BF;">state</div>
+      <div style="padding:8px;font:600 10.5px/1.4 'Source Sans 3',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#8A8375;border-bottom:1px solid #E4D7BF;">group</div>
+      <div style="padding:8px;font:600 10.5px/1.4 'Source Sans 3',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#8A8375;border-bottom:1px solid #E4D7BF;">what the rig does</div>
+      <div style="padding:8px;font:600 10.5px/1.4 'Source Sans 3',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#8A8375;border-bottom:1px solid #E4D7BF;">tokens</div>
+      <div style="padding:8px;font:600 10.5px/1.4 'Source Sans 3',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#8A8375;border-bottom:1px solid #E4D7BF;">reduced motion</div>
+      <sc-for list="{{ states }}" as="s" hint-placeholder-count="31">
+        <div style="padding:7px 8px;border-bottom:1px solid #F2EADA;font:11.5px/1.5 ui-monospace,monospace;color:#31281C;">{{ s.n }}</div>
+        <div style="padding:7px 8px;border-bottom:1px solid #F2EADA;font-size:11px;color:#8A8375;">{{ s.g }}</div>
+        <div style="padding:7px 8px;border-bottom:1px solid #F2EADA;font-size:12px;line-height:1.5;color:#5C554A;">{{ s.d }}</div>
+        <div style="padding:7px 8px;border-bottom:1px solid #F2EADA;font:10.5px/1.5 ui-monospace,monospace;color:#8A8375;">{{ s.tk }}</div>
+        <div style="padding:7px 8px;border-bottom:1px solid #F2EADA;font-size:11.5px;line-height:1.5;color:#4A6076;">{{ s.r }}</div>
+      </sc-for>
+    </div>
+  </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showExpressionSheets&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Sections&quot;},&quot;showAnimationLibrary&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Sections&quot;}}">
+class Component extends DCLogic {
+  INK = "#31281C"; LEG = "#6E6252";
+
+  POSES = {
+    listen:    { label: "Listening",  tilt: 5,  rotL: 8,    rotR: -8,   eyes: "open",   mouth: "small",  note: "lean in, arms at rest" },
+    speak:     { label: "Speaking",   tilt: -2, rotL: 6,    rotR: -62,  eyes: "open",   mouth: "open",   note: "one open hand" },
+    think:     { label: "Thinking",   tilt: -4, rotL: 6,    rotR: -142, eyes: "up",     mouth: "o",      note: "hand toward chin, eyes up" },
+    nervous:   { label: "Nervous",    tilt: 3,  rotL: -16,  rotR: 16,   eyes: "open",   mouth: "wobble", brows: "worry", blush: true, note: "arms tucked, brows in" },
+    confident: { label: "Confident",  tilt: -4, rotL: 32,   rotR: -32,  lenL: 38, lenR: 38, eyes: "open", mouth: "grin", note: "hands on hips, chin up" },
+    apologize: { label: "Apology",    tilt: 10, rotL: -8,   rotR: 8,    eyes: "closed", mouth: "small",  note: "head bowed, still, sincere" },
+    boundary:  { label: "Boundary",   tilt: 0,  rotL: 6,    rotR: -88,  lenR: 34, eyes: "open", mouth: "flat", palm: true, note: "flat palm, steady, calm" },
+    celebrate: { label: "Celebration",tilt: -3, rotL: 152,  rotR: -152, eyes: "closed", mouth: "grin",   hop: true, note: "arms up once, tiny hop" }
+  };
+  EXPR = {
+    neutral:   { eyes: "open",   mouth: "small" },
+    happy:     { eyes: "open",   mouth: "smile", blush: true },
+    curious:   { eyes: "up",     mouth: "o", brows: "raise" },
+    uncertain: { eyes: "open",   mouth: "wobble", brows: "worry", blush: true },
+    proud:     { eyes: "closed", mouth: "grin" },
+    "gently disappointed": { eyes: "down", mouth: "flat", brows: "worry" }
+  };
+
+  castData = [
+    { id: "maya", name: "Maya", age: 8, main: "#B85C48", soft: "#E8C4B8", skin: "#C99772", hairColor: "#4A2E1D", hair: "buns",
+      persona: "The one who makes rooms feel smaller in the best way. Maya notices who's standing alone and folds them in \u2014 sometimes before checking they wanted folding in.",
+      strengths: "welcoming newcomers, noticing left-out kids, hosting",
+      growth: "pausing to listen, asking before hugs, letting quiet be okay",
+      comm: "talks fast, thinks out loud, warm touch \u2014 and is learning to ask first",
+      interests: "baking, card games, planning parties",
+      family: "big multigenerational home; Spanish and English around the table; everyone hosts everything",
+      sil: "two round buns \u2014 readable at 16px", shape: "circles on circles; bouncy, open, wide stance",
+      clothing: "brick-rose top; hair ties take the module accent",
+      solving: "talks it through with everyone at once; repairs fast and sincerely",
+      avoid: "the loud-bossy-girl trope; her warmth is social skill, not comic excess. Her bilingual home is texture, never a punchline or a lesson topic." },
+    { id: "theo", name: "Theo", age: 6, main: "#587F70", soft: "#B9CDC4", skin: "#F2C9A4", hairColor: "#2E2218", hair: "curly",
+      persona: "The quiet observer with the sketchbook. Theo sees how people feel before they say it, and would rather show you a drawing than give a speech.",
+      strengths: "deep listening, noticing feelings, calm one-on-one",
+      growth: "joining groups, asking for help \u2014 out loud or by showing his book",
+      comm: "few words with wait-time, drawings, small nods; eye contact optional",
+      interests: "bugs, sketchbooks, sitting in good climbing trees",
+      family: "lives with his dad; Sunday drawing club at the library",
+      sil: "curly mop plus round glasses", shape: "soft rounded rectangles, low center of gravity, tucked",
+      clothing: "sage top; glasses frames take the module accent",
+      solving: "watches first, then acts once, precisely",
+      avoid: "quiet \u2260 sad, and Theo is never 'fixed' by becoming loud. His arc is being heard his way, not learning to perform." },
+    { id: "amara", name: "Amara", age: 9, main: "#D8A24C", soft: "#F0DDB8", skin: "#6B4226", hairColor: "#1F1712", hair: "braids",
+      persona: "The oldest and the planner. Amara is fair, organized, and brave about saying no \u2014 and is discovering that being right is not the same as being finished.",
+      strengths: "organizing, fairness, including younger kids, saying no confidently",
+      growth: "apologies and repair, leaving room for other people's ideas",
+      comm: "direct and clear; asks \u201cwhat's the plan?\u201d; lists things on fingers",
+      interests: "building kits, swimming, maps of places she'll go",
+      family: "Nigerian-American; moved cities mid-year; two younger brothers who copy everything she does",
+      sil: "crown of braids with beads", shape: "tall verticals, crisp edges, symmetrical stance",
+      clothing: "marigold top; braid beads take the module accent",
+      solving: "makes a plan, assigns parts \u2014 learning to ask before assigning",
+      avoid: "never the sassy corrector or the 'mature for her age' shortcut. Her apology arcs are about repair skills, not about softening her leadership." },
+    { id: "jun", name: "Jun", age: 7, main: "#5D6FAE", soft: "#C2CAE8", skin: "#E8B48A", hairColor: "#191410", hair: "fringe",
+      persona: "A firework in sneakers. Jun cheers the loudest, shares without counting, and sometimes lands in the middle of a sentence that wasn't his.",
+      strengths: "generosity, cheering others on, trying again after flops",
+      growth: "waiting for a pause, indoor volume, losing games gracefully",
+      comm: "loud and fizzy, tells great stories, talks with his whole body",
+      interests: "dinosaurs, dance routines, anything with wheels",
+      family: "Korean-American; grandparents do pickup \u2014 Korean at halmoni's house, dinosaur documentaries with harabeoji",
+      sil: "straight fringe with one proud cowlick", shape: "springy capsules, asymmetric, mid-motion even when still",
+      clothing: "periwinkle top; cowlick clip takes the module accent",
+      solving: "tries everything immediately; learning to try one thing at a time",
+      avoid: "energetic \u2260 troublemaker; Jun is never the running gag or the cautionary tale. His interruptions come from excitement, and the writing says so." },
+    { id: "nora", name: "Nora", age: 5, main: "#5B7086", soft: "#C3CEDA", skin: "#B97F5C", hairColor: "#8C5A3C", hair: "bob",
+      persona: "The youngest, and the surest about her own edges. Nora speaks in small bursts when she's ready and says the rest with her picture cards and a very definite wave.",
+      strengths: "boundaries (\u201cno thank you\u201d wave), gentleness with animals and littler kids",
+      growth: "asking for help, big-group noise, waiting her turn to be understood",
+      comm: "picture cards on a lanyard, pointing, waving, short spoken bursts when comfortable; no eye contact required, ever",
+      interests: "animals, rain puddles, sorting things by color",
+      family: "two dads and an elderly greyhound; long slow forest walks",
+      sil: "round bob with a clip, smallest of the cast", shape: "compact rounds, close to the ground, self-contained",
+      clothing: "river-blue top; card lanyard takes the module accent",
+      solving: "shows a card, points, or brings you to the thing",
+      avoid: "her cards are a language, not a limitation \u2014 never a problem to overcome, never inspiration material, and nobody ever speaks over her or for her without asking." }
+  ];
+
+  roles = [
+    { role: "Makes a mistake", ex: "Maya hugs before asking (Meeting People L4) \u00b7 Jun talks over Theo (L6) \u00b7 Amara assigns parts nobody chose (L5)" },
+    { role: "Helps someone", ex: "Theo shows Nora the quiet corner (L5) \u00b7 Nora teaches Maya her wave (L1) \u00b7 Jun cheers Amara's do-over (L7)" },
+    { role: "Feels uncertain", ex: "Amara at the new-city party (L4) \u00b7 Maya when nobody needs hosting (L7) \u00b7 Theo at the loud table (L5)" },
+    { role: "Learns from another", ex: "Maya learns wait-time from Theo (L6) \u00b7 Jun learns the pause from Nora (L6) \u00b7 Amara learns easy repair from Jun (L7)" },
+    { role: "Sets a boundary", ex: "Nora's no-thank-you wave (L1) \u00b7 Theo: \u201cI'll show you, not say it\u201d (L2) \u00b7 Jun: \u201cI don't like that game\u201d (L5)" },
+    { role: "Asks for help", ex: "Amara asks Maya how to start over (L7) \u00b7 Nora brings a grown-up her card (L8) \u00b7 Maya asks Theo what she missed (L6)" },
+    { role: "Repairs a situation", ex: "Jun circles back after interrupting (L6) \u00b7 Amara's full apology arc (L7) \u00b7 Maya re-invites after over-hosting (L4)" }
+  ];
+
+  states = [
+    ["idle","core","slow breath (\u22642% scale), long stillness between","3s cycle \u00b7 calm-scene","static"],
+    ["idle_variant","core","blink + small weight shift, every ~8s","motion.ui \u00b7 gentle-enter","static"],
+    ["enter","core","walks in, settles to idle","motion.scene \u00b7 calm-scene","fade in"],
+    ["exit","core","turns, walks out","motion.card \u00b7 gentle-exit","fade out"],
+    ["walk","locomotion","capsule-limb swing, no bounce above 2px","per-step 400ms \u00b7 calm-scene","position slide"],
+    ["sit","locomotion","folds to seated block","motion.ui \u00b7 soft-settle","state swap"],
+    ["stand","locomotion","rises, settles","motion.ui \u00b7 soft-settle","state swap"],
+    ["wave","social","one arm to 150\u00b0, two swings","motion.reaction \u00b7 playful","static raised arm"],
+    ["greet","social","wave + lean + open mouth","motion.reaction \u00b7 gentle-enter","expression swap"],
+    ["listen","social","5\u00b0 tilt toward speaker, arms rest, eyes to speaker","motion.ui \u00b7 gentle-enter","static listening pose"],
+    ["speak","social","hand gesture + mouth cycle","per-line \u00b7 gentle-enter","static speaking pose"],
+    ["think","feeling","hand toward chin, eyes up","motion.ui \u00b7 curious","static thinking pose"],
+    ["notice","feeling","head turn + brow raise","motion.ui \u00b7 curious","expression swap"],
+    ["curious","feeling","lean forward, o-mouth","motion.ui \u00b7 curious","expression swap"],
+    ["uncertain","feeling","arms tuck, wobble mouth, worry brows","motion.reaction \u00b7 gentle-enter","expression swap"],
+    ["encouraged","feeling","straightens, small smile after support","motion.reaction \u00b7 gentle-enter","expression swap"],
+    ["disappointed_gentle","feeling","2px shoulder drop, flat mouth \u2014 brief, never held","motion.reaction \u00b7 gentle-exit","expression swap"],
+    ["relieved","feeling","shoulders release, closed-eye soft smile","motion.reaction \u00b7 soft-settle","expression swap"],
+    ["proud","feeling","chin up, grin \u2014 about own effort, never over others","motion.reaction \u00b7 soft-settle","expression swap"],
+    ["celebrate_small","celebration","arms up once, \u22646px hop","motion.celebrate \u00b7 playful","static celebration pose + text"],
+    ["celebrate_module","celebration","group version, one round, then still","motion.celebrate-module \u00b7 playful","static group scene + map change"],
+    ["offer_object","care","arm extends with prop, waits","motion.reaction \u00b7 gentle-enter","prop appears in hand"],
+    ["receive_object","care","both hands, small nod","motion.reaction \u00b7 soft-settle","prop transfers"],
+    ["invite","care","arm sweeps toward open space","motion.reaction \u00b7 gentle-enter","gesture pose"],
+    ["join_group","care","steps in at the edge + small wave","motion.scene \u00b7 calm-scene","position + wave pose"],
+    ["wait_for_pause","care","hand half-raised, weight still, watching","hold \u00b7 static","identical (already still)"],
+    ["ask_permission","care","palm-up arm + head tilt","motion.reaction \u00b7 curious","gesture pose"],
+    ["give_space","care","one calm step back, arms neutral \u2014 framed as kindness","motion.ui \u00b7 calm-scene","position shift"],
+    ["apologize","repair","bow pose, hold, then eyes up to the other person","motion.reaction \u00b7 gentle-enter","static apology pose"],
+    ["accept_apology","repair","nod + soft smile, optional offered hand","motion.reaction \u00b7 soft-settle","expression swap"],
+    ["ask_for_help","repair","arm toward a trusted person; Nora's card variant is canonical","motion.reaction \u00b7 gentle-enter","gesture pose"],
+    ["say_no_confidently","repair","boundary pose: flat palm, steady eyes, calm mouth \u2014 zero anger coding","motion.ui \u00b7 gentle-enter","static boundary pose"]
+  ];
+
+  el(t, s, ...ch) { return React.createElement(t, { style: s }, ...ch); }
+  abs(s) { return Object.assign({ position: "absolute", boxSizing: "border-box" }, s); }
+
+  hairEls(c, u) {
+    const H = c.hairColor, bd = "2px solid " + this.INK, e = this.el.bind(this), a = this.abs.bind(this);
+    if (c.hair === "buns") return [
+      e("div", a({ left: -6*u, top: -2*u, width: 16*u, height: 16*u, borderRadius: "50%", background: H, border: bd })),
+      e("div", a({ left: 42*u, top: -2*u, width: 16*u, height: 16*u, borderRadius: "50%", background: H, border: bd })),
+      e("div", a({ left: 2*u, top: -2*u, width: 48*u, height: 17*u, borderRadius: (24*u)+"px "+(24*u)+"px 0 0", background: H }))];
+    if (c.hair === "curly") return [
+      e("div", a({ left: -4*u, top: -4*u, width: 24*u, height: 22*u, borderRadius: "50%", background: H })),
+      e("div", a({ left: 14*u, top: -9*u, width: 26*u, height: 24*u, borderRadius: "50%", background: H })),
+      e("div", a({ left: 32*u, top: -4*u, width: 24*u, height: 22*u, borderRadius: "50%", background: H }))];
+    if (c.hair === "braids") return [
+      e("div", a({ left: 0, top: -3*u, width: 52*u, height: 22*u, borderRadius: (26*u)+"px "+(26*u)+"px "+(6*u)+"px "+(6*u)+"px", background: H })),
+      e("div", a({ left: -9*u, top: 12*u, width: 11*u, height: 32*u, borderRadius: 6*u, background: H })),
+      e("div", a({ left: 50*u, top: 12*u, width: 11*u, height: 32*u, borderRadius: 6*u, background: H })),
+      e("div", a({ left: -7*u, top: 38*u, width: 7*u, height: 7*u, borderRadius: "50%", background: c.main })),
+      e("div", a({ left: 52*u, top: 38*u, width: 7*u, height: 7*u, borderRadius: "50%", background: c.main }))];
+    if (c.hair === "fringe") return [
+      e("div", a({ left: 0, top: -2*u, width: 52*u, height: 19*u, borderRadius: (26*u)+"px "+(26*u)+"px "+(4*u)+"px "+(4*u)+"px", background: H })),
+      e("div", a({ left: 38*u, top: -10*u, width: 7*u, height: 14*u, borderRadius: 4*u, background: H, transform: "rotate(18deg)" }))];
+    return [ // bob
+      e("div", a({ left: -3*u, top: -3*u, width: 58*u, height: 21*u, borderRadius: (29*u)+"px "+(29*u)+"px "+(8*u)+"px "+(8*u)+"px", background: H })),
+      e("div", a({ left: -5*u, top: 8*u, width: 9*u, height: 26*u, borderRadius: 4*u, background: H })),
+      e("div", a({ left: 48*u, top: 8*u, width: 9*u, height: 26*u, borderRadius: 4*u, background: H })),
+      e("div", a({ left: 36*u, top: 3*u, width: 11*u, height: 5*u, borderRadius: 2*u, background: c.main }))];
+  }
+
+  face(c, p, u) {
+    const e = this.el.bind(this), a = this.abs.bind(this), INK = this.INK;
+    const dy = p.eyes === "up" ? -3*u : p.eyes === "down" ? 2*u : 0;
+    const parts = [];
+    if (p.eyes === "closed") {
+      parts.push(e("div", a({ left: 13*u, top: 28*u, width: 8*u, height: 2*u, borderRadius: u, background: INK })));
+      parts.push(e("div", a({ left: 31*u, top: 28*u, width: 8*u, height: 2*u, borderRadius: u, background: INK })));
+    } else {
+      parts.push(e("div", a({ left: 14*u, top: 26*u + dy, width: 5*u, height: 5*u, borderRadius: "50%", background: INK })));
+      parts.push(e("div", a({ left: 33*u, top: 26*u + dy, width: 5*u, height: 5*u, borderRadius: "50%", background: INK })));
+    }
+    if (p.brows === "worry") {
+      parts.push(e("div", a({ left: 13*u, top: 21*u, width: 8*u, height: 2*u, borderRadius: u, background: INK, transform: "rotate(12deg)" })));
+      parts.push(e("div", a({ left: 31*u, top: 21*u, width: 8*u, height: 2*u, borderRadius: u, background: INK, transform: "rotate(-12deg)" })));
+    } else if (p.brows === "raise") {
+      parts.push(e("div", a({ left: 13*u, top: 20*u, width: 8*u, height: 2*u, borderRadius: u, background: INK })));
+      parts.push(e("div", a({ left: 31*u, top: 20*u, width: 8*u, height: 2*u, borderRadius: u, background: INK })));
+    }
+    const m = p.mouth;
+    if (m === "smile" || m === "grin") parts.push(e("div", a({ left: m === "grin" ? 18*u : 20*u, top: 35*u, width: (m === "grin" ? 16 : 12)*u, height: 7*u, border: "2px solid " + INK, borderTop: "none", borderRadius: "0 0 " + (12*u) + "px " + (12*u) + "px" })));
+    if (m === "small" || m === "flat") parts.push(e("div", a({ left: 22*u, top: 38*u, width: 8*u, height: 2*u, borderRadius: u, background: INK })));
+    if (m === "wobble") parts.push(e("div", a({ left: 21*u, top: 37*u, width: 10*u, height: 2*u, borderRadius: u, background: INK, transform: "rotate(-6deg)" })));
+    if (m === "open") parts.push(e("div", a({ left: 22*u, top: 35*u, width: 9*u, height: 9*u, borderRadius: "50%", background: INK })));
+    if (m === "o") parts.push(e("div", a({ left: 23*u, top: 36*u, width: 7*u, height: 7*u, borderRadius: "50%", border: "2px solid " + INK })));
+    if (p.blush) {
+      parts.push(e("div", a({ left: 8*u, top: 34*u, width: 7*u, height: 4*u, borderRadius: "50%", background: c.soft })));
+      parts.push(e("div", a({ left: 37*u, top: 34*u, width: 7*u, height: 4*u, borderRadius: "50%", background: c.soft })));
+    }
+    if (c.hair === "curly") { // Theo's glasses
+      parts.push(e("div", a({ left: 9*u, top: 21*u, width: 14*u, height: 14*u, borderRadius: "50%", border: "2px solid " + INK })));
+      parts.push(e("div", a({ left: 29*u, top: 21*u, width: 14*u, height: 14*u, borderRadius: "50%", border: "2px solid " + INK })));
+      parts.push(e("div", a({ left: 23*u, top: 27*u, width: 6*u, height: 2*u, background: INK })));
+    }
+    return parts;
+  }
+
+  fig(c, poseKey, u, sil) {
+    const p = this.POSES[poseKey] || this.POSES.listen;
+    const e = this.el.bind(this), a = this.abs.bind(this);
+    const INK = this.INK, bd = "2px solid " + INK;
+    const skin = sil ? INK : c.skin, top = sil ? INK : c.main, leg = sil ? INK : this.LEG;
+    const W = 132*u, H = 152*u;
+    const arm = (left, deg, len) => e("div", a({ left: left, top: 58*u, width: 14*u, height: (len || 46)*u, borderRadius: 8*u, background: skin, border: sil ? "none" : bd, transform: "rotate(" + deg + "deg)", transformOrigin: "50% " + (7*u) + "px" }));
+    const headKids = [ ...this.hairEls(sil ? Object.assign({}, c, { hairColor: INK, main: INK, soft: INK }) : c, u) ];
+    const head = e("div", a({ left: 34*u, top: 4*u, width: 52*u, height: 52*u }),
+      e("div", a({ left: 0, top: 0, width: 52*u, height: 52*u, borderRadius: "50%", background: skin, border: sil ? "none" : bd })),
+      ...headKids, ...(sil ? [] : this.face(c, p, u)));
+    return e("div", { position: "relative", width: W, height: H, transform: (p.hop && !sil ? "translateY(" + (-4*u) + "px) " : "") + "rotate(" + (sil ? 0 : p.tilt) + "deg)", transformOrigin: "50% 90%" },
+      e("div", a({ left: 30*u, top: 54*u, width: 60*u, height: 60*u, borderRadius: (16*u) + "px " + (16*u) + "px " + (10*u) + "px " + (10*u) + "px", background: top, border: sil ? "none" : bd })),
+      e("div", a({ left: 40*u, top: 112*u, width: 15*u, height: 30*u, borderRadius: 8*u, background: leg, border: sil ? "none" : bd })),
+      e("div", a({ left: 64*u, top: 112*u, width: 15*u, height: 30*u, borderRadius: 8*u, background: leg, border: sil ? "none" : bd })),
+      arm(17*u, p.rotL, p.lenL), arm(89*u, p.rotR, p.lenR),
+      ...(c.hair === "bob" && !sil ? [e("div", a({ left: 52*u, top: 74*u, width: 16*u, height: 12*u, borderRadius: 3*u, background: "#FFFDF8", border: bd }))] : []),
+      head,
+      ...(p.palm && !sil ? [e("div", a({ left: 116*u, top: 56*u, width: 13*u, height: 13*u, borderRadius: "50%", background: c.skin, border: bd }))] : [])
+    );
+  }
+
+  headOnly(c, exprKey, u) {
+    const p = this.EXPR[exprKey];
+    return this.el("div", { position: "relative", width: 62*u, height: 60*u, marginLeft: 8*u },
+      this.el("div", this.abs({ left: 0, top: 4*u, width: 52*u, height: 52*u, borderRadius: "50%", background: c.skin, border: "2px solid " + this.INK }),
+        ...this.hairEls(c, u), ...this.face(c, p, u)));
+  }
+
+  glimFig(st, u) {
+    const e = this.el.bind(this), a = this.abs.bind(this), bd = "2px solid " + this.INK;
+    return e("div", { position: "relative", width: 70*u, height: 96*u, transform: (st.hop ? "translateY(" + (-4*u) + "px) " : "") + "rotate(" + st.tilt + "deg)", transformOrigin: "50% 90%" },
+      e("div", a({ left: 20*u, top: 0, width: 30*u, height: 14*u, border: "3px solid #8A5A1C", borderBottom: "none", borderRadius: (14*u) + "px " + (14*u) + "px 0 0" })),
+      e("div", a({ left: 8*u, top: 13*u, width: 54*u, height: 66*u, borderRadius: 12*u, background: "#C98F2E", border: bd })),
+      e("div", a({ left: 18*u, top: 23*u, width: 34*u, height: 46*u, borderRadius: 8*u, background: "#FFFDF8", border: "2px solid #8A5A1C" })),
+      e("div", a({ left: 22*u, top: 27*u, width: 26*u, height: 26*u, borderRadius: "50%", background: "radial-gradient(circle,#F6DFAD 20%,rgba(246,223,173,0) 70%)", opacity: st.glow })),
+      st.eyes === "closed"
+        ? e("div", a({ left: 26*u, top: 42*u, width: 7*u, height: 2*u, borderRadius: u, background: "#8A5A1C" }))
+        : e("div", a({ left: 27*u, top: 40*u + (st.eyes === "up" ? -2*u : 0), width: 4*u, height: 4*u, borderRadius: "50%", background: "#8A5A1C" })),
+      st.eyes === "closed"
+        ? e("div", a({ left: 38*u, top: 42*u, width: 7*u, height: 2*u, borderRadius: u, background: "#8A5A1C" }))
+        : e("div", a({ left: 39*u, top: 40*u + (st.eyes === "up" ? -2*u : 0), width: 4*u, height: 4*u, borderRadius: "50%", background: "#8A5A1C" })),
+      e("div", a({ left: 31*u, top: 50*u, width: 8*u, height: 4*u, border: "2px solid #8A5A1C", borderTop: "none", borderRadius: "0 0 " + (7*u) + "px " + (7*u) + "px" })),
+      e("div", a({ left: 16*u, top: 80*u, width: 12*u, height: 8*u, borderRadius: 5*u, background: "#8A5A1C" })),
+      e("div", a({ left: 42*u, top: 80*u, width: 12*u, height: 8*u, borderRadius: 5*u, background: "#8A5A1C" })));
+  }
+
+  labeled(node, label) {
+    return this.el("div", { display: "flex", flexDirection: "column", alignItems: "center", gap: 6 },
+      node, this.el("div", { font: "9.5px/1.4 ui-monospace,monospace", color: "#8A8375", textAlign: "center" }, label));
+  }
+
+  renderVals() {
+    const poseKeys = Object.keys(this.POSES);
+    const exprKeys = Object.keys(this.EXPR);
+    const cast = this.castData.map((c) => ({
+      ...c,
+      strengths: c.strengths, growth: c.growth,
+      portrait: this.fig(c, "confident", 1.05, false),
+      silfig: this.fig(c, "listen", 0.5, true),
+      expr: this.el("div", { display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10 },
+        ...exprKeys.map((k) => this.labeled(this.headOnly(c, k, 0.72), k))),
+      poseRow: this.el("div", { display: "flex", gap: 26, alignItems: "flex-end" },
+        ...poseKeys.map((k) => this.labeled(this.fig(c, k, 0.78, false), this.POSES[k].label + " \u2014 " + this.POSES[k].note)))
+    }));
+    const glimStates = [
+      { n: "dim_rest", note: "resting glow; never dims because of a choice", tilt: 0, glow: .45, eyes: "open" },
+      { n: "glow_notice", note: "brightens + leans when something matters", tilt: -6, glow: .85, eyes: "open" },
+      { n: "wonder_tilt", note: "asks a question with a tilt + bubble", tilt: 10, glow: .65, eyes: "up" },
+      { n: "path_light", note: "leads transitions toward the next place", tilt: -4, glow: .95, eyes: "open" },
+      { n: "celebrate_small", note: "one bright hop, then rest", tilt: -3, glow: 1, eyes: "closed", hop: true }
+    ];
+    return {
+      cast,
+      roles: this.roles,
+      states: this.states.map((s) => ({ n: s[0], g: s[1], d: s[2], tk: s[3], r: s[4] })),
+      glimRow: this.el("div", { display: "flex", gap: 30, alignItems: "flex-end", flexWrap: "wrap" },
+        ...glimStates.map((st) => this.labeled(this.glimFig(st, 1.15), st.n + " \u2014 " + st.note))),
+      showAnimationLibrary: this.props.showAnimationLibrary ?? true,
+      showExpressionSheets: this.props.showExpressionSheets ?? true
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;padding:0;background:#ECE8DF;}
+  a{color:#A03F27;} a:hover{color:#7E301D;}
+  *{-webkit-tap-highlight-color:transparent;}
+</style>
+</helmet>
+<div style="padding:48px 64px 90px;font-family:'Source Sans 3',sans-serif;color:#31281C;">
+  <div style="margin-bottom:24px;max-width:860px;">
+    <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#8A8375;">Little Learner's Club — Phase 9 · parent experience</div>
+    <h1 style="font:600 32px/1.2 'Source Serif 4',Georgia,serif;margin:10px 0 10px;">The grown-up side</h1>
+    <p style="font-size:14.5px;line-height:1.6;color:#6E6252;margin:0;">Same brand, quieter register. The parent surface trades characters and playful motion for calm editorial layout, plain language, and fast, functional transitions — while sharing every token with the child app. It answers a few questions and never scores a child. Pick any screen; switch phone / tablet; flip the data state. Vocabulary is fixed to <strong>Practised · Exploring · Ready to review · Try together</strong> — no goodness, politeness, behavior, or obedience score exists anywhere in the type system.</p>
+  </div>
+
+  <div style="display:flex;gap:36px;align-items:flex-start;">
+    <div style="flex:none;width:640px;display:flex;justify-content:center;">
+      <div style="width:{{ frameW }};height:{{ frameH }};border-radius:{{ frameR }};border:9px solid #26221C;background:#FAF3E7;overflow:hidden;position:relative;box-shadow:0 20px 50px rgba(47,41,37,.28);box-sizing:border-box;">
+        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:{{ notchW }};height:26px;background:#26221C;border-radius:0 0 16px 16px;z-index:40;"></div>
+        <div style="position:absolute;inset:0;">{{ screenView }}</div>
+      </div>
+    </div>
+    <div style="flex:1;max-width:440px;">
+      <div style="background:#FFF;border:1px solid #E0DACC;border-radius:16px;padding:20px;">
+        <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A8375;margin-bottom:10px;">Set-up &amp; account</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <sc-for list="{{ groupSetup }}" as="j" hint-placeholder-count="4">
+            <button onClick="{{ j.go }}" style="font:600 12px/1 'Source Sans 3',sans-serif;background:{{ j.bg }};color:{{ j.fg }};border:1px solid #E4D7BF;border-radius:9px;padding:9px 12px;cursor:pointer;">{{ j.label }}</button>
+          </sc-for>
+        </div>
+        <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A8375;margin:16px 0 8px;">Dashboard</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <sc-for list="{{ groupDash }}" as="j" hint-placeholder-count="5">
+            <button onClick="{{ j.go }}" style="font:600 12px/1 'Source Sans 3',sans-serif;background:{{ j.bg }};color:{{ j.fg }};border:1px solid #E4D7BF;border-radius:9px;padding:9px 12px;cursor:pointer;">{{ j.label }}</button>
+          </sc-for>
+        </div>
+        <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A8375;margin:16px 0 8px;">Manage &amp; safety</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <sc-for list="{{ groupManage }}" as="j" hint-placeholder-count="6">
+            <button onClick="{{ j.go }}" style="font:600 12px/1 'Source Sans 3',sans-serif;background:{{ j.bg }};color:{{ j.fg }};border:1px solid #E4D7BF;border-radius:9px;padding:9px 12px;cursor:pointer;">{{ j.label }}</button>
+          </sc-for>
+        </div>
+        <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A8375;margin:16px 0 8px;">Device &amp; data state</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+          <div style="display:inline-flex;background:#F0E6D2;border-radius:9px;padding:3px;">
+            <button onClick="{{ setPhone }}" style="font:600 12px/1 'Source Sans 3',sans-serif;background:{{ phoneBg }};color:{{ phoneFg }};border:none;border-radius:7px;padding:8px 12px;cursor:pointer;">Phone</button>
+            <button onClick="{{ setTablet }}" style="font:600 12px/1 'Source Sans 3',sans-serif;background:{{ tabletBg }};color:{{ tabletFg }};border:none;border-radius:7px;padding:8px 12px;cursor:pointer;">Tablet</button>
+          </div>
+          <sc-for list="{{ stateJumps }}" as="j" hint-placeholder-count="4">
+            <button onClick="{{ j.go }}" style="font:600 12px/1 'Source Sans 3',sans-serif;background:{{ j.bg }};color:{{ j.fg }};border:1px solid #E4D7BF;border-radius:9px;padding:9px 12px;cursor:pointer;">{{ j.label }}</button>
+          </sc-for>
+        </div>
+        <div style="font-size:12px;line-height:1.6;color:#8A8375;margin-top:12px;">{{ hint }}</div>
+      </div>
+      <div style="background:#FAF3E7;border:1px solid #E4D7BF;border-radius:16px;padding:18px;margin-top:16px;">
+        <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A8375;margin-bottom:8px;">Now showing</div>
+        <div style="font:600 17px/1.3 'Source Serif 4',Georgia,serif;">{{ nowTitle }}</div>
+        <div style="font-size:13px;line-height:1.55;color:#5C554A;margin-top:6px;">{{ nowDesc }}</div>
+      </div>
+      <div style="background:#FFF;border:1px solid #E0DACC;border-radius:16px;padding:18px;margin-top:16px;">
+        <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A8375;margin-bottom:8px;">Parental gate &amp; safe return</div>
+        <div style="font-size:12.5px;line-height:1.6;color:#5C554A;">Any exit to the open web or a purchase sits behind the <strong>“Ask a grown-up”</strong> gate — a written multi-step answer a young child can't tap through. The child area has <strong>no link to account, billing, or settings</strong>; a parent opens the learning area from the dashboard and leaves through the same gate. Open <strong>Subscription</strong> or <strong>Safe return</strong> to see it.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  state = { screen: "onboarding", data: "normal", device: "phone", child: 0, obStep: 0, gate: null, gateVal: "", toast: null, navTab: "progress" };
+
+  INK = "#31281C"; SOFT = "#6E6252"; FAINT = "#8A8375"; CANVAS = "#FAF3E7"; SURFACE = "#FFFDF8"; PAPER = "#F0E6D2";
+  BORDER = "#E4D7BF"; BRAND = "#BE5136"; SAGE = "#587F70"; SAGES = "#3F6A5D"; TINT = "#E7EEE7";
+  HONEY = "#C98F2E"; DANGER = "#A34141"; SAND = "#F3ECDD";
+  EASE = "cubic-bezier(.22,.61,.36,1)";
+
+  children = [
+    { name: "Ava", band: "6\u20137", tint: "#F4DED6", ink: "#B0492F" },
+    { name: "Ben", band: "5", tint: "#DDE9E5", ink: "#3F6A5D" }
+  ];
+
+  e(t, s, ...c) { return React.createElement(t, s ? { style: s } : null, ...c); }
+  eP(t, p, ...c) { return React.createElement(t, p, ...c); }
+  set(p) { this.setState(p); }
+  go(screen) { this.setState({ screen }); }
+  tablet() { return this.state.device === "tablet"; }
+  toast(msg) { this.setState({ toast: msg }); setTimeout(() => this.setState((s) => (s.toast === msg ? { toast: null } : {})), 2400); }
+
+  anim(node, key) {
+    return this.eP("div", { key: key, style: { position: "absolute", inset: 0, background: this.CANVAS },
+      ref: (el) => { if (el) el.animate([{ opacity: 0, transform: "translateY(5px)" }, { opacity: 1, transform: "none" }], { duration: 150, easing: this.EASE, fill: "both" }); } }, node);
+  }
+
+  avatar(c, size) {
+    return this.e("div", { width: size, height: size, borderRadius: "50%", background: c.tint, color: c.ink, display: "flex", alignItems: "center", justifyContent: "center", font: "700 " + Math.round(size * 0.42) + "px/1 'Source Sans 3',sans-serif", flex: "none" }, c.name[0]);
+  }
+  card(children, pad) { return this.e("div", { background: this.SURFACE, border: "1px solid " + this.BORDER, borderRadius: 16, padding: pad == null ? 15 : pad }, children); }
+  eyebrow(t, c) { return this.e("div", { font: "600 10px/1.3 'Source Sans 3',sans-serif", letterSpacing: ".08em", textTransform: "uppercase", color: c || this.SAGES, marginBottom: 6 }, t); }
+  h(t, sz) { return this.e("div", { font: "600 " + (sz || 20) + "px/1.25 'Source Serif 4',Georgia,serif" }, t); }
+  primary(label, onClick) { return this.eP("button", { onClick, style: { width: "100%", background: this.BRAND, color: this.SURFACE, font: "600 14px/1 'Source Sans 3',sans-serif", border: "none", borderRadius: 12, padding: "13px 18px", cursor: "pointer" } }, label); }
+  quiet(label, onClick, danger) { return this.eP("button", { onClick, style: { width: "100%", background: "transparent", color: danger ? this.DANGER : this.SOFT, font: "600 13px/1 'Source Sans 3',sans-serif", border: "1px solid " + (danger ? "#E3C9C9" : this.BORDER), borderRadius: 12, padding: 12, cursor: "pointer" } }, label); }
+  chip(word) {
+    const map = { Practised: [this.TINT, this.SAGES], Exploring: ["#F6EBD3", "#8A5A1C"], "Ready to review": ["#E3E9EE", "#4A6076"], "Not started yet": [this.PAPER, this.FAINT] };
+    const c = map[word] || map["Not started yet"];
+    return this.e("div", { display: "inline-block", background: c[0], color: c[1], font: "600 10.5px/1 'Source Sans 3',sans-serif", borderRadius: 6, padding: "5px 8px" }, word);
+  }
+  row(children) { return this.e("div", { display: "flex", flexDirection: "column", gap: 12 }, ...children); }
+
+  // ---------- shell ----------
+  shell(title, bodyNodes, opts) {
+    const e = this.e.bind(this);
+    const o = opts || {}, tablet = this.tablet();
+    const topbar = e("div", { display: "flex", alignItems: "center", gap: 10, padding: tablet ? "16px 22px" : "14px 16px", borderBottom: "1px solid " + this.BORDER, background: this.SURFACE, flex: "none" },
+      o.back ? this.eP("button", { onClick: o.back, "aria-label": "Back", style: { background: "none", border: "none", cursor: "pointer", fontSize: 20, color: this.SOFT, padding: 0 } }, "\u2039") : null,
+      e("div", { font: "600 15px/1.2 'Source Serif 4',Georgia,serif", flex: 1 }, title),
+      o.hideChip ? null : e("div", { fontSize: 11, color: this.FAINT, background: this.PAPER, borderRadius: 20, padding: "5px 11px" }, "For grown-ups"));
+    const content = e("div", { flex: 1, overflow: "auto", padding: tablet ? "20px 24px" : "16px", minHeight: 0, position: "relative" }, this.row(bodyNodes), this.toastEl());
+    if (tablet && !o.noNav) {
+      return e("div", { position: "absolute", inset: 0, background: this.CANVAS, paddingTop: 34, boxSizing: "border-box", display: "flex", flexDirection: "column" },
+        e("div", { display: "flex", flex: 1, minHeight: 0 }, this.railNav(),
+          e("div", { flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }, topbar, content)));
+    }
+    return e("div", { position: "absolute", inset: 0, background: this.CANVAS, paddingTop: 34, boxSizing: "border-box", display: "flex", flexDirection: "column" },
+      topbar, content, o.noNav ? null : this.navBar());
+  }
+  toastEl() {
+    if (!this.state.toast) return null;
+    return this.eP("div", { key: this.state.toast, style: { position: "absolute", left: 12, right: 12, bottom: 12, background: this.SAGES, color: this.SURFACE, borderRadius: 12, padding: "12px 14px", font: "600 12.5px/1.4 'Source Sans 3',sans-serif", display: "flex", alignItems: "center", gap: 8, boxShadow: "0 8px 24px rgba(47,41,37,.2)" },
+      ref: (el) => { if (el) el.animate([{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 150, easing: this.EASE, fill: "both" }); } },
+      this.e("div", { width: 16, height: 16, borderRadius: "50%", background: "rgba(255,255,255,.25)", textAlign: "center", font: "700 11px/16px 'Source Sans 3',sans-serif", flex: "none" }, "\u2713"), this.state.toast);
+  }
+  navItem(key, label, shape, go) {
+    const on = this.state.navTab === key;
+    return this.eP("button", { key: key, onClick: () => this.setState({ navTab: key, screen: go }), style: { background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4, flex: 1, padding: "8px 0" } },
+      this.e("div", Object.assign({ width: 20, height: 20, boxSizing: "border-box", border: on ? "none" : "2px solid #A0937E", background: on ? this.BRAND : "transparent" }, shape)),
+      this.e("div", { font: "600 10px/1 'Source Sans 3',sans-serif", color: on ? this.BRAND : "#A0937E" }, label));
+  }
+  navBar() {
+    return this.e("div", { display: "flex", padding: "0 12px 10px", background: this.SURFACE, borderTop: "1px solid " + this.BORDER, flex: "none" },
+      this.navItem("progress", "Progress", { borderRadius: 5 }, "progress"),
+      this.navItem("missions", "Missions", { borderRadius: "50% 50% 4px 4px" }, "mission"),
+      this.navItem("skills", "Skills", { borderRadius: 3, transform: "rotate(45deg)" }, "skills"),
+      this.navItem("account", "Account", { borderRadius: "50%" }, "privacy"));
+  }
+  railNav() {
+    const e = this.e.bind(this);
+    const item = (key, label, go) => {
+      const on = this.state.navTab === key;
+      return this.eP("button", { key: key, onClick: () => this.setState({ navTab: key, screen: go }), style: { display: "flex", alignItems: "center", gap: 10, background: on ? this.PAPER : "transparent", border: "none", borderRadius: 10, padding: "11px 13px", cursor: "pointer", width: "100%", textAlign: "left" } },
+        e("div", { width: 10, height: 10, borderRadius: key === "skills" ? 2 : key === "account" ? "50%" : 3, background: on ? this.BRAND : "#A0937E", transform: key === "skills" ? "rotate(45deg)" : "none", flex: "none" }),
+        e("div", { font: "600 13px/1 'Source Sans 3',sans-serif", color: on ? this.INK : this.SOFT }, label));
+    };
+    return e("div", { width: 178, flex: "none", background: this.SURFACE, borderRight: "1px solid " + this.BORDER, padding: "18px 12px", display: "flex", flexDirection: "column", gap: 4 },
+      e("div", { font: "600 15px/1.2 'Source Serif 4',Georgia,serif", padding: "0 10px 14px" }, "Little Learner's"),
+      item("progress", "Progress", "progress"), item("missions", "Missions", "mission"), item("skills", "Skills", "skills"), item("account", "Account", "privacy"));
+  }
+
+  childSelector(compact) {
+    const e = this.e.bind(this);
+    return e("div", { display: "flex", gap: 8, flexWrap: "wrap" },
+      ...this.children.map((c, i) => {
+        const on = this.state.child === i;
+        return this.eP("button", { key: i, role: "tab", "aria-selected": on, onClick: () => this.setState({ child: i }), style: { display: "flex", alignItems: "center", gap: 8, background: on ? this.SURFACE : "transparent", border: "1px solid " + (on ? this.INK : this.BORDER), borderRadius: 22, padding: "5px 12px 5px 5px", cursor: "pointer" } },
+          this.avatar(c, 28), e("div", { textAlign: "left" }, e("div", { font: "600 12.5px/1.1 'Source Sans 3',sans-serif", color: this.INK }, c.name), e("div", { fontSize: 10, color: this.FAINT }, "age " + c.band)));
+      }),
+      this.children.length < 3 ? this.eP("button", { key: "add", onClick: () => this.go("createProfile"), style: { display: "flex", alignItems: "center", gap: 6, background: "transparent", border: "1px dashed " + this.BORDER, borderRadius: 22, padding: "9px 14px", cursor: "pointer", color: this.SOFT, font: "600 12px/1 'Source Sans 3',sans-serif" } }, "+ Add child") : null);
+  }
+
+  // ================= SCREENS =================
+  viewOnboarding() {
+    const e = this.e.bind(this);
+    const steps = [
+      { eb: "Welcome", h: "Five-minute lessons that build social confidence.", b: "Little Learner's Club helps children 5\u20139 practise kindness, greetings, listening, and boundaries through short stories and real-world missions \u2014 with you alongside." },
+      { eb: "How it works", h: "Your child plays; you get the gist.", b: "Each lesson ends with a small offline mission to try together. You'll see what was practised and one gentle prompt to talk about \u2014 never a score or a ranking." },
+      { eb: "Safety first", h: "Politeness never overrides safety.", b: "Lessons teach that a child can always say no, set a boundary, and ask a trusted adult. You own the account and all the data; children never sign in on their own." }
+    ];
+    const s = steps[this.state.obStep], last = this.state.obStep === steps.length - 1;
+    return this.shell("Getting started", [
+      e("div", { display: "flex", gap: 6, marginBottom: 4 }, ...steps.map((_, i) => e("div", { key: i, flex: 1, height: 5, borderRadius: 3, background: i <= this.state.obStep ? this.SAGE : "#EDE3CC" }))),
+      e("div", { flex: 1 }),
+      this.eyebrow(s.eb),
+      this.h(s.h, 24),
+      e("div", { fontSize: 14, lineHeight: 1.6, color: this.SOFT, marginTop: 8 }, s.b),
+      e("div", { flex: 1 }),
+      this.primary(last ? "Create your account" : "Next", () => last ? this.go("welcome") : this.setState({ obStep: this.state.obStep + 1 })),
+      this.state.obStep > 0 ? this.eP("button", { onClick: () => this.setState({ obStep: this.state.obStep - 1 }), style: { background: "none", border: "none", color: this.SOFT, font: "600 13px/1 'Source Sans 3',sans-serif", cursor: "pointer", padding: 8 } }, "Back") : e("div", { fontSize: 12, color: this.FAINT, textAlign: "center", padding: 8 }, "Already have an account? Sign in")
+    ], { noNav: true, hideChip: true });
+  }
+
+  viewWelcome() {
+    const e = this.e.bind(this);
+    return this.shell("Your account", [
+      e("div", { flex: 1 }),
+      e("div", { display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: 12 },
+        e("div", { width: 64, height: 64, borderRadius: 18, background: this.PAPER, display: "flex", alignItems: "center", justifyContent: "center", font: "600 26px/1 'Source Serif 4',Georgia,serif", color: this.BRAND }, "\u2691"),
+        this.h("You're all set, Sam.", 23),
+        e("div", { fontSize: 14, lineHeight: 1.6, color: this.SOFT, maxWidth: 280 }, "This is the grown-up area. Add your first child to open their learning path \u2014 a nickname and an age band is all we ask.")),
+      e("div", { flex: 1 }),
+      this.card([this.eyebrow("Private by default"), e("div", { fontSize: 12.5, lineHeight: 1.55, color: this.SOFT }, "No child email, no birth date, no photos. You can export or delete everything at any time.")]),
+      this.primary("Add your first child", () => this.go("createProfile"))
+    ], { noNav: true });
+  }
+
+  viewCreateProfile() {
+    const e = this.e.bind(this);
+    const bands = ["5", "6\u20137", "8\u20139"];
+    return this.shell("Add a child", [
+      this.eyebrow("Child profile"),
+      this.h("Who's learning?", 22),
+      e("div", { fontSize: 13, color: this.SOFT, lineHeight: 1.5, marginTop: -2 }, "A nickname is fine \u2014 no full name, no birthday."),
+      this.card([
+        e("label", { style: { font: "600 11px/1.4 'Source Sans 3',sans-serif", color: this.FAINT, textTransform: "uppercase", letterSpacing: ".06em" } }, "Nickname"),
+        e("div", { marginTop: 6, border: "1px solid " + this.BORDER, borderRadius: 10, padding: "12px 12px", background: this.CANVAS, fontSize: 14, color: this.INK }, "Ava", e("span", { style: { display: "inline-block", width: 1, height: 15, background: this.SAGE, marginLeft: 1, verticalAlign: "middle" } })),
+        e("div", { marginTop: 14, font: "600 11px/1.4 'Source Sans 3',sans-serif", color: this.FAINT, textTransform: "uppercase", letterSpacing: ".06em" }, "Age band"),
+        e("div", { display: "flex", gap: 8, marginTop: 6 }, ...bands.map((b, i) => e("div", { key: i, style: { flex: 1, textAlign: "center", padding: "11px 0", borderRadius: 10, border: "1px solid " + (i === 1 ? this.INK : this.BORDER), background: i === 1 ? this.TINT : this.SURFACE, font: "600 13px/1 'Source Sans 3',sans-serif", color: this.INK } }, b)))
+      ]),
+      e("div", { fontSize: 12, color: this.FAINT, lineHeight: 1.5 }, "You can add up to three children. A fourth is blocked with a clear message \u2014 no upsell."),
+      e("div", { flex: 1 }),
+      this.primary("Save profile", () => { this.toast("Profile saved \u2014 Ava is ready"); this.go("progress"); }),
+      this.quiet("Cancel", () => this.go("welcome"))
+    ], { noNav: true, back: () => this.go("welcome") });
+  }
+
+  viewSelector() {
+    const e = this.e.bind(this);
+    return this.shell("Who are you checking on?", [
+      this.eyebrow("Child selector"),
+      this.h("Choose a child", 22),
+      e("div", { fontSize: 13, color: this.SOFT, lineHeight: 1.5 }, "One child at a time \u2014 the dashboard never lines siblings up for comparison."),
+      ...this.children.map((c, i) => this.eP("button", { key: i, onClick: () => { this.setState({ child: i }); this.go("progress"); }, style: { display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", background: this.SURFACE, border: "1px solid " + this.BORDER, borderRadius: 14, padding: 14, cursor: "pointer" } },
+        this.avatar(c, 42), e("div", { flex: 1 }, e("div", { font: "600 15px/1.2 'Source Sans 3',sans-serif" }, c.name), e("div", { fontSize: 12, color: this.FAINT, marginTop: 2 }, "age " + c.band + " \u00b7 Meeting People")), e("div", { color: this.FAINT, fontSize: 20 }, "\u203A"))),
+      this.children.length < 3 ? this.quiet("+ Add another child", () => this.go("createProfile")) : null
+    ], { noNav: true });
+  }
+
+  skillAreas() {
+    return [
+      { area: "Greetings", status: "Practised" }, { area: "Introducing", status: "Exploring" },
+      { area: "Including others", status: "Not started yet" }, { area: "Listening", status: "Ready to review" }
+    ];
+  }
+
+  viewProgress() {
+    const e = this.e.bind(this), c = this.children[this.state.child];
+    if (this.state.data === "loading") {
+      const sk = (w, h) => e("div", { height: h || 12, width: w, borderRadius: 6, background: this.PAPER });
+      return this.shell("Progress", [this.childSelector(), this.card([sk("40%", 12), e("div", { height: 8 }), sk("90%", 12), e("div", { height: 6 }), sk("70%", 12)]), this.card([sk("50%"), e("div", { height: 8 }), sk("80%")]), e("div", { role: "status", "aria-live": "polite", fontSize: 12, color: this.FAINT, textAlign: "center" }, "Loading Ava's progress\u2026")]);
+    }
+    if (this.state.data === "error") {
+      return this.shell("Progress", [this.childSelector(), e("div", { flex: 1 }), e("div", { role: "alert", style: { textAlign: "center", padding: "10px 0" } }, this.eyebrow("Couldn't load", this.SOFT), this.h("That didn't load just now.", 20), e("div", { fontSize: 13, color: this.SOFT, lineHeight: 1.5, marginTop: 8, maxWidth: 260, marginLeft: "auto", marginRight: "auto" }, "Nothing is lost. Check your connection and try again.")), e("div", { flex: 1 }), this.primary("Try again", () => this.setState({ data: "normal" }))]);
+    }
+    if (this.state.data === "empty") {
+      return this.shell("Progress", [this.childSelector(), e("div", { flex: 1 }), e("div", { textAlign: "center", padding: "10px 0" }, e("div", { width: 52, height: 52, borderRadius: 14, background: this.PAPER, margin: "0 auto 14px", display: "flex", alignItems: "center", justifyContent: "center", font: "600 22px/1 'Source Serif 4',Georgia,serif", color: this.SAGE }, "\u2740"), this.h("Nothing here yet for " + c.name + ".", 20), e("div", { fontSize: 13, color: this.SOFT, lineHeight: 1.55, marginTop: 8, maxWidth: 270, marginLeft: "auto", marginRight: "auto" }, "When " + c.name + " opens a lesson, what they practise and this week's mission will appear here.")), e("div", { flex: 1 }), this.primary("Open the learning area", () => this.go("safeReturn"))]);
+    }
+    return this.shell("Progress", [
+      this.childSelector(),
+      this.card([
+        e("div", { display: "flex", justifyContent: "space-between", alignItems: "baseline" }, this.eyebrow("Meeting People", this.SAGES), e("div", { fontSize: 11.5, color: this.FAINT }, "3 of 8 practised")),
+        e("div", { height: 8, borderRadius: 4, background: "#EFE3CC", overflow: "hidden", margin: "9px 0 10px" }, e("div", { width: "37%", height: "100%", background: this.SAGE, borderRadius: 4 })),
+        e("div", { fontSize: 12.5, color: this.SOFT, lineHeight: 1.5 }, "Describes the lessons practised \u2014 not the child.")
+      ]),
+      e("div", { display: this.tablet() ? "grid" : "flex", gridTemplateColumns: this.tablet() ? "1fr 1fr" : null, flexDirection: this.tablet() ? null : "column", gap: 12 },
+        e("div", null, this.card([this.eyebrow("Next up", this.SAGES), e("div", { font: "600 15px/1.3 'Source Serif 4',Georgia,serif", marginTop: 2 }, "Introducing yourself"), e("div", { fontSize: 12, color: this.SOFT, marginTop: 4 }, "Ava's next available lesson."), e("div", { marginTop: 10 }, this.chip("Exploring"))])),
+        e("div", null, this.card([this.eyebrow("Last used", this.SAGES), e("div", { font: "600 15px/1.3 'Source Serif 4',Georgia,serif", marginTop: 2 }, "Today"), e("div", { fontSize: 12, color: this.SOFT, marginTop: 4 }, "When Ava last opened a lesson."), e("div", { marginTop: 10, fontSize: 12, color: this.FAINT } , "Never phrased as a telling-off.")]))
+      ),
+      this.eP("button", { onClick: () => this.go("mission"), style: { textAlign: "left", background: this.SAND, border: "1px solid " + this.BORDER, borderRadius: 16, padding: 15, cursor: "pointer", width: "100%" } }, this.eyebrow("Current mission", "#8A5A1C"), e("div", { font: "600 15px/1.35 'Source Serif 4',Georgia,serif", marginTop: 2 }, "Say hello to one person at the park."), e("div", { fontSize: 12, color: this.SOFT, marginTop: 6 }, "Try together \u00b7 tap to mark practised \u203A")),
+      this.eP("button", { onClick: () => this.go("prompt"), style: { textAlign: "left", background: this.SURFACE, border: "1px solid " + this.BORDER, borderRadius: 16, padding: 15, cursor: "pointer", width: "100%" } }, this.eyebrow("Worth talking about", "#8A5A1C"), e("div", { fontSize: 13, color: this.SOFT, lineHeight: 1.5, marginTop: 2 }, "Ava chose a quiet arrival at the party \u2014 not wrong, worth a chat."), e("div", { font: "italic 600 14px/1.5 'Source Serif 4',Georgia,serif", marginTop: 6 }, "\u201CWhen does a quiet hello work best?\u201D")),
+      this.eP("button", { onClick: () => this.go("skills"), style: { textAlign: "left", background: this.SURFACE, border: "1px solid " + this.BORDER, borderRadius: 16, padding: 15, cursor: "pointer", width: "100%" } }, this.eyebrow("Recent skills practised", this.SAGES), e("div", { display: "flex", flexWrap: "wrap", gap: 6, marginTop: 4 }, this.chip("Practised"), e("span", { style: { fontSize: 12.5, color: this.SOFT, alignSelf: "center" } }, "Greetings"), e("span", { style: { fontSize: 12.5, color: this.FAINT, alignSelf: "center" } }, "\u00b7 Introducing \u00b7 Listening"))),
+      e("div", { fontSize: 11.5, color: this.FAINT, textAlign: "center", lineHeight: 1.5 }, "No score, grade, streak, or ranking \u2014 ever.")
+    ]);
+  }
+
+  viewMission() {
+    const e = this.e.bind(this);
+    return this.shell("Current mission", [
+      this.eyebrow("Try together", "#8A5A1C"),
+      this.h("This week's mission", 21),
+      e("div", { position: "relative" }, e("div", { position: "absolute", left: 6, top: 6, right: -6, bottom: -6, background: this.PAPER, borderRadius: 16 }),
+        e("div", { position: "relative", background: this.SURFACE, border: "1px solid " + this.BORDER, borderRadius: 16, padding: 16 },
+          e("div", { font: "600 16px/1.35 'Source Serif 4',Georgia,serif" }, "Greet one person you don't know well."), e("div", { fontSize: 13, color: this.SOFT, lineHeight: 1.55, marginTop: 6 }, "A wave, a nod, or a hello card all count. From the \u201CSaying Hello\u201D lesson."))),
+      this.card([this.eyebrow("A prompt for afterwards"), e("div", { fontSize: 13.5, lineHeight: 1.5, color: this.INK }, "Ask Ava what she noticed on the other person's face.")]),
+      e("div", { flex: 1 }),
+      this.primary("Mark practised together", () => { this.toast("Nice \u2014 marked practised"); }),
+      this.quiet("Not yet", () => this.toast("No problem \u2014 it'll wait"))
+    ]);
+  }
+
+  viewSkills() {
+    const e = this.e.bind(this);
+    return this.shell("Skills", [
+      this.eyebrow("Recent skills practised", this.SAGES),
+      this.h("What Ava has been practising", 20),
+      e("div", { fontSize: 12.5, color: this.SOFT, lineHeight: 1.5 }, "These describe the lessons, not Ava."),
+      ...this.skillAreas().map((s, i) => e("div", { key: i, style: { display: "flex", alignItems: "center", justifyContent: "space-between", background: this.SURFACE, border: "1px solid " + this.BORDER, borderRadius: 12, padding: "12px 14px" } }, e("div", { font: "600 13.5px/1.2 'Source Sans 3',sans-serif" }, s.area), this.chip(s.status))),
+      this.card([this.eyebrow("Ready to review", "#4A6076"), e("div", { fontSize: 13, color: this.SOFT, lineHeight: 1.5, marginTop: 2 }, "Listening has been through once. A gentle revisit can help it stick."), e("div", { marginTop: 10 }, this.eP("button", { onClick: () => this.go("review"), style: { background: this.TINT, color: this.SAGES, border: "none", borderRadius: 10, padding: "9px 13px", font: "600 12px/1 'Source Sans 3',sans-serif", cursor: "pointer" } }, "See what's ready \u203A"))])
+    ]);
+  }
+
+  viewReview() {
+    const e = this.e.bind(this);
+    return this.shell("Ready to review", [
+      this.eyebrow("Ready to review", "#4A6076"),
+      this.h("A good moment to revisit", 20),
+      e("div", { fontSize: 13, color: this.SOFT, lineHeight: 1.5 }, "Lessons Ava has been through once. Replaying is encouraged and never re-locks anything."),
+      ...[{ t: "Listening while someone speaks", m: "Practised 4 days ago" }, { t: "Saying hello", m: "Practised today" }].map((r, i) => e("div", { key: i, style: { display: "flex", alignItems: "center", gap: 12, background: this.SURFACE, border: "1px solid " + this.BORDER, borderRadius: 12, padding: 13 } }, e("div", { width: 34, height: 34, borderRadius: "50%", background: "#E3E9EE", flex: "none", display: "flex", alignItems: "center", justifyContent: "center", color: "#4A6076", font: "700 13px/1 'Source Sans 3',sans-serif" }, "\u21BA"), e("div", { flex: 1 }, e("div", { font: "600 13px/1.2 'Source Sans 3',sans-serif" }, r.t), e("div", { fontSize: 11.5, color: this.FAINT, marginTop: 2 }, r.m)), this.chip("Ready to review"))),
+      e("div", { fontSize: 11.5, color: this.FAINT, lineHeight: 1.5, textAlign: "center" }, "Try together: revisit one of these side by side.")
+    ]);
+  }
+
+  viewPrompt() {
+    const e = this.e.bind(this);
+    return this.shell("Worth talking about", [
+      this.eyebrow("Suggested conversation", "#8A5A1C"),
+      this.h("One thing worth a chat", 21),
+      this.card([
+        e("div", { fontSize: 13, color: this.SOFT, lineHeight: 1.55 }, "In \u201CSaying Hello\u201D, Ava chose to arrive quietly at the party. That works in some rooms \u2014 it isn't a wrong answer."),
+        e("div", { font: "italic 600 16px/1.5 'Source Serif 4',Georgia,serif", color: this.INK, marginTop: 10, paddingLeft: 12, borderLeft: "3px solid " + this.SAGE }, "\u201CWhen you walk into a room full of people, when does a quiet hello feel right \u2014 and when might a bigger one help?\u201D")
+      ]),
+      e("div", { fontSize: 12.5, color: this.SOFT, lineHeight: 1.5 }, "This looks back only at moments Ava wanted more context \u2014 never a list of everything she picked. It's a conversation starter, framed as \u201Ctry together,\u201D not a correction."),
+      e("div", { flex: 1 }),
+      this.primary("Mark as talked about", () => this.toast("Saved \u2014 nice one"))
+    ]);
+  }
+
+  viewPrivacy() {
+    const e = this.e.bind(this);
+    const toggle = (label, sub, on) => e("div", { display: "flex", alignItems: "center", gap: 12, padding: "12px 0", borderBottom: "1px solid #EFE3CC" }, e("div", { flex: 1 }, e("div", { font: "600 13.5px/1.3 'Source Sans 3',sans-serif" }, label), e("div", { fontSize: 12, color: this.FAINT, marginTop: 2, lineHeight: 1.4 }, sub)), e("div", { width: 42, height: 24, borderRadius: 12, background: on ? this.SAGE : "#D8CDB6", position: "relative", flex: "none" }, e("div", { position: "absolute", top: 2, left: on ? 20 : 2, width: 20, height: 20, borderRadius: "50%", background: this.SURFACE, transition: "left .12s" })));
+    return this.shell("Account & privacy", [
+      this.eyebrow("Privacy controls"),
+      this.card([toggle("Product emails", "Occasional progress summaries.", true), toggle("Usage analytics", "First-party only. No ad tracking, ever.", false), e("div", { style: { paddingTop: 12 } }, this.eP("button", { onClick: () => this.toast("Preferences saved"), style: { background: this.SAGE, color: this.SURFACE, border: "none", borderRadius: 10, padding: "10px 14px", font: "600 12.5px/1 'Source Sans 3',sans-serif", cursor: "pointer" } }, "Save preferences"))]),
+      this.eyebrow("Your data"),
+      this.card([e("div", { display: "flex", flexDirection: "column", gap: 10 },
+        e("div", { display: "flex", justifyContent: "space-between", alignItems: "center" }, e("div", { fontSize: 13 }, "Export a copy of your data"), this.eP("button", { onClick: () => this.toast("Export on its way to your email"), style: { background: "transparent", border: "1px solid " + this.BORDER, borderRadius: 9, padding: "8px 11px", font: "600 12px/1 'Source Sans 3',sans-serif", cursor: "pointer", color: this.INK } }, "Export")),
+        e("div", { display: "flex", justifyContent: "space-between", alignItems: "center" }, e("div", { fontSize: 13 }, "Delete a child's progress"), this.eP("button", { onClick: () => this.go("deleteChild"), style: { background: "transparent", border: "1px solid " + this.BORDER, borderRadius: 9, padding: "8px 11px", font: "600 12px/1 'Source Sans 3',sans-serif", cursor: "pointer", color: this.INK } }, "Manage")))]),
+      this.eyebrow("Danger zone", this.DANGER),
+      e("div", { display: "flex", flexDirection: "column", gap: 8 }, this.quiet("Delete a child profile", () => this.go("deleteChild"), true), this.quiet("Delete my account", () => this.go("deleteAccount"), true)),
+      e("div", { style: { paddingTop: 4 } }, this.eyebrow("Plan"), this.eP("button", { onClick: () => this.go("subscription"), style: { textAlign: "left", width: "100%", background: this.SURFACE, border: "1px solid " + this.BORDER, borderRadius: 14, padding: 14, cursor: "pointer" } }, e("div", { display: "flex", justifyContent: "space-between", alignItems: "center" }, e("div", null, e("div", { font: "600 13.5px/1.2 'Source Sans 3',sans-serif" }, "Free beta"), e("div", { fontSize: 12, color: this.FAINT, marginTop: 2 }, "Manage subscription")), e("div", { color: this.FAINT, fontSize: 20 }, "\u203A"))))
+    ]);
+  }
+
+  confirmScreen(kind) {
+    const e = this.e.bind(this);
+    const del = kind === "account"
+      ? { title: "Delete account", h: "Delete your account?", b: "This removes your account, every child profile, and all progress and missions. This can't be undone.", confirm: "Delete everything", extra: "Prefer to pause instead? You can just sign out." }
+      : { title: "Delete profile", h: "Delete " + this.children[this.state.child].name + "'s profile?", b: "This removes " + this.children[this.state.child].name + "'s profile and their lesson progress and missions. Your other children aren't affected.", confirm: "Delete profile", extra: "You can also delete just the progress and keep the profile." };
+    return this.shell(del.title, [
+      e("div", { width: 48, height: 48, borderRadius: 14, background: "#F3E0E0", display: "flex", alignItems: "center", justifyContent: "center", color: this.DANGER, font: "700 20px/1 'Source Sans 3',sans-serif" }, "!"),
+      this.h(del.h, 20),
+      e("div", { fontSize: 13.5, color: this.SOFT, lineHeight: 1.6 }, del.b),
+      this.card([e("div", { fontSize: 12.5, color: this.SOFT, lineHeight: 1.5 }, del.extra)]),
+      e("div", { flex: 1 }),
+      this.eP("button", { onClick: () => { this.toast(kind === "account" ? "Account scheduled for deletion" : "Profile deleted"); this.go(kind === "account" ? "welcome" : "privacy"); }, style: { width: "100%", background: this.DANGER, color: this.SURFACE, border: "none", borderRadius: 12, padding: 13, font: "600 14px/1 'Source Sans 3',sans-serif", cursor: "pointer" } }, del.confirm),
+      this.quiet("Keep it \u2014 go back", () => this.go("privacy"))
+    ], { noNav: true, back: () => this.go("privacy") });
+  }
+
+  viewSubscription() {
+    const e = this.e.bind(this);
+    return this.shell("Subscription", [
+      this.eyebrow("Plan"),
+      this.h("Family membership", 22),
+      e("div", { fontSize: 13, color: this.SOFT, lineHeight: 1.5 }, "One plan for the whole family. Placeholder pricing \u2014 billing isn't live in the beta."),
+      this.card([
+        e("div", { display: "flex", justifyContent: "space-between", alignItems: "baseline" }, e("div", { font: "600 17px/1.2 'Source Serif 4',Georgia,serif" }, "Family"), e("div", null, e("span", { style: { font: "600 20px/1 'Source Serif 4',Georgia,serif" } }, "$—"), e("span", { style: { fontSize: 12, color: this.FAINT } }, " / month"))),
+        e("div", { height: 1, background: "#EFE3CC", margin: "12px 0" }),
+        ...["Up to 3 children", "All modules as they ship", "Offline missions & parent prompts", "Cancel anytime"].map((t, i) => e("div", { key: i, style: { display: "flex", gap: 8, alignItems: "center", padding: "4px 0", fontSize: 13, color: this.INK } }, e("div", { width: 16, height: 16, borderRadius: "50%", background: this.TINT, color: this.SAGES, textAlign: "center", font: "700 10px/16px 'Source Sans 3',sans-serif", flex: "none" }, "\u2713"), t))
+      ]),
+      e("div", { display: "flex", gap: 8, alignItems: "flex-start", background: this.SAND, border: "1px solid " + this.BORDER, borderRadius: 12, padding: 12 }, e("div", { width: 20, height: 20, borderRadius: 6, background: this.PAPER, color: "#8A5A1C", textAlign: "center", font: "700 12px/20px 'Source Sans 3',sans-serif", flex: "none" }, "\u2691"), e("div", { fontSize: 12, color: "#8A5A1C", lineHeight: 1.5 }, "Purchases open the \u201CAsk a grown-up\u201D gate before any payment screen.")),
+      e("div", { flex: 1 }),
+      this.primary("Continue to payment", () => this.setState({ gate: "purchase" }))
+    ]);
+  }
+
+  viewSafeReturn() {
+    const e = this.e.bind(this);
+    return this.shell("Safe return", [
+      this.eyebrow("Leaving the child area"),
+      this.h("How a grown-up gets back", 21),
+      e("div", { position: "relative", height: 150, borderRadius: 16, overflow: "hidden", border: "1px solid " + this.BORDER, background: this.TINT },
+        e("div", { position: "absolute", left: 0, right: 0, bottom: 0, height: 42, background: this.PAPER, borderTop: "2px solid " + this.INK }),
+        e("div", { position: "absolute", left: 20, bottom: 30, width: 42, height: 42, borderRadius: 12, border: "4px solid " + this.SAGE, borderBottom: "none", borderRadius: "21px 21px 0 0" }),
+        e("div", { position: "absolute", right: 16, top: 14, background: this.SURFACE, border: "1px solid " + this.BORDER, borderRadius: 10, padding: "8px 10px", font: "600 11px/1.3 'Source Sans 3',sans-serif", color: this.INK }, "Child area \u00b7 Hello Garden")),
+      e("div", { fontSize: 13.5, color: this.SOFT, lineHeight: 1.6 }, "Inside the learning area there is no link to account, billing, or settings \u2014 a child can't wander into the grown-up side. Returning to the parent area opens the gate."),
+      e("div", { flex: 1 }),
+      this.primary("Exit to parent area", () => this.setState({ gate: "return" }))
+    ], { noNav: true });
+  }
+
+  gateOverlay() {
+    if (!this.state.gate) return null;
+    const e = this.e.bind(this);
+    const ok = this.state.gateVal.replace(/\s/g, "") === "12";
+    const purpose = this.state.gate === "purchase" ? "before payment" : "to leave the child area";
+    return this.eP("div", { key: "gate", style: { position: "absolute", inset: 0, background: "rgba(47,41,37,.4)", display: "flex", alignItems: "flex-end", zIndex: 60 },
+      ref: (el) => { if (el) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 130, easing: this.EASE, fill: "both" }); } },
+      e("div", { background: this.SURFACE, borderRadius: "20px 20px 0 0", padding: 20, width: "100%", boxSizing: "border-box" },
+        this.eyebrow("Ask a grown-up", "#8A5A1C"),
+        this.h("Quick check " + purpose, 19),
+        e("div", { fontSize: 13, color: this.SOFT, lineHeight: 1.5, marginTop: 6 }, "To continue, type the answer: what is seven plus five?"),
+        e("div", { display: "flex", gap: 10, marginTop: 12, alignItems: "center" },
+          this.eP("input", { value: this.state.gateVal, onChange: (ev) => this.setState({ gateVal: ev.target.value }), inputMode: "numeric", placeholder: "Type a number", style: { flex: 1, border: "1px solid " + this.BORDER, borderRadius: 10, padding: "12px 12px", font: "15px 'Source Sans 3',sans-serif", background: this.CANVAS, color: this.INK, outline: "none" } }),
+          this.eP("button", { onClick: () => { if (ok) { const g = this.state.gate; this.setState({ gate: null, gateVal: "" }); this.toast(g === "purchase" ? "Verified \u2014 opening payment" : "Verified \u2014 welcome back"); if (g === "return") this.go("progress"); } }, disabled: !ok, style: { background: ok ? this.BRAND : this.PAPER, color: ok ? this.SURFACE : "#A0937E", border: "none", borderRadius: 10, padding: "12px 16px", font: "600 13px/1 'Source Sans 3',sans-serif", cursor: ok ? "pointer" : "default" } }, "Continue")),
+        e("div", { fontSize: 11.5, color: this.FAINT, lineHeight: 1.5, marginTop: 10 }, "A written answer, not a bright button \u2014 hard for a young child to tap through by accident."),
+        this.eP("button", { onClick: () => this.setState({ gate: null, gateVal: "" }), style: { width: "100%", background: "transparent", border: "none", color: this.SOFT, font: "600 13px/1 'Source Sans 3',sans-serif", padding: 12, marginTop: 4, cursor: "pointer" } }, "Cancel")));
+  }
+
+  renderVals() {
+    const scr = this.state.screen;
+    const map = {
+      onboarding: this.viewOnboarding(), welcome: this.viewWelcome(), createProfile: this.viewCreateProfile(),
+      selector: this.viewSelector(), progress: this.viewProgress(), mission: this.viewMission(),
+      skills: this.viewSkills(), review: this.viewReview(), prompt: this.viewPrompt(), privacy: this.viewPrivacy(),
+      deleteChild: this.confirmScreen("child"), deleteAccount: this.confirmScreen("account"),
+      subscription: this.viewSubscription(), safeReturn: this.viewSafeReturn()
+    };
+    const view = this.e("div", { position: "absolute", inset: 0 }, this.anim(map[scr] || map.progress, scr + this.state.data + this.state.device + this.state.child + this.state.obStep), this.gateOverlay());
+    const btn = (defs) => defs.map(([s, label]) => ({ label, go: () => this.setState({ screen: s }), bg: scr === s ? this.BRAND : this.SURFACE, fg: scr === s ? this.SURFACE : this.INK }));
+    const tab = this.tablet();
+    const seg = (on) => ({ bg: on ? this.SURFACE : "transparent", fg: on ? this.INK : this.SOFT });
+    const meta = {
+      onboarding: ["Parent onboarding", "Three calm steps: what it is, how it works, safety first. Quiet motion, no characters."],
+      welcome: ["Account welcome", "First run after sign-up. Private-by-default reassurance, then add the first child."],
+      createProfile: ["Child-profile creation", "Nickname + age band only. Up to three children; a fourth is blocked kindly."],
+      selector: ["Child selector", "One child at a time — never a sibling comparison. Local to this view, doesn't change who's learning."],
+      progress: ["Progress overview", "The dashboard: progress, next up, current mission, worth-talking-about, recent skills, last used. No score anywhere."],
+      mission: ["Current offline mission", "This week's mission + a prompt for afterwards. 'Mark practised together' or 'Not yet'."],
+      skills: ["Recent skills practised", "Skill areas with Practised / Exploring / Ready to review — describing lessons, not the child."],
+      review: ["Ready to review", "Lessons been through once; revisiting is encouraged and never re-locks anything."],
+      prompt: ["Suggested conversation prompt", "One 'worth talking about' moment, framed as try-together — never a correction."],
+      privacy: ["Privacy controls", "Emails, analytics (first-party only), export, and the danger zone. Plan link included."],
+      deleteChild: ["Delete child profile", "Clear consequences, an offer to delete just progress, and a calm confirm."],
+      deleteAccount: ["Delete account", "Removes everything, undoable warning, sign-out offered as a gentler option."],
+      subscription: ["Subscription placeholder", "Family plan, placeholder pricing; 'Continue to payment' opens the parental gate."],
+      safeReturn: ["Safe return from child area", "No link to account/billing inside the child area; leaving opens the gate."]
+    }[scr] || ["", ""];
+    return {
+      screenView: view,
+      frameW: tab ? "620px" : "344px", frameH: tab ? "760px" : "710px", frameR: tab ? "34px" : "44px", notchW: tab ? "150px" : "120px",
+      groupSetup: btn([["onboarding", "Onboarding"], ["welcome", "Account welcome"], ["createProfile", "Create profile"], ["selector", "Child selector"]]),
+      groupDash: btn([["progress", "Progress"], ["mission", "Mission"], ["skills", "Skills"], ["review", "Ready to review"], ["prompt", "Conversation prompt"]]),
+      groupManage: btn([["privacy", "Privacy"], ["deleteChild", "Delete child"], ["deleteAccount", "Delete account"], ["subscription", "Subscription"], ["safeReturn", "Safe return"]]),
+      stateJumps: [["normal", "Normal"], ["empty", "Empty"], ["loading", "Loading"], ["error", "Error"]].map(([d, label]) => ({ label, go: () => this.setState({ screen: "progress", data: d }), bg: this.state.data === d && scr === "progress" ? this.BRAND : this.SURFACE, fg: this.state.data === d && scr === "progress" ? this.SURFACE : this.INK })),
+      setPhone: () => this.setState({ device: "phone" }), setTablet: () => this.setState({ device: "tablet" }),
+      phoneBg: seg(!tab).bg, phoneFg: seg(!tab).fg, tabletBg: seg(tab).bg, tabletFg: seg(tab).fg,
+      hint: "Data state applies to the Progress screen (normal / empty / loading / error); success shows as a quiet toast after actions. Tablet adds a left rail and two-column dashboard. Subscription and Safe return open the parental gate.",
+      nowTitle: meta[0], nowDesc: meta[1]
+    };
+  }
+}
+</script>
+</body>
+</html>

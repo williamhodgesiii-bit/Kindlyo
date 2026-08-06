@@ -109,3 +109,43 @@ export function SparkIcon(props: IconProps) {
     </Icon>
   );
 }
+
+/** Clubhouse / home destination. */
+export function HomeIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M3.5 11.5 12 4.5l8.5 7" />
+      <path d="M6 10.5V19h12v-8.5" />
+    </Icon>
+  );
+}
+
+/** Neighborhood map destination. */
+export function MapIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M12 21s6-5.2 6-10a6 6 0 1 0-12 0c0 4.8 6 10 6 10Z" />
+      <circle cx="12" cy="11" r="2.2" />
+    </Icon>
+  );
+}
+
+/** Progress destination: a rising line, never a score. */
+export function ProgressIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M4 4v16h16" />
+      <path d="M8 14l3-3 2 2 4-5" />
+    </Icon>
+  );
+}
+
+/** Missions destination: a small flag. */
+export function FlagIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M6 21V4" />
+      <path d="M6 5h11l-2.5 3.5L17 12H6" />
+    </Icon>
+  );
+}

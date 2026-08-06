@@ -1,7 +1,12 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { ChildAppShell } from "./ChildAppShell";
 import { ParentAppShell } from "./ParentAppShell";
+
+// ChildAppShell renders the BottomNav, which reads the current path.
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/learn",
+}));
 
 /**
  * The landmark contract, pinned at unit level.
@@ -82,12 +87,30 @@ describe("ChildAppShell", () => {
     );
   });
 
-  it("does not offer the child a menu of somewhere else to be", () => {
+  it("gives the child the Clubhouse / Map / Me bottom navigation", () => {
+    // The design gives the child area a persistent bottom nav
+    // (docs/design/COMPONENT_STATES.md §02) — the one menu that belongs here.
     render(
       <ChildAppShell>
         <p>Lesson content</p>
       </ChildAppShell>,
     );
-    expect(screen.queryByRole("navigation")).not.toBeInTheDocument();
+
+    const nav = screen.getByRole("navigation", { name: "Learning area" });
+    expect(nav).toBeInTheDocument();
+    for (const label of ["Clubhouse", "Map", "Me"]) {
+      expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
+    }
+  });
+
+  it("themes the surface when given a module id", () => {
+    const { container } = render(
+      <ChildAppShell moduleId="hello-garden">
+        <p>Lesson content</p>
+      </ChildAppShell>,
+    );
+    expect(
+      container.querySelector('[data-module="hello-garden"]'),
+    ).toBeInTheDocument();
   });
 });

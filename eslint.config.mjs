@@ -11,6 +11,8 @@ const config = [
       "playwright-report/**",
       "test-results/**",
       "next-env.d.ts",
+      // Design handoff bundle: reference docs + HTML/JS prototypes, not source.
+      "design_handoff_little_learners_club/**",
     ],
   },
   // `core-web-vitals` brings the accessibility (jsx-a11y) rules we rely on.

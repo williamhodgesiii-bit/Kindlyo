@@ -1,5 +1,6 @@
 "use client";
 
+import { ParentSurface } from "@/components/nav/ParentSurface";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useFamily } from "@/features/profiles/useFamily";
@@ -31,7 +32,12 @@ export function ParentArea() {
     );
   }
 
+  // Onboarding is intentionally nav-free (COMPONENT_STATES §4 "noNav").
   if (!family.onboarded) return <ParentOnboarding family={family} />;
 
-  return <ParentDashboard family={family} />;
+  return (
+    <ParentSurface>
+      <ParentDashboard family={family} />
+    </ParentSurface>
+  );
 }

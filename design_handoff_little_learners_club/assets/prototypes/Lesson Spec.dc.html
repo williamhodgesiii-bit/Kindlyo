@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;padding:0;background:#ECE8DF;}
+  a{color:#A03F27;} a:hover{color:#7E301D;}
+  code{font:12px ui-monospace,monospace;background:#F0E6D2;border-radius:4px;padding:1px 5px;}
+</style>
+</helmet>
+<div style="padding:56px 64px 96px;font-family:'Source Sans 3',sans-serif;color:#31281C;width:1420px;min-width:1420px;box-sizing:content-box;">
+  <div style="margin-bottom:28px;max-width:900px;">
+    <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#8A8375;">Little Learner's Club — Phase 7 · implementation specification</div>
+    <h1 style="font:600 32px/1.2 'Source Serif 4',Georgia,serif;margin:10px 0 12px;">Saying Hello — screen by screen</h1>
+    <p style="font-size:14.5px;line-height:1.6;color:#6E6252;margin:0;">The engineering companion to <a href="#">Lesson Prototype</a>. One card per screen: purpose, the components it composes (existing Kindlyo primitives named where they apply, <span style="color:#B0492F;font-weight:600;">new</span> where they must be built), layout &amp; responsive rules, interactions, states, motion tokens, reduced-motion, accessibility, and content rules. Everything references the Storybook Geometry tokens and Little Motions — no screen introduces a one-off value.</p>
+  </div>
+
+  <div data-screen-label="Conventions" style="background:#FFF;border:1px solid #E0DACC;border-radius:16px;padding:22px 26px;margin-bottom:24px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;">
+    <div>
+      <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A8375;margin-bottom:8px;">Breakpoints</div>
+      <div style="font-size:12.5px;line-height:1.7;color:#5C554A;"><code>phone</code> &lt; 600px — single column, bottom nav, one action in view.<br><code>tablet</code> ≥ 600px — lesson uses a two-pane split (scene ‖ interaction); chrome gets wider gutters (<code>space-12</code>).<br>No layout below 360px; nothing horizontally scrolls at 375 / 768 / 1024.</div>
+    </div>
+    <div>
+      <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A8375;margin-bottom:8px;">Global rules</div>
+      <div style="font-size:12.5px;line-height:1.7;color:#5C554A;">Touch targets ≥ 44×44 with ≥ <code>space-2</code> between. One <code>h1</code> per screen, no skipped levels. Focus moves to the step region on step change (not first render). Nothing is conveyed by color alone. No <code>correct/wrong/rude</code> anywhere.</div>
+    </div>
+    <div>
+      <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A8375;margin-bottom:8px;">Data (per child profile)</div>
+      <div style="font-size:12.5px;line-height:1.7;color:#5C554A;"><code>run</code> {stepIndex, choiceBySceneId, practiceOptionId} — version-strict.<br><code>completion</code> {at} — survives revisions.<br><code>missionStatus</code> — parent-set. No free-form child text is ever stored.</div>
+    </div>
+  </div>
+
+  <sc-for list="{{ screens }}" as="s" hint-placeholder-count="16">
+    <div data-screen-label="Screen spec" style="background:#FFF;border:1px solid #E0DACC;border-radius:18px;padding:26px;margin-bottom:20px;">
+      <div style="display:flex;align-items:baseline;gap:12px;border-bottom:1px solid #EFE3CC;padding-bottom:14px;margin-bottom:16px;">
+        <div style="font:700 13px/1 'Source Sans 3',sans-serif;background:#31281C;color:#FFF;border-radius:8px;padding:7px 10px;flex:none;">{{ s.no }}</div>
+        <h2 style="font:600 21px/1.2 'Source Serif 4',Georgia,serif;margin:0;">{{ s.name }}</h2>
+        <div style="font-size:12.5px;color:#6E6252;flex:1;">{{ s.purpose }}</div>
+        <div style="font:10px/1.4 ui-monospace,monospace;color:#8A8375;flex:none;">{{ s.stepRef }}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px 26px;">
+        <sc-for list="{{ s.fields }}" as="f" hint-placeholder-count="9">
+          <div>
+            <div style="font:600 10px/1.4 'Source Sans 3',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:{{ f.c }};margin-bottom:5px;">{{ f.k }}</div>
+            <div style="font-size:12.5px;line-height:1.6;color:#5C554A;">{{ f.v }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-for>
+
+  <div data-screen-label="Component inventory" style="background:#FFF;border:1px solid #E0DACC;border-radius:18px;padding:26px;">
+    <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#8A8375;">Component inventory for this lesson</div>
+    <p style="font-size:13px;line-height:1.6;color:#6E6252;margin:10px 0 16px;max-width:820px;">What already exists in <code>src/components</code> versus what this module needs built. Existing primitives are reused verbatim; new ones are additive and follow the same content contracts (no <code>correct</code> prop on choices, no <code>src</code> on avatars, no score fields).</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;">
+      <div>
+        <div style="font:600 12px/1.4 'Source Sans 3',sans-serif;color:#3D6B58;margin-bottom:8px;">Reuse as-is</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <sc-for list="{{ reuse }}" as="c" hint-placeholder-count="12">
+            <div style="font:11.5px/1.5 ui-monospace,monospace;color:#5C554A;background:#F4EFE4;border-radius:6px;padding:6px 8px;">{{ c }}</div>
+          </sc-for>
+        </div>
+      </div>
+      <div>
+        <div style="font:600 12px/1.4 'Source Sans 3',sans-serif;color:#B0492F;margin-bottom:8px;">Build new (spec'd above)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <sc-for list="{{ build }}" as="c" hint-placeholder-count="10">
+            <div style="font:11.5px/1.5 ui-monospace,monospace;color:#5C554A;background:#F6EBD3;border-radius:6px;padding:6px 8px;">{{ c }}</div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  K = { comp: "#3D6B58", layout: "#8A5A1C", motion: "#4A6076", a11y: "#B0492F", data: "#6E6252", int: "#31281C" };
+
+  screensData = [
+    { no: "01", name: "App launch", purpose: "Open calmly and set the tone before anything asks for input.", stepRef: "template n/a",
+      f: [["comp", "New: SplashScreen (wordmark + Glim dim_rest → glow). No shell."], ["layout", "Full-bleed canvas, centered stack. Identical phone/tablet, art scales."], ["int", "Any tap or 1.5s auto-advance → Clubhouse. Skippable always."], ["motion", "motion.intro (900ms) · ease.calm-scene · one fade+rise, no loop."], ["a11y", "Wordmark is the h1; 'Skip' reachable by keyboard; respects prefers-reduced-motion."], ["data", "Reads last-active profile to pick greeting; writes nothing."], ["reduced", "240ms opacity fade only; Glim static at dim_rest."], ["states", "Cold start only — not shown on resume from background."]] },
+    { no: "02", name: "Clubhouse home", purpose: "Home base: who's learning, what's next, today's mission.", stepRef: "child hub",
+      f: [["comp", "ChildAppShell · Card (continue) · ProgressBar · MissionCard · New: BottomNav, GlimBubble."], ["layout", "Scroll column; continue-card on a level-2 paper-offset. Bottom nav pinned. Tablet: same column, wider gutters, art larger."], ["int", "Continue-card → Learning path. Nav: Clubhouse / Map / Me. Mission is read-only here."], ["motion", "Continue-card enters motion.card (240ms) gentle-enter, +120ms after header."], ["a11y", "h1 = greeting; nav is a labelled landmark; each tab has a text label, not icon-only."], ["data", "Reads resume position + active mission from progress store."], ["reduced", "Card appears without rise; Glim bubble static."], ["states", "New profile → empty continue-card ('Start your first lesson'); no mission yet."]] },
+    { no: "03", name: "Neighborhood map", purpose: "Show the twelve worlds as one place; orient without pressure.", stepRef: "module select",
+      f: [["comp", "New: NeighborhoodMap, MapNode (state: current/next/later/hub). ChildAppShell."], ["layout", "Vertical node trail on phone; free 2D layout on tablet. Current node scrolls into center on mount."], ["int", "Tap current/next node → that module's path. Later nodes are information, not buttons."], ["motion", "Screen in motion.scene calm-scene; current node breathes once (idle_variant)."], ["a11y", "Nodes carry state in text ('Exploring · 1 of 8', 'up next', 'a little later') + shape, never hue alone."], ["data", "Reads per-module completion counts; hue is a static module token."], ["reduced", "No breathe; node states static."], ["states", "All-locked (new) shows Hello Garden available, rest 'a little later' — never a demerit."]] },
+    { no: "04", name: "Module introduction", purpose: "The six-beat arrival into a world (map → travel → landmark → moment → title → path).", stepRef: "intro formula",
+      f: [["comp", "New: ModuleIntro (sequenced scene player) reusing the scenery kit + character rig."], ["layout", "Full-bleed scene; title chip lower third. Same composition both devices, art scales."], ["int", "Auto-plays ≤8s; tap advances a beat; 'Skip intro' after first view (stored per module)."], ["motion", "Beats 1/6 motion.scene, 2/3 motion.intro, 4 motion.reaction, 5 motion.card — all named tokens."], ["a11y", "Fully narrated + captioned; each beat is a labelled region; skip is a real button."], ["data", "Writes hasSeenIntro[moduleId]; never blocks progress."], ["reduced", "Five still frames with the same narration; 'travel' = map-position change."], ["states", "First-visit (full) vs return (auto-skips to path)."]] },
+    { no: "05", name: "Learning path", purpose: "The eight lessons of Meeting People and where the child is.", stepRef: "path",
+      f: [["comp", "LearningPath.tsx · ProgressBar · ContentStatusBadge · PathNode (current/available/complete/locked/unwritten)."], ["layout", "Vertical list of nodes + connectors; sticky module header with back-to-map. Tablet: two columns of nodes."], ["int", "Available/current node → LessonRunner. Locked node renders a reason ('Finish lesson 2 first'), no press."], ["motion", "Nodes stagger in motion.card gentle-enter; complete→unlock uses soft-settle once."], ["a11y", "Draft badge visible; locked state in words + lock icon; one h1; heading outline intact."], ["data", "buildModulePath(module, getLesson, progress) — pure; completing unlocks the next only."], ["reduced", "No stagger; nodes appear together."], ["states", "locked · available · in-progress · complete · unwritten ('being written')."]] },
+    { no: "06", name: "Lesson · scene (situation + interaction)", purpose: "Establish the birthday scene and the characters calmly, before any choice.", stepRef: "template 1–4",
+      f: [["comp", "LessonShell · StoryPanel · New: SceneStage (kit + rig), AudioNarration."], ["layout", "Phone: scene fills upper area, narration bar below, one 'Carry on'. Tablet: scene ‖ narration/controls two-pane."], ["int", "'Carry on' advances. Narration play/pause/replay; CC toggles a transcript. Illustration is decorative."], ["motion", "Scene enters motion.scene calm-scene; characters idle; narration pauses ambient motion (Explain)."], ["a11y", "Narration carries the situation; picture is aria-hidden; captions available; focus lands on scene region."], ["data", "run.stepIndex; no choice recorded yet."], ["reduced", "Scene fades (240ms); characters use idle static; no ambient loops."], ["states", "Scene beats derived from lesson.scenes — a lesson with more beats gets more scene steps."]] },
+    { no: "07", name: "Lesson · choice", purpose: "Offer the three approaches; let the child tap and see, not be graded.", stepRef: "template 5–7",
+      f: [["comp", "ChoiceList + ChoiceCard (no correct prop, ever) · New: NonverbalNote."], ["layout", "Prompt (serif) + stacked choice cards; a persistent note offers wave/card. Tablet: cards beside the scene."], ["int", "Tap selects (aria-pressed + check, motion.ui soft-settle); a choice can be changed freely; 'Carry on' enabled only after a pick."], ["motion", "Cards enter one at a time motion.card +60ms stagger, after narration ends."], ["a11y", "Buttons in a labelled list, Tab+Enter; not radios (arrow keys would commit on explore). Selection = aria-pressed + icon."], ["data", "run.choiceBySceneId[sceneId] = optionId on select."], ["reduced", "Cards appear together; selection is a border/check swap."], ["states", "unselected · selected · (nonverbal mode reworded)."]] },
+    { no: "08", name: "Lesson · consequence", purpose: "Show a believable, gentle outcome for the chosen approach.", stepRef: "template 8–9",
+      f: [["comp", "InlineFeedback (helpful | mixed | needs-context) · SceneStage (consequence variant) · GlimBubble."], ["layout", "Inline below the choices — stays on screen (not a toast). Scene updates to reflect the choice."], ["int", "Read-only; Glim poses a question (never a verdict). Child may go back and try another choice."], ["motion", "Consequence card motion.reaction gentle-enter; needs-context adds a 200ms thoughtful hold. Character settles."], ["a11y", "role=status / aria-live=polite; tone = icon + text label + color, never color alone; identical motion weight across all three tones."], ["data", "Derived from consequenceType in content; nothing extra stored."], ["reduced", "240ms fade after the same hold; scene = state swap."], ["states", "helpful · mixed · needs_context — no failure state exists."]] },
+    { no: "09", name: "Lesson · principle", purpose: "State the one idea: a greeting lets people know you noticed them.", stepRef: "template 10",
+      f: [["comp", "PrincipleStepView · Glim (curious)."], ["layout", "Quiet centered layout; all other motion paused. Serif principle, one supporting line about many greeting forms."], ["int", "'Let's practise' advances. No choices here."], ["motion", "Enters motion.scene calm-scene; screen is otherwise still (Explain principle)."], ["a11y", "Principle is a heading; adequate contrast; reads fully without the illustration."], ["data", "Static per lesson (principle.context points)."], ["reduced", "240ms fade."], ["states", "Single state."]] },
+    { no: "10", name: "Lesson · guided practice", purpose: "Rehearse: pick the greeting that fits a calm room.", stepRef: "template 11",
+      f: [["comp", "PracticeStepView · ChoiceList · InlineFeedback."], ["layout", "Prompt + option cards, same anatomy as the choice step (consistency by design)."], ["int", "Pick an option → immediate feedback; 'Carry on' enabled when the fitting option is chosen; retry is encouraged, never blocked."], ["motion", "Feedback motion.reaction gentle-enter; selection soft-settle."], ["a11y", "Selection cannot be skipped (canAdvance=false until picked); reason shown in words beside disabled button."], ["data", "run.practiceOptionId."], ["reduced", "Fades; state swaps."], ["states", "unselected · fitting · not-yet-fitting (gentle 'try another')."]] },
+    { no: "11", name: "Lesson · offline mission", purpose: "Hand a real-world mission to do away from the screen.", stepRef: "template 12",
+      f: [["comp", "MissionStepView · MissionCard · New: MissionSaveToggle."], ["layout", "Mission card on a paper-offset; a muted 'For grown-ups' line; add-to-missions toggle."], ["int", "'Reveal' (motion.card 16px rise); toggle marks intent; 'Finish lesson' advances. Skippable without blocking."], ["motion", "Mission rises motion.card gentle-enter; toggle uses motion.touch soft-settle."], ["a11y", "Mission is content-agnostic text; toggle is a labelled control ≥44px."], ["data", "missionStatus is parent-owned; child 'add' sets a suggestion flag only."], ["reduced", "Fade in."], ["states", "not-added · added ('Saved to your missions')."]] },
+    { no: "12", name: "Lesson · completion", purpose: "Mark the accomplishment warmly, then get out of the way.", stepRef: "template 13–14",
+      f: [["comp", "CompletionStepView · Glim (celebrate_small) · New: CelebrationBurst (≤8 motif particles)."], ["layout", "Centered: Glim, headline, one-line garden change, position chip, primary return + 'Play again'."], ["int", "'Back to Hello Garden' → path (live immediately, never gated). 'Play again' replays the burst only."], ["motion", "motion.celebrate (600ms) playful, single emission; then still. No loop, no auto-repeat."], ["a11y", "Celebration meaning also in text ('You practised saying hello') + visible 1-of-8 change."], ["data", "Writes completion{at}; updates module path; run may be replayed without re-locking."], ["reduced", "Static badge + progress text change; no particles."], ["states", "first-completion vs replay (no new achievement, still celebrated softly)."]] },
+    { no: "13", name: "Loading", purpose: "Cover any wait > 300ms without anxiety.", stepRef: "system state",
+      f: [["comp", "Skeleton · Glim (dim_rest breathing)."], ["layout", "Centered Glim + 'Getting Hello Garden ready…' over skeleton bars of the incoming layout."], ["int", "None; auto-resolves. No cancel needed."], ["motion", "Lantern glow breathes 1200ms × ≤3, then a still frame + text (not an infinite spinner)."], ["a11y", "role=status aria-live=polite announces 'Loading' once; skeleton hidden from AT."], ["data", "n/a."], ["reduced", "Static lantern + text; no breathing."], ["states", "≤3 cycles then error path if still pending."]] },
+    { no: "14", name: "Interruption / resume", purpose: "Return mid-lesson to exactly where the child left off.", stepRef: "system state",
+      f: [["comp", "New: ResumeCard · GlimBubble."], ["layout", "'Welcome back' bubble + a card naming the saved step; 'Keep going' primary, 'Start over' secondary."], ["int", "Keep going → saved stepIndex; Start over → step 0 (answers cleared). Nothing auto-decides."], ["motion", "Enters motion.scene calm-scene; no urgency cues."], ["a11y", "Plain-language position ('Step 3 of 7'); both actions ≥44px, keyboard reachable."], ["data", "Reads run (version-strict — a stale run cannot resume; lesson starts fresh instead)."], ["reduced", "Fade in."], ["states", "valid-run (resume offered) · stale/again-version (fresh start, no scary message)."]] },
+    { no: "15", name: "Recoverable error", purpose: "A retryable failure, framed as an event — never an alarm or a fault.", stepRef: "system state",
+      f: [["comp", "ErrorState (live) · Glim."], ["layout", "Calm centered card: Glim, 'That part didn't load', reassurance, 'Try again' + 'Back to the clubhouse'."], ["int", "Try again → Loading; secondary returns home. Place is preserved."], ["motion", "Enters motion.card gentle-enter — same as any card. No shake, flash, or red flood."], ["a11y", "role=alert only because it follows an action; no big ✕; no blame wording; contrast holds."], ["data", "Retries the failed fetch; no data lost."], ["reduced", "240ms fade."], ["states", "Single recoverable state (fatal errors route to a separate boundary, out of scope here)."]] },
+    { no: "16", name: "Parent coaching prompt", purpose: "Reveal the coaching prompt to the grown-up — outside the child's flow.", stepRef: "parent area",
+      f: [["comp", "ParentInsightCard · CoachingStepView · MissionCard."], ["layout", "Sand 'For grown-ups' card in the parent area (never mid-lesson): the coaching question + this week's mission with mark-practised."], ["int", "Parent reads the prompt, marks the mission practised or 'not yet'. Read-only about the child's choices."], ["motion", "Parent motion is quieter — motion.ui gentle-enter crossfades only; no character motion in the parent surface."], ["a11y", "Eyebrow 'For grown-ups' + sand tint mark it as not addressed to the child; quiet, functional."], ["data", "Reads completion + needs_context moments for 'worth talking about'; writes missionStatus."], ["reduced", "Instant crossfade; the parent surface is already quiet."], ["states", "post-lesson (prompt shown) · no-activity (empty state, no nagging)."]] }
+  ];
+
+  reuse = ["ChildAppShell", "LessonShell", "StoryPanel", "ChoiceList", "ChoiceCard", "InlineFeedback", "ProgressBar", "MissionCard", "CompletionStepView", "PrincipleStepView", "PracticeStepView", "CoachingStepView", "MissionStepView", "SceneStepView", "ParentInsightCard", "ContentStatusBadge", "Skeleton", "ErrorState", "EmptyState", "LearningPath", "Button / ButtonLink", "Card"];
+  build = ["SplashScreen", "NeighborhoodMap", "MapNode", "ModuleIntro", "SceneStage (kit+rig)", "CharacterRig", "AudioNarration + captions", "GlimBubble", "BottomNav", "ResumeCard", "CelebrationBurst", "NonverbalNote"];
+
+  renderVals() {
+    const label = { comp: "Components", layout: "Layout & responsive", int: "Interactions", motion: "Motion (tokens)", a11y: "Accessibility", data: "Data", reduced: "Reduced motion", states: "States" };
+    const order = ["comp", "layout", "int", "states", "motion", "reduced", "a11y", "data"];
+    const color = { comp: this.K.comp, layout: this.K.layout, int: this.K.int, motion: this.K.motion, a11y: this.K.a11y, data: this.K.data, reduced: this.K.motion, states: this.K.layout };
+    const screens = this.screensData.map((s) => {
+      const map = {}; s.f.forEach(([k, v]) => map[k] = v);
+      return { no: s.no, name: s.name, purpose: s.purpose, stepRef: s.stepRef,
+        fields: order.filter((k) => map[k]).map((k) => ({ k: label[k], v: map[k], c: color[k] })) };
+    });
+    return { screens, reuse: this.reuse, build: this.build };
+  }
+}
+</script>
+</body>
+</html>

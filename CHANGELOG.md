@@ -12,6 +12,11 @@ Newest first.
 
 ## 2026-08-06
 
+- chore(design): add Little Learner's Club design handoff bundle
+- feat(design): port Little Learner's Club design tokens (handoff step 1)
+- feat(design): shell & navigation + self-hosted fonts (handoff step 2)
+- feat(design): neighborhood map (handoff step 3)
+- Shipped from `98b73cc` (`claude/little-learners-design-impl-e0rxsx`)
 - Add Stripe web subscription foundation
 - Shipped from `bb27862` (`claude/stripe-subscription-foundation-anoec3`)
 
