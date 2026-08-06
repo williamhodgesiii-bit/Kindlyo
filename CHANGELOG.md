@@ -12,6 +12,8 @@ Newest first.
 
 ## 2026-08-06
 
+- feat(design): lesson runner — scene stage & celebration (handoff step 4)
+- Shipped from `be3642d` (`claude/step-4-lesson-runner-p4qtf9`)
 - chore(design): add Little Learner's Club design handoff bundle
 - feat(design): port Little Learner's Club design tokens (handoff step 1)
 - feat(design): shell & navigation + self-hosted fonts (handoff step 2)

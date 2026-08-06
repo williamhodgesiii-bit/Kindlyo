@@ -32,6 +32,12 @@ export type LessonShellProps = {
   stepCount: number;
   /** Content status badge, shown beside the title. */
   status?: ReactNode;
+  /**
+   * The lesson's module world. Sets `data-module`, so the scene stage and
+   * celebration pick up this world's accent, tint, and motif (src/styles/
+   * tokens.css). Omitting it inherits the default Hello Garden theme.
+   */
+  moduleId?: string;
   children: ReactNode;
   footer?: ReactNode;
 };
@@ -42,6 +48,7 @@ export function LessonShell({
   stepNumber,
   stepCount,
   status,
+  moduleId,
   children,
   footer,
 }: LessonShellProps) {
@@ -55,7 +62,7 @@ export function LessonShell({
   }, [stepKey]);
 
   return (
-    <PageContainer>
+    <PageContainer data-module={moduleId}>
       <div className="flex flex-wrap items-center gap-3">
         <Heading level={1} size="lg">
           {lessonTitle}

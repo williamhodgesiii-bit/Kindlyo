@@ -1,17 +1,20 @@
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { SparkIcon } from "@/components/ui/icons";
 import { MissionCard } from "@/components/ui/MissionCard";
 import { Heading, Text } from "@/components/ui/Typography";
 import type { Lesson } from "@/features/curriculum/schema";
 import type { LessonRunState } from "@/features/lessons/lessonMachine";
+import { CelebrationBurst } from "../CelebrationBurst";
 
 /**
  * The end of the lesson.
  *
- * Warm, and quiet. No points, no streak, no confetti, no score
- * (docs/DESIGN_SYSTEM.md; CLAUDE.md principle 5) — the reward for finishing a
- * lesson about kindness should not look like a slot machine.
+ * Warm, and quiet. The celebration is a single gentle emission of the module
+ * motif — no points, no streak, no confetti rain, no score
+ * (docs/design/COMPONENT_STATES.md §12, MOTION.md; CLAUDE.md principle 5). It
+ * stays inside the design's hard limits and, under reduced motion, is just a
+ * still badge and the progress change; finishing a lesson about kindness should
+ * not look like a slot machine.
  *
  * The recap shows what the child chose, without ranking it. It exists so the
  * conversation afterwards has something concrete to start from, and so a
@@ -51,18 +54,15 @@ export function CompletionStepView({
 
   return (
     <section>
-      <span
-        aria-hidden="true"
-        className="inline-flex text-brand-primary-strong"
-      >
-        <SparkIcon className="h-8 w-8" />
-      </span>
-      <Heading level={2} size="xl" className="mt-2">
-        {lesson.completion.title}
-      </Heading>
-      <Text size="lg" className="mt-3 max-w-prose">
-        {lesson.completion.message}
-      </Text>
+      <div className="flex flex-col items-center text-center">
+        <CelebrationBurst moduleId={lesson.moduleId} />
+        <Heading level={2} size="xl" className="mt-4">
+          {lesson.completion.title}
+        </Heading>
+        <Text size="lg" className="mt-3 max-w-prose">
+          {lesson.completion.message}
+        </Text>
+      </div>
 
       {decisions.length > 0 || practised !== undefined ? (
         <Card elevation="soft" className="mt-8">
@@ -94,7 +94,7 @@ export function CompletionStepView({
         description={lesson.offlineMission.childPrompt}
       />
 
-      <div className="mt-8 flex flex-wrap gap-3">
+      <div className="mt-8 flex flex-wrap justify-center gap-3">
         <ButtonLink href="/learn" variant="primary" size="lg">
           Back to the lessons
         </ButtonLink>

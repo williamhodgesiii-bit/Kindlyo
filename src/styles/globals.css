@@ -73,6 +73,118 @@ li a {
 }
 
 /*
+ * Little Motions — the lesson-runner entrance behaviours
+ * (docs/design/MOTION.md, "Behavior contract"). Each is built only from the
+ * duration and easing tokens; none introduces a one-off value. All animate a
+ * transform + opacity *in* from a hidden first keyframe with `both` fill, so the
+ * element rests visible when the animation is absent (SSR, tests) and, under the
+ * reduced-motion block below, collapses to an instant appearance rather than a
+ * hidden element. Meaning never lives in the motion — it is always carried by
+ * the text, icon, or position underneath (docs/design/ACCESSIBILITY.md).
+ */
+
+@keyframes llc-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--llc-rise, 12px));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scene entrance — 20px rise, then narration (MOTION.md "Scene entrance"). */
+.llc-scene-enter {
+  --llc-rise: 20px;
+  animation: llc-rise-in var(--llc-motion-scene) var(--llc-ease-calm-scene) both;
+}
+
+/* Principle reveal — 12px rise, all other motion paused (MOTION.md). */
+.llc-principle-enter {
+  --llc-rise: 12px;
+  animation: llc-rise-in var(--llc-motion-scene) var(--llc-ease-calm-scene) both;
+}
+
+/* Mission reveal — 16px rise, like a ticket (MOTION.md "Mission reveal"). */
+.llc-mission-enter {
+  --llc-rise: 16px;
+  animation: llc-rise-in var(--llc-motion-card) var(--llc-ease-gentle-enter)
+    both;
+}
+
+/* Choice-card entrance — 12px rise, one at a time on a +60ms stagger keyed by
+   --llc-enter-index (MOTION.md "Choice-card entrance"). Reduced motion drops the
+   stagger with everything else, so the cards simply appear together. */
+.llc-card-enter {
+  --llc-rise: 12px;
+  animation: llc-rise-in var(--llc-motion-card) var(--llc-ease-gentle-enter)
+    both;
+  animation-delay: calc(var(--llc-enter-index, 0) * 60ms);
+}
+
+/* Consequence feedback — 8px rise. Helpful and mixed are identical in weight;
+   needs-context alone adds a 200ms thoughtful hold before the same motion, never
+   a heavier or failure effect (MOTION.md; COMPONENT_STATES.md §08). */
+.llc-reaction-enter {
+  --llc-rise: 8px;
+  animation: llc-rise-in var(--llc-motion-reaction) var(--llc-ease-gentle-enter)
+    both;
+}
+
+.llc-reaction-enter--hold {
+  animation-delay: 200ms;
+}
+
+/*
+ * Lesson celebration — scale .8 → 1.05 → 1, once, then still
+ * (MOTION.md "Lesson completion"; hard limit ≤ 600ms, no loop). The motif petals
+ * are a separate one-emission drift; both are decorative and reduced motion
+ * removes the particles entirely, leaving the static badge and the progress
+ * text change as the payoff.
+ */
+@keyframes llc-celebrate-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.llc-celebrate {
+  animation: llc-celebrate-pop var(--llc-motion-celebrate)
+    var(--llc-ease-playful) both;
+}
+
+@keyframes llc-petal-drift {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.6) rotate(0deg);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--llc-petal-x, 0), var(--llc-petal-y, -40px))
+      scale(1) rotate(var(--llc-petal-r, 40deg));
+  }
+}
+
+.llc-petal {
+  animation: llc-petal-drift var(--llc-motion-celebrate) var(--llc-ease-playful)
+    forwards;
+  animation-delay: calc(var(--llc-enter-index, 0) * 40ms);
+}
+
+/*
  * Reduced-motion support: honour the OS preference globally rather than
  * relying on each component to remember.
  */

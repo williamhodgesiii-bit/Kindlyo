@@ -8,7 +8,7 @@ import {
   type HeadingLevel,
 } from "@/components/ui/Typography";
 import { feedbackToneForConsequence } from "../consequenceTone";
-import { SceneIllustration } from "../illustrations";
+import { SceneStage } from "../SceneStage";
 import type { ChoiceScene } from "@/features/lessons/steps";
 
 /**
@@ -18,7 +18,11 @@ import type { ChoiceScene } from "@/features/lessons/steps";
  * on screen and stay selectable. A child may try another one and read what
  * happens instead — that is the lesson working, not a mistake being corrected.
  *
- * Nothing here is scored, and nothing marks a choice right or wrong.
+ * Nothing here is scored, and nothing marks a choice right or wrong. The scene
+ * reflects that a choice was made (the `consequence` variant), and the feedback
+ * arrives with the same gentle motion whatever the choice was — needs-context
+ * alone taking a short thoughtful pause first (docs/design/COMPONENT_STATES.md
+ * §07/§08; MOTION.md). The cards fan in on a small stagger.
  */
 
 export type ChoiceStepViewProps = {
@@ -51,28 +55,35 @@ export function ChoiceStepView({
       narration={scene.narration}
       headingLevel={headingLevel}
       illustration={
-        <SceneIllustration
-          illustrationKey={scene.illustrationKey}
-          className="h-auto w-full"
+        <SceneStage
+          key={scene.id}
+          variant={selected ? "consequence" : "scene"}
         />
       }
     >
       <Heading level={nextHeadingLevel(headingLevel)}>{prompt}</Heading>
 
       <ChoiceList label={prompt} className="mt-4">
-        {scene.choices.map((choice) => (
+        {scene.choices.map((choice, index) => (
           <ChoiceCard
             key={choice.id}
             label={choice.text}
             selected={choice.id === selectedChoiceId}
             onClick={() => onChoose(choice.id)}
+            className="llc-card-enter"
+            style={{ "--llc-enter-index": index } as React.CSSProperties}
           />
         ))}
       </ChoiceList>
 
       {selected ? (
         <InlineFeedback
-          className="mt-6"
+          key={selected.id}
+          className={
+            selected.consequenceType === "needs_context"
+              ? "mt-6 llc-reaction-enter llc-reaction-enter--hold"
+              : "mt-6 llc-reaction-enter"
+          }
           tone={feedbackToneForConsequence[selected.consequenceType]}
         >
           {selected.response}

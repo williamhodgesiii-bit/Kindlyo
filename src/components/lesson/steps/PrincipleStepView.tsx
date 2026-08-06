@@ -23,7 +23,7 @@ export function PrincipleStepView({
   headingLevel?: HeadingLevel;
 }) {
   return (
-    <section>
+    <section className="llc-principle-enter">
       <Heading level={headingLevel}>{principle.title}</Heading>
       <Text size="lg" className="mt-3 max-w-prose">
         {principle.body}

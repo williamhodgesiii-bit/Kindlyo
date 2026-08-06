@@ -181,6 +181,7 @@ function LessonPlayer({
       stepNumber={run.stepNumber}
       stepCount={run.stepCount}
       status={<ContentStatusBadge status={lesson.status} />}
+      moduleId={lesson.moduleId}
       footer={
         isLastStep ? null : (
           <div className="flex flex-wrap items-center justify-between gap-4">
