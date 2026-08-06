@@ -1,5 +1,6 @@
+import { randomUUID } from "node:crypto";
 import { expect, test } from "@playwright/test";
-import { STORAGE_STATE } from "./support/auth";
+import { E2E_PARENT_PASSWORD, STORAGE_STATE } from "./support/auth";
 
 // This spec follows the footer links into the gated product surfaces, so it
 // runs as a signed-in parent. The unauthenticated gate itself is auth.spec.ts.
@@ -23,6 +24,20 @@ test.describe("application shell", () => {
     // Both app surfaces are reached from the footer rather than the header:
     // the header nav belongs to the marketing pages, and these two are
     // labelled "preview" because they run on prototype local storage.
+    //
+    // This test asserts the pristine first-visit states (no child profile yet,
+    // onboarding not done). The default signed-in parent is shared across specs
+    // and its profiles/onboarding live in the server's store, which sibling
+    // specs mutate — and onboarding, once completed, is never undone. So sign in
+    // as a brand-new parent nobody else uses (the offline gateway sessions any
+    // well-formed credentials; the id derives from the email), making the empty
+    // states deterministic under parallel and serial runs alike.
+    const isolatedParent = `shell-footer-${randomUUID()}@example.com`;
+    const signIn = await page.request.post("/api/auth/signin", {
+      data: { email: isolatedParent, password: E2E_PARENT_PASSWORD },
+    });
+    expect(signIn.ok()).toBe(true);
+
     await page.goto("/");
 
     await page.getByRole("link", { name: "Learning area preview" }).click();
