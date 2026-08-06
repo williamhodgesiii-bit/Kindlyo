@@ -4,6 +4,7 @@ import { MissionCard } from "@/components/ui/MissionCard";
 import { Heading, Text } from "@/components/ui/Typography";
 import type { Lesson } from "@/features/curriculum/schema";
 import type { LessonRunState } from "@/features/lessons/lessonMachine";
+import { GlimBubble } from "@/components/character/GlimBubble";
 import { CelebrationBurst } from "../CelebrationBurst";
 
 /**
@@ -55,7 +56,8 @@ export function CompletionStepView({
   return (
     <section>
       <div className="flex flex-col items-center text-center">
-        <CelebrationBurst moduleId={lesson.moduleId} />
+        <GlimBubble state="celebrate_small" />
+        <CelebrationBurst moduleId={lesson.moduleId} className="mt-2" />
         <Heading level={2} size="xl" className="mt-4">
           {lesson.completion.title}
         </Heading>
