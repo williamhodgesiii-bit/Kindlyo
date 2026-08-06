@@ -66,15 +66,18 @@
   /* ---- Typography families — DESIGN.md §3 ----
      Serif = the voice of the story (titles, prompts, celebrations, parent
      editorial headings). Sans = everything functional. No third typeface.
-     NOTE: the Source Serif 4 / Source Sans 3 webfonts are not yet loaded
-     (that is wired with next/font in the shell step); until then these resolve
-     to the fallback stacks, which keeps the current rendering unchanged. */
+     The Source Serif 4 / Source Sans 3 webfonts are self-hosted via next/font
+     (src/app/layout.tsx), which sets --font-source-serif / --font-source-sans.
+     If those are absent (e.g. in tests, or a build without the fonts), each
+     stack falls back to the family name and then the system fonts, so nothing
+     breaks. */
   --llc-type-display:
-    "Source Serif 4", "Iowan Old Style", "Palatino Linotype", Palatino,
-    "Book Antiqua", Georgia, "Times New Roman", serif;
+    var(--font-source-serif, "Source Serif 4"), "Iowan Old Style",
+    "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Times New Roman",
+    serif;
   --llc-type-body:
-    "Source Sans 3", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-    Roboto, "Helvetica Neue", Arial, sans-serif;
+    var(--font-source-sans, "Source Sans 3"), ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
   /* ---- Radius (5 stops) — DESIGN.md §4 ----
      `round` is reserved for character heads, map nodes, and the play button —
@@ -286,6 +289,12 @@
  * custom properties so module theming cascades from [data-module] ancestors.
  */
 @theme {
+  /* ---- Responsive breakpoint — DESIGN.md §7 ----
+     phone < 600px (base, mobile-first); tablet >= 600px. Adds a `tablet:`
+     variant alongside Tailwind's default sm/md/lg, which existing components
+     still use. */
+  --breakpoint-tablet: 600px;
+
   /* ---- Little Learner's Club colour utilities (leaf names match DESIGN.md) ---- */
   --color-ink: var(--llc-color-ink);
   --color-ink-soft: var(--llc-color-ink-soft);

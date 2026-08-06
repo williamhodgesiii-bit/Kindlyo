@@ -1,8 +1,32 @@
 import type { Metadata, Viewport } from "next";
+import { Source_Sans_3, Source_Serif_4 } from "next/font/google";
 import { SkipLink } from "@/components/SkipLink";
 import { LegacyLocalDataReset } from "@/components/system/LegacyLocalDataReset";
 import { absoluteUrl, siteDescription, siteName } from "@/lib/seo";
 import "@/styles/globals.css";
+
+/**
+ * The two Storybook Geometry families (docs/design/DESIGN.md §3), self-hosted
+ * by next/font so no request ever leaves for a third party — a hard
+ * requirement for a children's product. Each exposes a CSS variable that
+ * src/styles/tokens.css feeds into `--llc-type-display` / `--llc-type-body`.
+ *
+ * Serif is the voice of the story and ships weight 600 only; sans is
+ * everything functional (400/600, plus 700 reserved for chips <= 12px).
+ */
+const sourceSerif = Source_Serif_4({
+  subsets: ["latin"],
+  weight: ["600"],
+  variable: "--font-source-serif",
+  display: "swap",
+});
+
+const sourceSans = Source_Sans_3({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  variable: "--font-source-sans",
+  display: "swap",
+});
 
 /**
  * `metadataBase` is what makes the relative image path in `openGraph` resolve
@@ -50,7 +74,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className={`${sourceSerif.variable} ${sourceSans.variable}`}
+    >
       <body className="flex min-h-screen flex-col">
         <SkipLink />
         <LegacyLocalDataReset />
