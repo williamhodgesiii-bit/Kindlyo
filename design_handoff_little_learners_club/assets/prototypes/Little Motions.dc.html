@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;padding:0;background:#ECE8DF;}
+  a{color:#A03F27;} a:hover{color:#7E301D;}
+</style>
+</helmet>
+<div style="padding:56px 64px 96px;font-family:'Source Sans 3',sans-serif;color:#31281C;width:1520px;min-width:1520px;box-sizing:content-box;">
+  <div style="margin-bottom:32px;max-width:900px;">
+    <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#8A8375;">Little Learner's Club — Phase 6 · motion system</div>
+    <h1 style="font:600 34px/1.2 'Source Serif 4',Georgia,serif;margin:10px 0 12px;">Little Motions</h1>
+    <p style="font-size:15px;line-height:1.6;color:#6E6252;margin:0;">Personality: <strong>curious, gentle, responsive, and alive.</strong> Every behavior below is built exclusively from the eight duration tokens and six easing tokens defined in the design system — no arbitrary values. Demos animate from their own spec numbers; replay any card, or flip the <em>reducedMotion</em> and <em>slowMo</em> tweaks to audit the whole board at once.</p>
+  </div>
+
+  <div data-screen-label="Principles" style="background:#FFF;border:1px solid #E0DACC;border-radius:20px;padding:28px;margin-bottom:24px;">
+    <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#8A8375;">01 — Seven principles</div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:14px;margin-top:16px;">
+      <sc-for list="{{ principles }}" as="p" hint-placeholder-count="7">
+        <div style="background:#FAF3E7;border:1px solid #E4D7BF;border-radius:14px;padding:14px;">
+          <div style="font:600 16px/1.25 'Source Serif 4',Georgia,serif;">{{ p.n }}</div>
+          <div style="font-size:12px;line-height:1.55;color:#5C554A;margin-top:6px;">{{ p.d }}</div>
+          <div style="font:10px/1.5 ui-monospace,monospace;color:#8A8375;margin-top:10px;">{{ p.seen }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div data-screen-label="Token recap" style="background:#FFF;border:1px solid #E0DACC;border-radius:20px;padding:22px 28px;margin-bottom:24px;display:flex;gap:40px;align-items:flex-start;">
+    <div>
+      <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#8A8375;margin-bottom:8px;">02 — Duration tokens</div>
+      <div style="font:11.5px/2 ui-monospace,monospace;color:#5C554A;">touch 120 · ui 180 · card 240 · reaction 320 · scene 400 · celebrate 600 · intro 900 · celebrate-module 1200</div>
+    </div>
+    <div>
+      <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#8A8375;margin-bottom:8px;">Easing tokens</div>
+      <div style="font:11.5px/2 ui-monospace,monospace;color:#5C554A;">gentle-enter · gentle-exit · soft-settle · curious · playful · calm-scene</div>
+    </div>
+    <div style="background:#F6EBD3;border-radius:10px;padding:10px 14px;font-size:12.5px;line-height:1.6;color:#8A5A1C;max-width:420px;">Hard limits: celebrations ≤ 1.2s of motion (1.5s only with a documented reason) · no constant bouncing, flashing, shaking, buzzers, red ✕, dramatic sadness, point subtraction, or endless confetti.</div>
+  </div>
+
+  <div data-screen-label="Motion spec board" style="background:#FFF;border:1px solid #E0DACC;border-radius:20px;padding:28px;">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;">
+      <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#8A8375;">03 — Behavior specifications ({{ modeLabel }})</div>
+      <div style="font-size:12px;color:#8A8375;">Each demo animates with its own duration, easing, distance, scale and opacity values.</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+      <sc-for list="{{ behaviors }}" as="b" hint-placeholder-count="20">
+        <div style="background:#FFFDF8;border:1px solid #E4D7BF;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <div style="font:600 16px/1.25 'Source Serif 4',Georgia,serif;">{{ b.t }}</div>
+            <div style="font:600 10px/1 'Source Sans 3',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#587F70;background:#E7EEE7;border-radius:6px;padding:4px 7px;flex:none;">{{ b.pr }}</div>
+          </div>
+          <div style="font-size:12.5px;line-height:1.5;color:#5C554A;">{{ b.purpose }}</div>
+          <div style="position:relative;">
+            <div>{{ b.demo }}</div>
+            <button onClick="{{ b.play }}" style="position:absolute;right:8px;bottom:8px;font:600 10.5px/1 'Source Sans 3',sans-serif;background:#FFFDF8;border:1px solid #E4D7BF;border-radius:7px;padding:6px 9px;cursor:pointer;color:#31281C;">Replay</button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;">
+            <sc-for list="{{ b.f }}" as="fv" hint-placeholder-count="8">
+              <div style="display:flex;gap:6px;align-items:baseline;border-bottom:1px solid #F2EADA;padding:3px 0;">
+                <div style="font:600 10px/1.4 'Source Sans 3',sans-serif;letter-spacing:.05em;text-transform:uppercase;color:#8A8375;width:62px;flex:none;">{{ fv.k }}</div>
+                <div style="font-size:11.5px;line-height:1.45;color:#31281C;">{{ fv.v }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="font-size:11.5px;line-height:1.5;color:#4A6076;background:#E3E9EE;border-radius:8px;padding:7px 10px;"><strong>Reduced:</strong> {{ b.reduced }}</div>
+          <div style="font-size:11.5px;line-height:1.5;color:#8A5A1C;"><strong>Never:</strong> {{ b.never }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;reducedMotion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Audit&quot;},&quot;slowMo&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1,&quot;min&quot;:1,&quot;max&quot;:4,&quot;step&quot;:0.5,&quot;unit&quot;:&quot;\u00d7&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Audit&quot;}}">
+class Component extends DCLogic {
+  state = { plays: {} };
+
+  EASE = {
+    "gentle-enter": "cubic-bezier(.22,.61,.36,1)", "gentle-exit": "cubic-bezier(.4,.05,.7,.4)",
+    "soft-settle": "cubic-bezier(.3,1.12,.4,1)", "curious": "cubic-bezier(.5,-.12,.4,1)",
+    "playful": "cubic-bezier(.3,1.3,.5,1)", "calm-scene": "cubic-bezier(.45,.05,.25,1)"
+  };
+
+  principles = [
+    { n: "Anticipate", d: "A very small preparation movement before a meaningful action.", seen: "character anticipation, scene exit" },
+    { n: "Respond", d: "Immediate visual acknowledgement after the learner touches something.", seen: "touch, button, choice selection" },
+    { n: "Explain", d: "Motion pauses or quiets while important narration or text is presented.", seen: "principle reveal, scene entrance" },
+    { n: "Settle", d: "Characters and objects return calmly to rest. Stillness is a feature.", seen: "every behavior's final frame" },
+    { n: "Encourage", d: "Helpful feedback is warm but brief \u2014 then out of the way.", seen: "feedback trio, progress" },
+    { n: "Reflect", d: "Context-dependent choices get thoughtful motion, never failure effects.", seen: "needs-context feedback" },
+    { n: "Celebrate", d: "Accomplishment feels satisfying without becoming loud or addictive.", seen: "lesson & module completion" }
+  ];
+
+  // frames use dx/dy px, s scale, o opacity; built to WAAPI keyframes
+  spec = [
+    { t: "App launch", pr: "Explain", purpose: "Arrive calmly: the clubhouse fades up once, then narration begins.",
+      dur: "motion.intro \u00b7 900ms", ease: "calm-scene", dist: "16px rise", scale: ".96 \u2192 1", opac: "0 \u2192 1",
+      sound: "one soft ambient swell, optional", narr: "precedes narration", 
+      never: "on return from background \u2014 go straight in", reduced: "single 240ms fade, no rise or scale",
+      anim: { d: 900, e: "calm-scene", fr: [{ opacity: 0, transform: "translateY(16px) scale(.96)" }, { opacity: 1, transform: "none" }] } },
+    { t: "Touch feedback", pr: "Respond", purpose: "Anything touchable acknowledges the finger within one frame.",
+      dur: "motion.touch \u00b7 120ms", ease: "soft-settle", dist: "none", scale: "1 \u2192 .97 \u2192 1", opac: "none",
+      sound: "soft tick \u2264 \u221220 LUFS, optional", narr: "never pauses narration",
+      never: "on non-interactive elements \u2014 motion implies tappability", reduced: "instant pressed state (border/fill swap), no scale",
+      anim: { d: 120, e: "soft-settle", fr: [{ transform: "scale(1)" }, { transform: "scale(.97)", offset: .4 }, { transform: "scale(1)" }] } },
+    { t: "Button press", pr: "Respond", purpose: "Primary actions compress slightly and settle \u2014 the 1b squish, budgeted.",
+      dur: "motion.touch \u00b7 120ms", ease: "soft-settle", dist: "none", scale: "1 \u2192 .96 \u2192 1", opac: "none",
+      sound: "same tick as touch", narr: "never pauses narration",
+      never: "on disabled buttons \u2014 absence of motion is the disabled signal", reduced: "pressed fill swap only",
+      anim: { d: 120, e: "soft-settle", fr: [{ transform: "scale(1)" }, { transform: "scale(.96)", offset: .4 }, { transform: "scale(1)" }] } },
+    { t: "Choice-card entrance", pr: "Explain", purpose: "Cards arrive one at a time so the child reads them one at a time.",
+      dur: "motion.card \u00b7 240ms +60ms stagger", ease: "gentle-enter", dist: "12px rise", scale: "none", opac: "0 \u2192 1",
+      sound: "none", narr: "waits for the narration line to finish",
+      never: "mid-sentence, or all three at once", reduced: "cards appear together in one 240ms fade",
+      multi: 3, anim: { d: 240, e: "gentle-enter", fr: [{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }] } },
+    { t: "Choice selection", pr: "Respond", purpose: "The tapped card confirms itself; nothing else on screen moves.",
+      dur: "motion.ui \u00b7 180ms", ease: "soft-settle", dist: "none", scale: "1 \u2192 1.02 \u2192 1", opac: "check fades in",
+      sound: "soft tick", narr: "never pauses narration",
+      never: "reflowing or dimming the other cards \u2014 exploring is allowed", reduced: "border + check state swap",
+      anim: { d: 180, e: "soft-settle", fr: [{ transform: "scale(1)" }, { transform: "scale(1.02)", offset: .5 }, { transform: "scale(1)" }] } },
+    { t: "Scene entrance", pr: "Explain", purpose: "A new place fades up as one piece; then narration starts.",
+      dur: "motion.scene \u00b7 400ms", ease: "calm-scene", dist: "20px rise", scale: "none", opac: "0 \u2192 1",
+      sound: "ambient bed fades in with it", narr: "completes before narration begins",
+      never: "layered with card entrances \u2014 sequence, don't stack", reduced: "240ms fade, no rise",
+      anim: { d: 400, e: "calm-scene", fr: [{ opacity: 0, transform: "translateY(20px)" }, { opacity: 1, transform: "none" }] } },
+    { t: "Scene exit", pr: "Anticipate", purpose: "The scene bows out downward, quicker than it arrived.",
+      dur: "motion.card \u00b7 240ms", ease: "gentle-exit", dist: "14px drop", scale: "none", opac: "1 \u2192 0",
+      sound: "none", narr: "never interrupts narration \u2014 waits",
+      never: "before the child confirms leaving", reduced: "180ms fade out",
+      anim: { d: 240, e: "gentle-exit", fr: [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(14px)" }] } },
+    { t: "Character anticipation", pr: "Anticipate", purpose: "A 3px counter-lean telegraphs that a character is about to act.",
+      dur: "motion.ui \u00b7 180ms", ease: "curious", dist: "3px counter, 10px action", scale: "none", opac: "none",
+      sound: "none", narr: "frozen while narration plays",
+      never: "during narration, or in reduced motion (off entirely)", reduced: "off \u2014 action happens without wind-up",
+      anim: { d: 360, e: "curious", fr: [{ transform: "translateX(0)" }, { transform: "translateX(-4px)", offset: .35 }, { transform: "translateX(10px)" }] } },
+    { t: "Character reaction", pr: "Settle", purpose: "Expression and pose change, hold, then settle to rest.",
+      dur: "motion.reaction \u00b7 320ms", ease: "gentle-enter", dist: "4px shift", scale: "none", opac: "expression crossfade",
+      sound: "none", narr: "waits for a narration pause",
+      never: "mockery, exaggerated sadness, or looping distress", reduced: "static expression swap",
+      anim: { d: 320, e: "gentle-enter", fr: [{ opacity: 0, transform: "translateY(4px)" }, { opacity: 1, transform: "none" }] } },
+    { t: "Helpful-choice feedback", pr: "Encourage", purpose: "Warm, brief: the chip rises, the scene consequence carries the meaning.",
+      dur: "motion.reaction \u00b7 320ms", ease: "gentle-enter", dist: "8px rise", scale: "none", opac: "0 \u2192 1",
+      sound: "one soft note \u2014 identical for all three feedback kinds", narr: "plays after the narration line",
+      never: "bigger or louder than the other two feedbacks", reduced: "240ms fade",
+      demoBg: "#E3EBE6", demoDot: "#3D6B58",
+      anim: { d: 320, e: "gentle-enter", fr: [{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }] } },
+    { t: "Mixed-choice feedback", pr: "Encourage", purpose: "Identical motion to helpful \u2014 only icon, color and words differ.",
+      dur: "motion.reaction \u00b7 320ms", ease: "gentle-enter", dist: "8px rise", scale: "none", opac: "0 \u2192 1",
+      sound: "the same single soft note", narr: "plays after the narration line",
+      never: "slower, sadder or smaller than helpful \u2014 no motion hierarchy of worth", reduced: "240ms fade",
+      demoBg: "#F6EBD3", demoDot: "#8A5A1C",
+      anim: { d: 320, e: "gentle-enter", fr: [{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }] } },
+    { t: "Needs-context feedback", pr: "Reflect", purpose: "A 200ms thoughtful hold, then the same gentle arrival \u2014 a question, not a verdict.",
+      dur: "motion.reaction \u00b7 320ms +200ms hold", ease: "gentle-enter", dist: "8px rise", scale: "none", opac: "0 \u2192 1",
+      sound: "the same single soft note, or none", narr: "plays after the narration line",
+      never: "shake, buzz, red, or any failure grammar", reduced: "240ms fade after the same hold",
+      demoBg: "#E3E9EE", demoDot: "#4A6076",
+      anim: { d: 320, e: "gentle-enter", delay: 200, fr: [{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }] } },
+    { t: "Principle reveal", pr: "Explain", purpose: "Everything else stops; the one idea of the lesson rises alone.",
+      dur: "motion.scene \u00b7 400ms", ease: "calm-scene", dist: "12px rise", scale: "none", opac: "0 \u2192 1",
+      sound: "none", narr: "all other motion is paused while it is on screen",
+      never: "while a character is still reacting", reduced: "240ms fade",
+      anim: { d: 400, e: "calm-scene", fr: [{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }] } },
+    { t: "Mission reveal", pr: "Encourage", purpose: "The offline mission slides up like a ticket worth keeping.",
+      dur: "motion.card \u00b7 240ms", ease: "gentle-enter", dist: "16px rise", scale: "none", opac: "0 \u2192 1",
+      sound: "soft paper rustle, optional", narr: "after narration introduces it",
+      never: "before guided practice is finished", reduced: "240ms fade",
+      anim: { d: 240, e: "gentle-enter", fr: [{ opacity: 0, transform: "translateY(16px)" }, { opacity: 1, transform: "none" }] } },
+    { t: "Lesson completion", pr: "Celebrate", purpose: "One pop, \u22648 motif particles, then still. Satisfying, finished.",
+      dur: "motion.celebrate \u00b7 600ms", ease: "playful", dist: "particles \u226440px", scale: ".8 \u2192 1.05 \u2192 1", opac: "0 \u2192 1",
+      sound: "one warm chime", narr: "narration resumes after the motion ends",
+      never: "looping, blocking the continue button, or auto-replaying", reduced: "badge appears in a 240ms fade + progress text updates",
+      anim: { d: 600, e: "playful", fr: [{ opacity: 0, transform: "scale(.8)" }, { opacity: 1, transform: "scale(1.05)", offset: .6 }, { transform: "scale(1)" }] } },
+    { t: "Module completion", pr: "Celebrate", purpose: "The landmark glows, the cast does one small celebration, the map updates.",
+      dur: "motion.celebrate-module \u00b7 1200ms", ease: "playful \u2192 soft-settle", dist: "\u22646px character hop", scale: ".9 \u2192 1.04 \u2192 1", opac: "glow 0 \u2192 .8 \u2192 rest",
+      sound: "one two-note chime", narr: "narration resumes after; button live immediately",
+      never: "repeating on revisits, exceeding 1.2s, confetti rain", reduced: "static celebratory scene + visible map-state change",
+      anim: { d: 1200, e: "playful", fr: [{ opacity: 0, transform: "scale(.9)" }, { opacity: 1, transform: "scale(1.04)", offset: .4 }, { transform: "scale(1)" }] } },
+    { t: "Loading", pr: "Settle", purpose: "Glim's lantern glow breathes \u2014 slow, dim, patient. Max 3 breaths, then a still frame + text.",
+      dur: "1200ms \u00d7 \u22643 loops", ease: "calm-scene", dist: "none", scale: "none", opac: ".55 \u2194 .95",
+      sound: "none", narr: "n/a",
+      never: "fast spinners, or blocking >500ms without a message", reduced: "static lantern + \u201cGetting ready\u2026\u201d text",
+      anim: { d: 1200, e: "calm-scene", iter: 3, fr: [{ opacity: .55 }, { opacity: .95 }, { opacity: .55 }] } },
+    { t: "Empty state", pr: "Settle", purpose: "A quiet arrival for a screen with nothing in it yet; the words do the work.",
+      dur: "motion.ui \u00b7 180ms", ease: "gentle-enter", dist: "8px rise", scale: "none", opac: "0 \u2192 1",
+      sound: "none", narr: "n/a",
+      never: "looping animation begging for attention", reduced: "appears without motion",
+      anim: { d: 180, e: "gentle-enter", fr: [{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }] } },
+    { t: "Recoverable error", pr: "Reflect", purpose: "\u201cThat needs another try\u201d arrives as calmly as any card \u2014 an event, not an alarm.",
+      dur: "motion.card \u00b7 240ms", ease: "gentle-enter", dist: "12px rise", scale: "none", opac: "0 \u2192 1",
+      sound: "none, or one neutral tone", narr: "pauses narration until resolved",
+      never: "shake, flash, red flood, or blame wording", reduced: "240ms fade",
+      anim: { d: 240, e: "gentle-enter", fr: [{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }] } },
+    { t: "Parent-area transition", pr: "Settle", purpose: "Crossing to the grown-up surface is a plain crossfade \u2014 quieter grammar, same tokens.",
+      dur: "motion.ui \u00b7 180ms", ease: "gentle-exit / gentle-enter", dist: "none", scale: "none", opac: "crossfade",
+      sound: "none", narr: "n/a",
+      never: "playful easing or character motion anywhere in the parent area", reduced: "instant swap",
+      anim: { d: 180, e: "gentle-enter", fr: [{ opacity: 0 }, { opacity: 1 }] } }
+  ];
+
+  TRIGGERS = {
+    "App launch": "cold start only",
+    "Touch feedback": "pointer down on any interactive element",
+    "Button press": "pointer down / up on a button",
+    "Choice-card entrance": "narration line finishes on a choice step",
+    "Choice selection": "child taps a choice card",
+    "Scene entrance": "step change into a new scene",
+    "Scene exit": "child confirms leaving (taps continue)",
+    "Character anticipation": "just before a scripted character action",
+    "Character reaction": "consequence of the child's choice begins",
+    "Helpful-choice feedback": "consequence resolved as helpful",
+    "Mixed-choice feedback": "consequence resolved as mixed",
+    "Needs-context feedback": "consequence resolved as needs-context",
+    "Principle reveal": "consequence settled; principle step begins",
+    "Mission reveal": "guided practice completed",
+    "Lesson completion": "final step reached, once per completion",
+    "Module completion": "eighth lesson practised, once ever",
+    "Loading": "any wait longer than 300ms",
+    "Empty state": "screen renders with no content",
+    "Recoverable error": "a retryable failure occurs",
+    "Parent-area transition": "grown-up gate passed"
+  };
+
+  demo(row) {
+    const reduced = this.props.reducedMotion ?? false;
+    const slow = this.props.slowMo ?? 1;
+    const n = this.state.plays[row.t] || 0;
+    const run = (el, delay) => {
+      if (!el) return;
+      const fr = reduced ? [{ opacity: 0 }, { opacity: 1 }] : row.anim.fr;
+      el.animate(fr, {
+        duration: (reduced ? 240 : row.anim.d) * slow,
+        easing: this.EASE[row.anim.e] || "ease",
+        delay: ((reduced ? 0 : row.anim.delay || 0) + delay) * slow,
+        iterations: reduced ? 1 : (row.anim.iter || 1),
+        fill: "both"
+      });
+    };
+    const chip = (i, w) => React.createElement("div", {
+      key: i, ref: (el) => run(el, i * 60),
+      style: { width: w, height: 26, borderRadius: 9, background: row.demoBg || "#F0E6D2",
+        border: "1px solid " + (row.demoBg ? "transparent" : "#E4D7BF"),
+        display: "flex", alignItems: "center", gap: 6, padding: "0 9px", boxSizing: "border-box" }
+    }, React.createElement("div", { style: { width: 12, height: 12, borderRadius: "50%", background: row.demoDot || "#BE5136", flex: "none" } }),
+       React.createElement("div", { style: { flex: 1, height: 5, borderRadius: 3, background: "rgba(49,40,28,.18)" } }));
+    const count = row.multi || 1;
+    return React.createElement("div", {
+      key: row.t + n + reduced + slow,
+      style: { height: 84, background: "#FAF3E7", border: "1px solid #E4D7BF", borderRadius: 12,
+        display: "flex", alignItems: "center", justifyContent: "center", gap: 8, overflow: "hidden" }
+    }, Array.from({ length: count }, (_, i) => chip(i, count > 1 ? 88 : 120)));
+  }
+
+  renderVals() {
+    const behaviors = this.spec.map((row) => ({
+      t: row.t, pr: row.pr, purpose: row.purpose, never: row.never, reduced: row.reduced,
+      f: [
+        { k: "Trigger", v: this.TRIGGERS[row.t] },
+        { k: "Duration", v: row.dur }, { k: "Easing", v: row.ease }, { k: "Distance", v: row.dist },
+        { k: "Scale", v: row.scale }, { k: "Opacity", v: row.opac }, { k: "Sound", v: row.sound }, { k: "Narration", v: row.narr }
+      ],
+      demo: this.demo(row),
+      play: () => this.setState((s) => ({ plays: { ...s.plays, [row.t]: (s.plays[row.t] || 0) + 1 } }))
+    }));
+    const reduced = this.props.reducedMotion ?? false;
+    const slow = this.props.slowMo ?? 1;
+    return {
+      principles: this.principles, behaviors,
+      modeLabel: (reduced ? "reduced-motion mode" : "standard motion") + (slow !== 1 ? " \u00b7 " + slow + "\u00d7 slow" : "")
+    };
+  }
+}
+</script>
+</body>
+</html>

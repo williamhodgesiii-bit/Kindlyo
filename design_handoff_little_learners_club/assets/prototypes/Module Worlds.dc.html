@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;padding:0;background:#ECE8DF;}
+  a{color:#A03F27;} a:hover{color:#7E301D;}
+</style>
+</helmet>
+<div style="padding:56px 64px 96px;font-family:'Source Sans 3',sans-serif;color:#31281C;width:1460px;min-width:1460px;box-sizing:content-box;">
+  <div style="margin-bottom:32px;max-width:920px;">
+    <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#8A8375;">Little Learner's Club — module worlds &amp; storyboards</div>
+    <h1 style="font:600 34px/1.2 'Source Serif 4',Georgia,serif;margin:10px 0 12px;">The Neighborhood — twelve worlds, one kit</h1>
+    <p style="font-size:15px;line-height:1.6;color:#6E6252;margin:0;">Every module world is a place in one living neighborhood, introduced by one repeatable six-beat formula and built from one shared scenery kit. Target held: <strong>by scene instance, ≥80% of drawn elements are kit parts</strong>; each world adds at most four unique assets. Cultural difference is represented as variation between homes, tables, and gardens — never as one standard with exceptions.</p>
+  </div>
+
+  <div data-screen-label="Introduction formula" style="background:#FFF;border:1px solid #E0DACC;border-radius:20px;padding:28px;margin-bottom:24px;">
+    <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#8A8375;">01 — The module-introduction formula · same six beats, every world</div>
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:16px;">
+      <div style="background:#FAF3E7;border:1px solid #E4D7BF;border-radius:14px;padding:14px;"><div style="font:600 14px/1.3 'Source Serif 4',Georgia,serif;">1 · On the map</div><div style="font-size:12px;line-height:1.55;color:#5C554A;margin-top:5px;">The neighborhood map, this world's node breathing once.</div><div style="font:9.5px/1.5 ui-monospace,monospace;color:#8A8375;margin-top:8px;">motion.scene · calm-scene</div></div>
+      <div style="background:#FAF3E7;border:1px solid #E4D7BF;border-radius:14px;padding:14px;"><div style="font:600 14px/1.3 'Source Serif 4',Georgia,serif;">2 · Travel</div><div style="font-size:12px;line-height:1.55;color:#5C554A;margin-top:5px;">Glim's light leads along the path; the landmark grows nearer.</div><div style="font:9.5px/1.5 ui-monospace,monospace;color:#8A8375;margin-top:8px;">motion.intro · calm-scene</div></div>
+      <div style="background:#FAF3E7;border:1px solid #E4D7BF;border-radius:14px;padding:14px;"><div style="font:600 14px/1.3 'Source Serif 4',Georgia,serif;">3 · Landmark wakes</div><div style="font-size:12px;line-height:1.55;color:#5C554A;margin-top:5px;">The world's signature ambient motion starts — the place is alive.</div><div style="font:9.5px/1.5 ui-monospace,monospace;color:#8A8375;margin-top:8px;">motion.intro · gentle-enter</div></div>
+      <div style="background:#FAF3E7;border:1px solid #E4D7BF;border-radius:14px;padding:14px;"><div style="font:600 14px/1.3 'Source Serif 4',Georgia,serif;">4 · One small moment</div><div style="font-size:12px;line-height:1.55;color:#5C554A;margin-top:5px;">One short social interaction previews what this world teaches.</div><div style="font:9.5px/1.5 ui-monospace,monospace;color:#8A8375;margin-top:8px;">motion.reaction · gentle-enter</div></div>
+      <div style="background:#FAF3E7;border:1px solid #E4D7BF;border-radius:14px;padding:14px;"><div style="font:600 14px/1.3 'Source Serif 4',Georgia,serif;">5 · Title reveal</div><div style="font-size:12px;line-height:1.55;color:#5C554A;margin-top:5px;">Motion quiets; the module title arrives with narration.</div><div style="font:9.5px/1.5 ui-monospace,monospace;color:#8A8375;margin-top:8px;">motion.card · gentle-enter</div></div>
+      <div style="background:#FAF3E7;border:1px solid #E4D7BF;border-radius:14px;padding:14px;"><div style="font:600 14px/1.3 'Source Serif 4',Georgia,serif;">6 · Into the path</div><div style="font-size:12px;line-height:1.55;color:#5C554A;margin-top:5px;">Crossfade to the learning path, first lesson glowing.</div><div style="font:9.5px/1.5 ui-monospace,monospace;color:#8A8375;margin-top:8px;">motion.scene · calm-scene</div></div>
+    </div>
+    <div style="font-size:12.5px;color:#6E6252;margin-top:14px;">Whole introduction ≤ 8s, skippable after first viewing, fully narrated. Reduced motion: beats become five still frames with the same narration; travel becomes a map-position change.</div>
+  </div>
+
+  <div style="display:flex;gap:24px;margin-bottom:24px;align-items:stretch;">
+    <div data-screen-label="Neighborhood hue map" style="background:#FFF;border:1px solid #E0DACC;border-radius:20px;padding:28px;flex:none;">
+      <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#8A8375;">02 — Accent assignments · adjacent worlds never share a hue family</div>
+      <div style="position:relative;width:640px;height:410px;margin-top:8px;">
+        <div style="position:absolute;left:288px;top:170px;width:64px;height:56px;background:#BE5136;border:2px solid #31281C;border-radius:10px;box-sizing:border-box;"></div>
+        <div style="position:absolute;left:306px;top:150px;width:28px;height:24px;background:#BE5136;border:2px solid #31281C;border-radius:8px 8px 2px 2px;transform:rotate(45deg);box-sizing:border-box;"></div>
+        <div style="position:absolute;left:288px;top:230px;width:64px;text-align:center;font:600 10.5px/1.3 'Source Sans 3',sans-serif;">The Clubhouse</div>
+        <sc-for list="{{ modules }}" as="m" hint-placeholder-count="12">
+          <div style="position:absolute;left:{{ m.mapL }};top:{{ m.mapT }};width:110px;display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div style="width:30px;height:30px;border-radius:50%;background:{{ m.a }};border:2px solid #31281C;box-sizing:border-box;"></div>
+            <div style="font:600 10px/1.25 'Source Sans 3',sans-serif;text-align:center;">{{ m.name }}</div>
+            <div style="font:8.5px/1 ui-monospace,monospace;color:#8A8375;">{{ m.a }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div data-screen-label="Shared kit" style="background:#FFF;border:1px solid #E0DACC;border-radius:20px;padding:28px;flex:1;">
+      <div style="font:11px/1.4 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#8A8375;">03 — The shared scenery kit (the ~80%)</div>
+      <p style="font-size:12.5px;line-height:1.6;color:#6E6252;margin:10px 0 12px;">Twenty-six parts, drawn once, themed by module variables. Every storyboard frame below is assembled from these plus ≤4 unique assets per world.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;">
+        <sc-for list="{{ kit }}" as="k" hint-placeholder-count="26">
+          <div style="background:#FAF3E7;border:1px solid #E4D7BF;border-radius:8px;padding:6px 10px;font-size:11.5px;color:#5C554A;">{{ k }}</div>
+        </sc-for>
+      </div>
+      <div style="background:#F6EBD3;border-radius:10px;padding:10px 12px;margin-top:14px;font-size:12px;line-height:1.6;color:#8A5A1C;">Accounting rule: a scene averaging 20 drawn elements may use at most 4 module-unique ones. Unique assets that a second module wants get promoted into the kit.</div>
+      <div style="font-size:12px;line-height:1.6;color:#6E6252;margin-top:12px;"><strong>Known flag:</strong> Thankful Kitchen (saffron) and Sunny Table Café (gold) sit in nearby hue families — acceptable because they are non-adjacent on the map, but final art should push Kitchen warmer and Café lighter.</div>
+    </div>
+  </div>
+
+  <sc-for list="{{ modules }}" as="m" hint-placeholder-count="12">
+    <div data-screen-label="Module world card" style="background:#FFF;border:1px solid #E0DACC;border-radius:20px;padding:28px;margin-bottom:24px;">
+      <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;">
+        <h2 style="font:600 24px/1.2 'Source Serif 4',Georgia,serif;margin:0;">{{ m.name }}</h2>
+        <div style="display:flex;gap:5px;align-items:center;">
+          <div style="width:20px;height:20px;border-radius:6px;background:{{ m.a }};"></div>
+          <div style="width:20px;height:20px;border-radius:6px;background:{{ m.s }};"></div>
+          <div style="width:20px;height:20px;border-radius:6px;background:{{ m.t }};border:1px solid #E4D7BF;"></div>
+          <div style="font:9.5px/1 ui-monospace,monospace;color:#8A8375;margin-left:4px;">{{ m.a }} · motif: {{ m.motif }}</div>
+        </div>
+        <div style="font-size:13px;color:#6E6252;flex:1;min-width:300px;"><strong style="color:#31281C;">Teaches:</strong> {{ m.purpose }}</div>
+      </div>
+      <sc-if value="{{ showStoryboards }}" hint-placeholder-val="{{ true }}">
+        <div style="margin-top:16px;">{{ m.board }}</div>
+        <div style="font-size:12.5px;line-height:1.55;color:#5C554A;margin-top:10px;"><strong>Introduction action:</strong> {{ m.intro }}</div>
+      </sc-if>
+      <sc-if value="{{ showSpecs }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px 20px;margin-top:14px;border-top:1px solid #EFE3CC;padding-top:14px;">
+          <sc-for list="{{ m.fields }}" as="f" hint-placeholder-count="12">
+            <div style="display:flex;gap:8px;align-items:baseline;padding:4px 0;">
+              <div style="font:600 9.5px/1.5 'Source Sans 3',sans-serif;letter-spacing:.05em;text-transform:uppercase;color:#8A8375;width:92px;flex:none;">{{ f.k }}</div>
+              <div style="font-size:12px;line-height:1.5;color:#5C554A;">{{ f.v }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showStoryboards&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Sections&quot;},&quot;showSpecs&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Sections&quot;}}">
+class Component extends DCLogic {
+  INK = "#31281C"; CANVAS = "#FAF3E7"; PAPER = "#F0E6D2"; WOOD = "#8C6242"; HONEY = "#C98F2E"; CREAM = "#FFFDF8";
+
+  kit = ["ground band", "hill silhouette (2 sizes)", "path dots", "canopy circle", "trunk capsule", "bush circle", "block (3 sizes)", "arch", "diamond", "plank capsule", "door", "window", "table", "chair", "bench", "jar", "dish set", "cloud", "motif particle system", "title chip", "lesson-path nodes", "narration bar", "choice cards", "character rig (\u00d75 kids)", "Glim", "celebration ring"];
+
+  // landmark parts: [l,t,w,h,radius,color-code,outline?,rotate?]  codes: A accent, S soft, D deep, W wood, C cream, H honey, K ink
+  modulesData = [
+    { name: "Hello Garden", a: "#587F70", s: "#9DB8AC", t: "#E7EEE7", d: "#D5E2D6", motif: "petal", mapL: "265px", mapT: "18px",
+      purpose: "Greetings and introductions \u2014 noticing people and letting them know you're ready to connect.",
+      intro: "Two kids notice each other across the garden; flowers open along the path between them as they wave \u2014 a bow, a nod, and a hello card open flowers just the same.",
+      lm: [[28,26,56,44,"28px 28px 0 0","X",1],[10,50,32,32,"50%","S",1],[74,50,32,32,"50%","A",1],[48,8,18,18,"50%","H",1]],
+      fields: [["Landmark","greeting arch with bloom bushes at the garden gate"],["Environment","arch, bush circles, flower dots, path, hills, ground band"],["Ambient motion","blooms slowly turn toward whoever arrives (3s, calm-scene)"],["Completion","one arch bloom opens per practised lesson; full arch at module end"],["Props","hello cards, watering can, gate bell"],["Interactions","wave, greet, join_group \u2014 Nora's no-thank-you wave is canon here"],["Reduced motion","blooms swap to open state; no turning"],["A11y risks","petal motion near the narration bar \u2014 pauses during speech"],["Culture & safety","bow, wave, nod, hello card shown as equal greetings; no forced handshakes, hugs, or eye contact"],["Shared assets","arch, bushes, hills, path dots, ground band"],["Unique assets","bloom set (3 states), gate bell"]] },
+    { name: "Echo Treehouse", a: "#47808A", s: "#8FB4BB", t: "#E4EDEE", d: "#CFDFE1", motif: "echo ring", mapL: "372px", mapT: "39px",
+      purpose: "Conversation and listening \u2014 taking turns, waiting for pauses, showing you heard.",
+      intro: "Speech shapes drift from a talking kid up into the listening leaves; the leaves answer only when the kid pauses and listens.",
+      lm: [[50,38,16,46,"8px","W",1],[24,2,46,46,"50%","A",1],[54,0,48,48,"50%","S",1],[38,30,42,26,"6px","C",1]],
+      fields: [["Landmark","broad tree with plank treehouse and listening-leaf canopy"],["Environment","trunk, canopy circles, house block, ladder rungs, hills"],["Ambient motion","leaves shimmer while someone speaks; go perfectly still to listen"],["Completion","a paper lantern lights in the canopy per lesson"],["Props","speech-dot bubbles, rope ladder, cushion"],["Interactions","listen, speak, wait_for_pause"],["Reduced motion","leaves swap between two static states; speech dots appear without drift"],["A11y risks","turn-taking must be captioned, never carried by motion alone"],["Culture & safety","pause length and friendly overlap differ by family \u2014 both named as styles, not errors"],["Shared assets","trunk, canopy, block, hills, ground band"],["Unique assets","listening-leaf cluster, lantern string"]] },
+    { name: "Friendship Forest", a: "#7A8040", s: "#AEB37E", t: "#EDEEDF", d: "#DDDFC5", motif: "leaf", mapL: "451px", mapT: "98px",
+      purpose: "Friendship and inclusion \u2014 joining, inviting, and making room.",
+      intro: "Three characters on separate paths gradually arrive at the same clearing, which widens to fit each new arrival.",
+      lm: [[4,6,42,42,"50%","S",1],[66,2,46,46,"50%","A",1],[34,20,40,40,"50%","S",1],[44,62,32,20,"8px","W",1]],
+      fields: [["Landmark","a clearing where three paths meet at a stump table"],["Environment","forest kit (canopies, trunks), merging paths, stump"],["Ambient motion","paths brighten gently when walked together"],["Completion","a ring of stones grows around the clearing \u2014 room for more"],["Props","stump table, backpack, shared blanket"],["Interactions","invite, join_group, give_space"],["Reduced motion","brightening becomes a static highlighted path"],["A11y risks","\u201cthe clearing widens\u201d must be narrated, not implied"],["Culture & safety","parallel play, chatting, and quiet company all count as friendship"],["Shared assets","entire forest kit from Echo Treehouse, hills, path dots"],["Unique assets","stump table, path-merge tiles"]] },
+    { name: "Build-It Workshop", a: "#B26B3A", s: "#D6A379", t: "#F4EAE0", d: "#E8D6C4", motif: "brick", mapL: "480px", mapT: "178px",
+      purpose: "Cooperation \u2014 plans, turns, and lifting things together.",
+      intro: "Two separate piles of parts become one small structure only when two characters lift a plank together.",
+      lm: [[26,34,60,44,"8px","A",1],[36,10,40,40,"8px","S",1,45],[44,52,20,26,"6px 6px 0 0","C",1]],
+      fields: [["Landmark","workshop shed with an outdoor build-table"],["Environment","shed block, roof diamond, crates, planks"],["Ambient motion","aligned blocks settle with a soft-settle click when a plan works"],["Completion","each lesson adds a piece to a group build displayed outside"],["Props","crates, planks, pulley wheel, blueprint card"],["Interactions","offer_object, receive_object, ask_permission"],["Reduced motion","structure swaps assembled/unassembled states"],["A11y risks","cooperation shown by position + narration, never simultaneous motion alone"],["Culture & safety","ask before taking tools; the planner role rotates \u2014 no boss"],["Shared assets","block set, plank, table, ground band"],["Unique assets","pulley, blueprint card, group-build display"]] },
+    { name: "Bridge Builders Bay", a: "#4E7A9B", s: "#8FAEC5", t: "#E5ECF2", d: "#D0DEE8", motif: "wave", mapL: "451px", mapT: "258px",
+      purpose: "Conflict, apologies, and repair \u2014 rebuilding after a wobble.",
+      intro: "Two kids on opposite platforms; every listening or repair action lays one plank until they meet in the middle.",
+      lm: [[2,58,32,18,"6px","W",1],[86,58,32,18,"6px","W",1],[26,30,66,28,"33px 33px 0 0","X",2],[52,72,18,12,"4px","S",1]],
+      fields: [["Landmark","two shore platforms with a build-it-yourself bridge"],["Environment","water band (tint-deep), platforms, planks, small boat"],["Ambient motion","water arcs lap slowly; a plank glows faintly when a repair step lands"],["Completion","the bridge completes; a paper boat passes under \u2014 repairs carry weight"],["Props","planks, rope, paper boat, repair kit"],["Interactions","apologize, accept_apology, say_no_confidently"],["Reduced motion","planks appear laid; water still"],["A11y risks","conflict scenes stay low-volume \u2014 no raised-voice audio"],["Culture & safety","apologies take many forms (words, notes, actions); accepting has no deadline; leaving stays available"],["Shared assets","platform blocks, plank, water band, hills"],["Unique assets","bridge assembly set, paper boat"]] },
+    { name: "Thankful Kitchen", a: "#C29237", s: "#DDBA79", t: "#F6EEDC", d: "#EBDDBC", motif: "steam curl", mapL: "372px", mapT: "317px",
+      purpose: "Gratitude and kindness \u2014 small helpful actions that add up.",
+      intro: "Each small helpful action drops an ingredient into the shared pot while the recipe board fills in.",
+      lm: [[16,58,88,20,"6px","A",1],[42,34,38,26,"4px 4px 16px 16px","K",0],[50,10,8,18,"4px","S",0,-12],[64,4,8,18,"4px","S",0,10]],
+      fields: [["Landmark","a warm kitchen with one big shared pot and a recipe board"],["Environment","interior wall, counter, pot, shelf, jars"],["Ambient motion","steam curls rise slowly; a jar glows when filled"],["Completion","the finished dish is shared out \u2014 every plate gets some"],["Props","pot, jars, ladle, recipe cards, plates"],["Interactions","offer_object, receive_object, encouraged"],["Reduced motion","steam removed; ingredients appear in the pot"],["A11y risks","kindness is never counted publicly \u2014 the pot fills, no one keeps score"],["Culture & safety","recipes rotate cuisines with cultural review; thanks customs vary and all are shown warmly"],["Shared assets","interior wall, table, shelf, jar, dish set"],["Unique assets","pot + steam set, recipe board"]] },
+    { name: "Welcome Home", a: "#8A5E74", s: "#B693A6", t: "#F1E8ED", d: "#E2D2DB", motif: "mat stripe", mapL: "265px", mapT: "338px",
+      purpose: "Being a guest and a host \u2014 doorways, coats, and making space.",
+      intro: "A doorway, coat corner, guest space, and shared activity come to life one by one as a guest arrives and is welcomed in.",
+      lm: [[38,16,38,62,"19px 19px 4px 4px","A",1],[62,44,6,6,"50%","H",0],[86,10,14,14,"50%","H",1],[32,78,50,8,"3px","S",0]],
+      fields: [["Landmark","a friendly front door with porch light, pegs, and a guest corner"],["Environment","door, porch, peg rail, rug, sofa block"],["Ambient motion","the porch light warms as someone approaches; the door opens gently"],["Completion","the welcome mat gains a stripe per lesson; the light stays lit"],["Props","coat pegs, slippers, tray, board game"],["Interactions","invite, greet, ask_permission, give_space"],["Reduced motion","light and door are state swaps"],["A11y risks","no doorbell startle sounds; \u201chome\u201d drawn neutral \u2014 apartment or house"],["Culture & safety","shoes on or off, greeting elders first, host and guest customs \u2014 shown as each family's way, never ranked"],["Shared assets","door, rug, interior wall, table, block set"],["Unique assets","peg rail, welcome mat, porch light"]] },
+    { name: "Community Town", a: "#A85D62", s: "#C99295", t: "#F4E9EA", d: "#E7D3D4", motif: "crosswalk stripe", mapL: "158px", mapT: "317px",
+      purpose: "Sharing public spaces \u2014 queues, quiet zones, buses, and benches.",
+      intro: "Crosswalks, queues, buses, and benches light up as characters take turns and make room for each other.",
+      lm: [[6,28,30,50,"4px","S",1],[40,18,34,60,"4px","A",1],[78,32,28,46,"4px","D",1],[10,82,96,6,"3px","C",0]],
+      fields: [["Landmark","a small town square: crosswalk, bench, bus stop, library corner"],["Environment","building row, crosswalk stripes, bench, bus"],["Ambient motion","the square responds to considerate acts \u2014 the bus kneels, queue gaps even out"],["Completion","the square fills with a small friendly crowd, everyone with space"],["Props","bus, bench, queue markers, library cart"],["Interactions","wait_for_pause, give_space, ask_for_help"],["Reduced motion","queue and bus become state swaps; no crowd motion"],["A11y risks","crowd scenes stay low-density; queue logic narrated, not implied"],["Culture & safety","volume and queue norms differ by place; safety: find a uniformed or trusted helper, stay findable"],["Shared assets","block set, bench, ground band, path dots"],["Unique assets","bus, crosswalk set, queue markers"]] },
+    { name: "Sunny Table Caf\u00e9", a: "#D9A44A", s: "#EBC98D", t: "#FAF1DE", d: "#F0E0BC", motif: "sun ray", mapL: "79px", mapT: "258px",
+      purpose: "Dining together \u2014 tables, turns, and passing things kindly.",
+      intro: "A shared table assembles itself \u2014 plates, cups, chairs \u2014 while characters participate, listen, and pass things along.",
+      lm: [[26,4,64,32,"32px 32px 0 0","A",1],[56,34,5,30,"2px","K",0],[34,60,52,20,"50%","S",1]],
+      fields: [["Landmark","a round caf\u00e9 table under one big umbrella"],["Environment","umbrella, round table, chairs, menu board"],["Ambient motion","the table sets itself piece by piece as characters take part"],["Completion","a full table and one shared-meal moment, played once"],["Props","plates, cups, napkins, menu, pitcher"],["Interactions","ask_permission, offer_object, wait_for_pause"],["Reduced motion","settings appear placed"],["A11y risks","sensory food aversions respected \u2014 \u201cno thank you\u201d is table manners too"],["Culture & safety","chopsticks, hands, and forks all appear; no utensil is the correct one; family table customs vary"],["Shared assets","table, chairs, dish set, ground band"],["Unique assets","umbrella, menu board, pitcher"]] },
+    { name: "Pixel Plaza", a: "#5D6FAE", s: "#A5B0D6", t: "#E6EAF5", d: "#D2D9EC", motif: "pixel", mapL: "50px", mapT: "178px",
+      purpose: "Digital citizenship \u2014 kind messages, permission, and screen sense.",
+      intro: "Messages appear as shapes whose feeling changes with wording, timing, permission, and context.",
+      lm: [[30,8,30,30,"6px","A",1],[62,8,30,30,"6px","S",1],[46,40,30,30,"6px","S",1],[26,72,70,10,"4px","D",1]],
+      fields: [["Landmark","a plaza kiosk built of pixel blocks with a mosaic screen"],["Environment","pixel blocks, kiosk, message shapes"],["Ambient motion","message shapes float up the kiosk, softening or sharpening with their wording"],["Completion","the screen shows a mosaic of the module's kind messages"],["Props","message tiles, camera-permission tile, device frame"],["Interactions","ask_permission, wait_for_pause, say_no_confidently"],["Reduced motion","message states swap; no float"],["A11y risks","tone is never color-alone \u2014 every message shape pairs with a label; core rule of this world"],["Culture & safety","photo consent, private info, and telling a trusted adult about odd messages; screen rules belong to each family"],["Shared assets","block set (workshop), title chip, ground band"],["Unique assets","message-shape set, mosaic screen"]] },
+    { name: "Brave Basecamp", a: "#B0782A", s: "#D8B075", t: "#F2E8D3", d: "#E6D8B8", motif: "compass diamond", mapL: "79px", mapT: "98px",
+      purpose: "Safety, consent, and boundaries \u2014 the module every other one defers to.",
+      intro: "A compass and trail system help characters spot boundaries, trusted adults, and safe choices.",
+      lm: [[24,26,48,48,"10px","A",1,45],[80,4,4,58,"2px","K",0],[84,4,26,16,"3px","S",1],[86,64,22,22,"50%","C",1]],
+      fields: [["Landmark","a tent with a flag, a compass rock, and a trusted-adults board"],["Environment","tent diamond, flag, compass, trail dots"],["Ambient motion","the compass needle settles when a safe choice is made; the trail lights toward trusted adults"],["Completion","the child plants their own flag: \u201cI can say no. I can get help.\u201d"],["Props","compass, flags, trail markers, trusted-adult cards"],["Interactions","say_no_confidently, ask_for_help, boundary pose throughout"],["Reduced motion","needle appears settled; trail is a static highlight"],["A11y risks","safety choices are never timed and never pressured; calmest module in the app"],["Culture & safety","politeness never overrides safety, consent, or body autonomy; practicing \u201cno\u201d is celebrated; all content requires qualified human review pre-ship"],["Shared assets","ground band, hills, trail/path dots, title chip"],["Unique assets","tent + flag set, compass, trusted-adult board"]] },
+    { name: "World Garden", a: "#7D6CA6", s: "#AC9FC9", t: "#EDE9F4", d: "#DDD5EA", motif: "mixed petals", mapL: "158px", mapT: "39px",
+      purpose: "Culture and different customs \u2014 many right ways, one shared garden.",
+      intro: "Different plants flourish in different ways \u2014 tall, trailing, blooming, quiet \u2014 while contributing to one shared garden.",
+      lm: [[6,58,30,20,"5px","A",1],[44,58,30,20,"5px","S",1],[82,58,30,20,"5px","A",1],[14,36,14,22,"7px","D",0],[52,30,16,16,"50%","H",1],[88,34,16,16,"8px","S",0,45]],
+      fields: [["Landmark","a ring of planter beds, each growing differently, around one fountain"],["Environment","planter blocks, varied plant shapes, fountain"],["Ambient motion","each bed sways in its own rhythm; the fountain reflects them all"],["Completion","the fountain blooms with a pattern woven from every bed's motif"],["Props","planters, watering can (shared with Hello Garden), pattern tiles"],["Interactions","notice, curious, greet \u2014 in many forms"],["Reduced motion","sway removed; beds hold varied static states"],["A11y risks","variety carried by shape + label, never color alone"],["Culture & safety","the variation module: customs are parallel gardens, never exotic-vs-normal; authored with cultural consultants; no flag or costume clich\u00e9s"],["Shared assets","garden kit from Hello Garden, circle/block kit, hills"],["Unique assets","plant-variety set, fountain, pattern tiles"]] }
+  ];
+
+  el(t, s, ...ch) { return React.createElement(t, { style: s }, ...ch); }
+  abs(s) { return Object.assign({ position: "absolute", boxSizing: "border-box" }, s); }
+
+  color(m, code) {
+    return { A: m.a, S: m.s, D: m.d, W: this.WOOD, C: this.CREAM, H: this.HONEY, K: "#5C554A", X: "transparent" }[code];
+  }
+
+  landmark(m, scale) {
+    const parts = m.lm.map((p, i) => {
+      const [l, t, w, h, r, cc, bd, rot] = p;
+      const isArch = cc === "X";
+      return this.el("div", this.abs({
+        key: i, left: l * scale, top: t * scale, width: w * scale, height: h * scale,
+        borderRadius: typeof r === "string" ? r : r * scale,
+        background: isArch ? "transparent" : this.color(m, cc),
+        border: isArch ? (4 * scale) + "px solid " + m.a : (bd ? "2px solid " + this.INK : "none"),
+        borderBottom: isArch ? "none" : undefined,
+        transform: rot ? "rotate(" + rot + "deg)" : "none"
+      }));
+    });
+    return this.el("div", { position: "relative", width: 120 * scale, height: 90 * scale }, ...parts);
+  }
+
+  miniKid(x, y, skin, outfit, s) {
+    return [
+      this.el("div", this.abs({ left: x, top: y, width: 13 * s, height: 13 * s, borderRadius: "50%", background: skin, border: "1.5px solid " + this.INK })),
+      this.el("div", this.abs({ left: x - 1.5 * s, top: y + 12 * s, width: 16 * s, height: 14 * s, borderRadius: "5px 5px 3px 3px", background: outfit, border: "1.5px solid " + this.INK }))
+    ];
+  }
+
+  thumb(m, beat) {
+    const e = this.el.bind(this), a = this.abs.bind(this);
+    const W = 176, H = 112;
+    const kids = [];
+    let bg = m.t;
+    if (beat === 1 || beat === 6) bg = this.CANVAS;
+    if (beat >= 2 && beat <= 5) {
+      kids.push(e("div", a({ left: -30, bottom: -26, width: 130, height: 70, borderRadius: "50%", background: m.d })));
+    }
+    if (beat >= 3 && beat <= 5) {
+      kids.push(e("div", a({ left: 0, right: 0, bottom: 0, height: 16, background: this.PAPER, borderTop: "2px solid " + this.INK })));
+    }
+    if (beat === 1) {
+      kids.push(e("div", a({ left: 26, top: 48, width: 20, height: 17, borderRadius: "4px 4px 6px 6px", background: "#BE5136", border: "1.5px solid " + this.INK })));
+      for (let i = 0; i < 4; i++) kids.push(e("div", a({ left: 54 + i * 16, top: 44 - i * 4, width: 7, height: 2.5, borderRadius: 2, background: "#B4A88E", transform: "rotate(-14deg)" })));
+      kids.push(e("div", a({ left: 120, top: 22, width: 22, height: 22, borderRadius: "50%", background: m.a, border: "2px solid " + this.INK, boxShadow: "0 0 0 4px " + m.s })));
+      kids.push(e("div", a({ left: 70, top: 74, width: 13, height: 13, borderRadius: "50%", background: m.d })));
+      kids.push(e("div", a({ left: 140, top: 78, width: 13, height: 13, borderRadius: "50%", background: m.d })));
+    } else if (beat === 2) {
+      for (let i = 0; i < 5; i++) kids.push(e("div", a({ left: 14 + i * 20, top: 88 - i * 7, width: 6, height: 6, borderRadius: "50%", background: m.a })));
+      kids.push(e("div", a({ left: 36, top: 56, width: 13, height: 17, borderRadius: 4, background: this.HONEY, border: "1.5px solid " + this.INK })));
+      kids.push(e("div", a({ left: 39, top: 60, width: 7, height: 7, borderRadius: "50%", background: "#F6DFAD" })));
+      kids.push(e("div", a({ right: 6, bottom: 12, transform: "scale(.62)", transformOrigin: "100% 100%" }), this.landmark(m, 1)));
+    } else if (beat === 3) {
+      kids.push(e("div", a({ right: 22, bottom: 14 }), this.landmark(m, 0.92)));
+      for (let i = 0; i < 3; i++) kids.push(e("div", a({ left: 16 + i * 15, top: 14 + (i % 2) * 9, width: 8, height: 8, borderRadius: m.motif === "pixel" || m.motif === "brick" ? 2 : m.motif === "compass diamond" ? 2 : "50%", background: m.s, transform: m.motif === "compass diamond" ? "rotate(45deg)" : "none" })));
+    } else if (beat === 4) {
+      kids.push(e("div", a({ right: 10, bottom: 14, opacity: .55, transform: "scale(.7)", transformOrigin: "100% 100%" }), this.landmark(m, 1)));
+      kids.push(...this.miniKid(34, 52, "#C99772", m.a, 1.4));
+      kids.push(...this.miniKid(84, 52, "#8C5A3C", m.s, 1.4));
+      for (let i = 0; i < 3; i++) kids.push(e("div", a({ left: 62 + i * 7, top: 44, width: 3.5, height: 3.5, borderRadius: "50%", background: this.INK })));
+    } else if (beat === 5) {
+      kids.push(e("div", a({ right: 16, bottom: 14, opacity: .4, transform: "scale(.8)", transformOrigin: "100% 100%" }), this.landmark(m, 1)));
+      kids.push(e("div", a({ left: 20, top: 40, right: 20, background: this.CREAM, border: "1.5px solid " + this.INK, borderRadius: 9, padding: "8px 6px", textAlign: "center", font: "600 12px/1.2 'Source Serif 4',Georgia,serif", color: this.INK }), m.name));
+    } else {
+      const st = [[26, m.a, true], [76, null, false], [126, m.d, false]];
+      st.forEach(([x, fill, ring]) => {
+        kids.push(e("div", a({ left: x, top: 46, width: 20, height: 20, borderRadius: "50%", background: fill || this.CREAM, border: "2px solid " + (ring || fill ? this.INK : "#C8BCA4") })));
+      });
+      for (let i = 0; i < 2; i++) for (let j = 0; j < 3; j++) kids.push(e("div", a({ left: 50 + i * 50 + j * 8, top: 55, width: 5, height: 2.5, borderRadius: 2, background: "#B4A88E" })));
+      kids.push(e("div", a({ left: 22, top: 74, font: "9px/1.4 ui-monospace,monospace", color: "#8A8375" }), "lesson 1 glowing"));
+    }
+    return this.el("div", { position: "relative", width: W, height: H, background: bg, border: "1px solid #E4D7BF", borderRadius: 12, overflow: "hidden", flex: "none" }, ...kids);
+  }
+
+  board(m) {
+    const caps = ["1 \u00b7 On the map", "2 \u00b7 Travel", "3 \u00b7 Landmark wakes", "4 \u00b7 One small moment", "5 \u00b7 Title reveal", "6 \u00b7 Into the path"];
+    return this.el("div", { display: "flex", gap: 14 },
+      ...caps.map((c, i) => this.el("div", { display: "flex", flexDirection: "column", gap: 5 },
+        this.thumb(m, i + 1),
+        this.el("div", { font: "9.5px/1.4 ui-monospace,monospace", color: "#8A8375" }, c))));
+  }
+
+  renderVals() {
+    return {
+      kit: this.kit,
+      modules: this.modulesData.map((m) => ({
+        ...m,
+        board: this.board(m),
+        fields: m.fields.map((f) => ({ k: f[0], v: f[1] }))
+      })),
+      showStoryboards: this.props.showStoryboards ?? true,
+      showSpecs: this.props.showSpecs ?? true
+    };
+  }
+}
+</script>
+</body>
+</html>
