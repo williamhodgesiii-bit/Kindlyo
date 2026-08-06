@@ -12,6 +12,8 @@ Newest first.
 
 ## 2026-08-06
 
+- feat(design): system states — loading, resume, recoverable error (handoff step 6)
+- Shipped from `fe2a495` (`claude/step-4-lesson-runner-p4qtf9`)
 - test(e2e): isolate the shell footer spec with its own parent
 - feat(design): character rig & Glim (handoff step 5)
 - Shipped from `3ae03f8` (`claude/step-4-lesson-runner-p4qtf9`)

@@ -4,12 +4,14 @@ import { LessonShell } from "@/components/shells/LessonShell";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { ContentStatusBadge } from "@/components/ui/ContentStatusBadge";
 import { PageContainer } from "@/components/ui/PageContainer";
-import { Skeleton } from "@/components/ui/Skeleton";
 import { Heading, Text } from "@/components/ui/Typography";
 import type { Lesson } from "@/features/curriculum/schema";
 import { useLessonRun, type LessonRun } from "@/features/lessons/useLessonRun";
 import { useModulePath } from "@/features/lessons/useModulePath";
 import { useFamily } from "@/features/profiles/useFamily";
+import { LessonLoading } from "./LessonLoading";
+import { RecoverableError } from "./RecoverableError";
+import { ResumeCard } from "./ResumeCard";
 import { ChoiceStepView } from "./steps/ChoiceStepView";
 import { CoachingStepView } from "./steps/CoachingStepView";
 import { CompletionStepView } from "./steps/CompletionStepView";
@@ -78,15 +80,6 @@ function waitingHint(run: LessonRun): string | null {
   return null;
 }
 
-function LoadingLesson() {
-  return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-12">
-      <Skeleton variant="block" loadingLabel="Loading your lesson" />
-      <Skeleton variant="text" lines={3} className="mt-6" />
-    </div>
-  );
-}
-
 /** A calm full-page notice with one way onward. Not an error state. */
 function LessonNotice({
   title,
@@ -125,7 +118,7 @@ export function LessonRunner({ lesson }: { lesson: Lesson }) {
   const profileId = family.selectedProfile?.id ?? null;
   const path = useModulePath(profileId);
 
-  if (!family.hydrated) return <LoadingLesson />;
+  if (!family.hydrated) return <LessonLoading />;
 
   if (family.selectedProfile === null) {
     return (
@@ -138,7 +131,7 @@ export function LessonRunner({ lesson }: { lesson: Lesson }) {
   }
 
   // Profile chosen, but its progress is still loading.
-  if (path === null) return <LoadingLesson />;
+  if (path === null) return <LessonLoading />;
 
   const entry = path.lessons.find(
     (pathLesson) => pathLesson.lesson?.id === lesson.id,
@@ -166,10 +159,27 @@ function LessonPlayer({
 }) {
   const run = useLessonRun(lesson, profileId);
 
+  // The saved run could not be loaded: offer a calm retry, place preserved.
+  if (run.loadError) return <RecoverableError onRetry={run.retry} />;
+
   // Saved progress is read after mount, so until then we do not know which
   // step to draw. Showing a placeholder beats flashing step one at a child who
   // was halfway through.
-  if (!run.hydrated) return <LoadingLesson />;
+  if (!run.hydrated) return <LessonLoading />;
+
+  // A run stopped mid-lesson: ask before resuming rather than deciding for the
+  // child (docs/design/COMPONENT_STATES.md §14).
+  if (run.resumeStep !== null) {
+    return (
+      <ResumeCard
+        lessonTitle={lesson.title}
+        stepNumber={run.resumeStep + 1}
+        stepCount={run.stepCount}
+        onKeepGoing={run.keepGoing}
+        onStartOver={run.startOver}
+      />
+    );
+  }
 
   const hint = waitingHint(run);
   const isLastStep = run.step.kind === "completion";
