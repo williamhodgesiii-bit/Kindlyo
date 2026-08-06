@@ -1,86 +1,408 @@
 /*
- * Design tokens from docs/DESIGN_SYSTEM.md.
- * These are provisional and intended to be replaceable.
+ * Design tokens — Little Learner's Club "Storybook Geometry" system.
  *
- * Exposed to Tailwind v4 via @theme so utilities such as `bg-background`,
- * `text-primary`, and `rounded-lg` resolve to these values. Components should
- * consume tokens, never raw hex.
+ * Source of truth:
+ *   design_handoff_little_learners_club/docs/design/DESIGN.md   (global + module theme)
+ *   design_handoff_little_learners_club/docs/design/MOTION.md   (duration + easing)
+ *   design_handoff_little_learners_club/docs/design/MODULE_WORLDS.md §3 (per-world values)
+ *
+ * Leaf names mirror the `llc.<group>.<name>` / `module.<name>` names in those
+ * docs exactly, so this file stays the reference. "If it isn't a token, it does
+ * not ship" — screens consume these, never raw hex/spacing/radius.
+ *
+ * Layout of this file:
+ *   1. `:root`              — the canonical --llc-* / --module-* custom
+ *                            properties (design source of truth, themeable).
+ *   2. `[data-module=...]`  — the twelve per-world theme overrides.
+ *   3. `@theme`             — maps the tokens into Tailwind v4 utility
+ *                            namespaces (bg-*, text-*, rounded-*, font-*, ...)
+ *                            and aliases Kindlyo's older token names onto the
+ *                            new values, so existing components adopt the
+ *                            palette without breaking (to be removed as those
+ *                            components migrate onto the llc.* tokens).
  */
 
+:root {
+  /* ---- Colour · brand & neutrals (global, immutable) — DESIGN.md §2 ---- */
+  --llc-color-ink: #31281c; /* text, outlines, icon strokes */
+  --llc-color-ink-soft: #6e6252; /* secondary text */
+  --llc-color-canvas: #faf3e7; /* app background (elevation 0) */
+  --llc-color-surface: #fffdf8; /* cards, bars (elevation 1) */
+  --llc-color-paper: #f0e6d2; /* paper layers, offsets, scene ground band */
+  --llc-color-border: #e4d7bf; /* hairlines */
+  --llc-color-brand: #be5136; /* primary action fill, brand moments */
+  --llc-color-brand-strong: #a03f27; /* brand as text, hover/pressed */
+  --llc-color-on-brand: #fffdf8; /* text/icon on a filled brand surface */
+
+  /* ---- Colour · feedback trio (global, module-independent) — DESIGN.md §2 ----
+     Always paired with an icon AND a text label — never colour alone. There is
+     no fourth state and no red in the child app; motion weight is identical
+     across all three. */
+  --llc-color-feedback-helpful: #3d6b58;
+  --llc-color-feedback-helpful-bg: #e3ebe6;
+  --llc-color-feedback-mixed: #8a5a1c;
+  --llc-color-feedback-mixed-bg: #f6ebd3;
+  --llc-color-feedback-context: #4a6076;
+  --llc-color-feedback-context-bg: #e3e9ee;
+  /* Destructive account actions — PARENT AREA ONLY (never the child app). */
+  --llc-color-danger: #a34141;
+
+  /* ---- Colour · skin ramp (6 steps, used verbatim) — DESIGN.md §2 ---- */
+  --llc-skin-1: #f2c9a4;
+  --llc-skin-2: #e8b48a;
+  --llc-skin-3: #c99772;
+  --llc-skin-4: #b97f5c;
+  --llc-skin-5: #8c5a3c;
+  --llc-skin-6: #6b4226;
+
+  /* ---- Colour · cast signatures (one per character) — DESIGN.md §2 ---- */
+  --llc-cast-maya: #b85c48;
+  --llc-cast-theo: #587f70;
+  --llc-cast-amara: #d8a24c;
+  --llc-cast-jun: #5d6fae;
+  --llc-cast-nora: #5b7086;
+  --llc-cast-glim: #c98f2e;
+
+  /* ---- Typography families — DESIGN.md §3 ----
+     Serif = the voice of the story (titles, prompts, celebrations, parent
+     editorial headings). Sans = everything functional. No third typeface.
+     NOTE: the Source Serif 4 / Source Sans 3 webfonts are not yet loaded
+     (that is wired with next/font in the shell step); until then these resolve
+     to the fallback stacks, which keeps the current rendering unchanged. */
+  --llc-type-display:
+    "Source Serif 4", "Iowan Old Style", "Palatino Linotype", Palatino,
+    "Book Antiqua", Georgia, "Times New Roman", serif;
+  --llc-type-body:
+    "Source Sans 3", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* ---- Radius (5 stops) — DESIGN.md §4 ----
+     `round` is reserved for character heads, map nodes, and the play button —
+     never buttons. */
+  --llc-radius-sm: 0.5rem; /* 8px  · chips */
+  --llc-radius-md: 0.75rem; /* 12px · buttons */
+  --llc-radius-lg: 1rem; /* 16px · cards */
+  --llc-radius-xl: 1.5rem; /* 24px · scene panels */
+  --llc-radius-round: 9999px; /* full circle */
+
+  /* ---- Spacing · 4px base — DESIGN.md §4 ---- */
+  --llc-space-1: 0.25rem; /* 4  */
+  --llc-space-2: 0.5rem; /* 8  */
+  --llc-space-3: 0.75rem; /* 12 · inside chips */
+  --llc-space-4: 1rem; /* 16 · card padding */
+  --llc-space-6: 1.5rem; /* 24 · between cards */
+  --llc-space-8: 2rem; /* 32 · section gaps */
+  --llc-space-12: 3rem; /* 48 · tablet gutters */
+  --llc-space-16: 4rem; /* 64 · hero breathing room */
+
+  /* ---- Touch floor — DESIGN.md §4 ---- */
+  --llc-size-touch: 2.75rem; /* 44px, with >= space-2 between targets */
+
+  /* ---- Elevation — DESIGN.md §4 ----
+     Level 1 surface card: 1px border + this two-layer soft shadow (ink 4–6%).
+     Level 2 is a solid `paper` layer offset +6px x/y behind a hero card — a
+     component pattern that consumes --llc-elevation-paper-offset. No hard-black
+     shadows, no glows (except Glim). */
+  --llc-shadow-soft:
+    0 1px 2px rgb(49 40 28 / 0.04), 0 4px 12px rgb(49 40 28 / 0.06);
+  --llc-elevation-paper-offset: 6px;
+
+  /* ---- Motion · durations (8 tokens) — MOTION.md ---- */
+  --llc-motion-touch: 120ms; /* press/release response */
+  --llc-motion-ui: 180ms; /* small UI state changes */
+  --llc-motion-card: 240ms; /* card entrance */
+  --llc-motion-reaction: 320ms; /* character reaction */
+  --llc-motion-scene: 400ms; /* scene transition */
+  --llc-motion-celebrate: 600ms; /* lesson celebration */
+  --llc-motion-intro: 900ms; /* module-introduction beat */
+  --llc-motion-celebrate-module: 1200ms; /* module celebration */
+
+  /* ---- Motion · easings (6 tokens) — MOTION.md ---- */
+  --llc-ease-gentle-enter: cubic-bezier(0.22, 0.61, 0.36, 1); /* arriving */
+  --llc-ease-gentle-exit: cubic-bezier(0.4, 0.05, 0.7, 0.4); /* leaving */
+  --llc-ease-soft-settle: cubic-bezier(0.3, 1.12, 0.4, 1); /* squish, <=6% */
+  --llc-ease-curious: cubic-bezier(0.5, -0.12, 0.4, 1); /* anticipation */
+  --llc-ease-playful: cubic-bezier(0.3, 1.3, 0.5, 1); /* celebration + Glim */
+  --llc-ease-calm-scene: cubic-bezier(0.45, 0.05, 0.25, 1); /* scene/route */
+
+  /* ==== Module theme (the only themeable surface) — DESIGN.md §6 ====
+     Exactly five variables plus a motif, set once per world and consumed
+     everywhere. Default = Hello Garden; override on an ancestor via the
+     [data-module="..."] rules below. accent >= 3:1 vs canvas (non-text);
+     accent-strong is the only step allowed to carry text (>= 4.5:1 on surface);
+     no gradients (Glim's glow excepted). */
+  --module-accent: #587f70;
+  --module-accent-strong: #3f6a5d;
+  --module-accent-soft: #9db8ac;
+  --module-tint: #e7eee7;
+  --module-tint-deep: #d5e2d6;
+  --module-motif: petal;
+}
+
+/* ==== Per-world module themes — MODULE_WORLDS.md §3 ====
+   accent / accent-soft / tint / tint-deep / motif are published for all twelve
+   worlds. accent-strong is published ("proven") for Hello Garden, Pixel Plaza,
+   and Brave Basecamp; the other nine are DERIVED by the documented rule (a
+   darker step of the same hue, >= 4.5:1 on the surface token) and should be
+   confirmed by the designer. Each derived row notes its measured contrast on
+   surface. Adjacent worlds on the map never share a hue family. */
+
+/* 1 · Hello Garden — sage · petal. `meeting-people` is the current repo id for
+   this world (see src/content/modules.ts); aliased until the ids reconcile. */
+[data-module="hello-garden"],
+[data-module="meeting-people"] {
+  --module-accent: #587f70;
+  --module-accent-strong: #3f6a5d; /* proven · 6.02:1 on surface */
+  --module-accent-soft: #9db8ac;
+  --module-tint: #e7eee7;
+  --module-tint-deep: #d5e2d6;
+  --module-motif: petal;
+}
+
+/* 2 · Echo Treehouse — teal · echo ring */
+[data-module="echo-treehouse"] {
+  --module-accent: #47808a;
+  --module-accent-strong: #37646c; /* derived · 6.45:1 on surface */
+  --module-accent-soft: #8fb4bb;
+  --module-tint: #e4edee;
+  --module-tint-deep: #cfdfe1;
+  --module-motif: echo-ring;
+}
+
+/* 3 · Friendship Forest — olive · leaf */
+[data-module="friendship-forest"] {
+  --module-accent: #7a8040;
+  --module-accent-strong: #5f6432; /* derived · 6.16:1 on surface */
+  --module-accent-soft: #aeb37e;
+  --module-tint: #edeedf;
+  --module-tint-deep: #dddfc5;
+  --module-motif: leaf;
+}
+
+/* 4 · Build-It Workshop — rust · brick */
+[data-module="build-it-workshop"] {
+  --module-accent: #b26b3a;
+  --module-accent-strong: #8b532d; /* derived · 6.12:1 on surface */
+  --module-accent-soft: #d6a379;
+  --module-tint: #f4eae0;
+  --module-tint-deep: #e8d6c4;
+  --module-motif: brick;
+}
+
+/* 5 · Bridge Builders Bay — blue · wave */
+[data-module="bridge-builders-bay"] {
+  --module-accent: #4e7a9b;
+  --module-accent-strong: #3d5f79; /* derived · 6.64:1 on surface */
+  --module-accent-soft: #8faec5;
+  --module-tint: #e5ecf2;
+  --module-tint-deep: #d0dee8;
+  --module-motif: wave;
+}
+
+/* 6 · Thankful Kitchen — saffron · steam curl.
+   Known flag (MODULE_WORLDS.md §3): saffron accent is 2.55:1 on canvas, below
+   the 3:1 non-text guideline; final art should push this warmer. */
+[data-module="thankful-kitchen"] {
+  --module-accent: #c29237;
+  --module-accent-strong: #916d29; /* derived · 4.67:1 on surface */
+  --module-accent-soft: #ddba79;
+  --module-tint: #f6eedc;
+  --module-tint-deep: #ebddbc;
+  --module-motif: steam-curl;
+}
+
+/* 7 · Welcome Home — plum · mat stripe */
+[data-module="welcome-home"] {
+  --module-accent: #8a5e74;
+  --module-accent-strong: #6c495a; /* derived · 7.54:1 on surface */
+  --module-accent-soft: #b693a6;
+  --module-tint: #f1e8ed;
+  --module-tint-deep: #e2d2db;
+  --module-motif: mat-stripe;
+}
+
+/* 8 · Community Town — rose · crosswalk stripe */
+[data-module="community-town"] {
+  --module-accent: #a85d62;
+  --module-accent-strong: #84474b; /* derived · 6.92:1 on surface */
+  --module-accent-soft: #c99295;
+  --module-tint: #f4e9ea;
+  --module-tint-deep: #e7d3d4;
+  --module-motif: crosswalk-stripe;
+}
+
+/* 9 · Sunny Table Café — gold · sun ray.
+   Known flag (MODULE_WORLDS.md §3): gold accent is 2.03:1 on canvas, below the
+   3:1 non-text guideline; final art should push this lighter. */
+[data-module="sunny-table-cafe"] {
+  --module-accent: #d9a44a;
+  --module-accent-strong: #986b20; /* derived · 4.63:1 on surface */
+  --module-accent-soft: #ebc98d;
+  --module-tint: #faf1de;
+  --module-tint-deep: #f0e0bc;
+  --module-motif: sun-ray;
+}
+
+/* 10 · Pixel Plaza — periwinkle · pixel */
+[data-module="pixel-plaza"] {
+  --module-accent: #5d6fae;
+  --module-accent-strong: #47558c; /* proven · 7.01:1 on surface */
+  --module-accent-soft: #a5b0d6;
+  --module-tint: #e6eaf5;
+  --module-tint-deep: #d2d9ec;
+  --module-motif: pixel;
+}
+
+/* 11 · Brave Basecamp — amber · compass diamond.
+   Safety/consent/boundaries module — all content requires qualified human
+   review before ship (ACCESSIBILITY.md, MODULE_WORLDS.md §4). */
+[data-module="brave-basecamp"] {
+  --module-accent: #b0782a;
+  --module-accent-strong: #8a5a1c; /* proven · 5.80:1 on surface */
+  --module-accent-soft: #d8b075;
+  --module-tint: #f2e8d3;
+  --module-tint-deep: #e6d8b8;
+  --module-motif: compass-diamond;
+}
+
+/* 12 · World Garden — violet · mixed petals.
+   Culture module — authored with cultural consultants; requires human review
+   before ship (ACCESSIBILITY.md, MODULE_WORLDS.md §4). */
+[data-module="world-garden"] {
+  --module-accent: #7d6ca6;
+  --module-accent-strong: #605185; /* derived · 6.86:1 on surface */
+  --module-accent-soft: #ac9fc9;
+  --module-tint: #ede9f4;
+  --module-tint-deep: #ddd5ea;
+  --module-motif: mixed-petals;
+}
+
+/*
+ * Tailwind v4 theme mapping.
+ *
+ * Exposed via @theme so utilities such as `bg-canvas`, `text-ink`,
+ * `bg-module-accent`, `rounded-lg`, `font-display`, and `ease-soft-settle`
+ * resolve to the tokens above. Values reference the --llc-* / --module-*
+ * custom properties so module theming cascades from [data-module] ancestors.
+ */
 @theme {
-  --color-background: #fffaf2;
-  --color-surface: #ffffff;
-  --color-surface-muted: #f5eee3;
-  --color-text-primary: #2f2925;
-  --color-text-secondary: #6f655e;
-  --color-brand-primary: #d96f52;
-  --color-brand-primary-hover: #c76046;
-  --color-brand-secondary: #6f9b8f;
-  --color-brand-accent: #e5ad4f;
-  --color-success: #4f876f;
-  --color-warning: #b77b2f;
-  --color-danger: #b95858;
-  --color-border: #e7ddd1;
+  /* ---- Little Learner's Club colour utilities (leaf names match DESIGN.md) ---- */
+  --color-ink: var(--llc-color-ink);
+  --color-ink-soft: var(--llc-color-ink-soft);
+  --color-canvas: var(--llc-color-canvas);
+  --color-surface: var(--llc-color-surface);
+  --color-paper: var(--llc-color-paper);
+  --color-border: var(--llc-color-border);
+  --color-brand: var(--llc-color-brand);
+  --color-brand-strong: var(--llc-color-brand-strong);
+  --color-on-brand: var(--llc-color-on-brand);
+
+  --color-feedback-helpful: var(--llc-color-feedback-helpful);
+  --color-feedback-helpful-bg: var(--llc-color-feedback-helpful-bg);
+  --color-feedback-mixed: var(--llc-color-feedback-mixed);
+  --color-feedback-mixed-bg: var(--llc-color-feedback-mixed-bg);
+  --color-feedback-context: var(--llc-color-feedback-context);
+  --color-feedback-context-bg: var(--llc-color-feedback-context-bg);
+  --color-danger: var(--llc-color-danger);
+
+  --color-skin-1: var(--llc-skin-1);
+  --color-skin-2: var(--llc-skin-2);
+  --color-skin-3: var(--llc-skin-3);
+  --color-skin-4: var(--llc-skin-4);
+  --color-skin-5: var(--llc-skin-5);
+  --color-skin-6: var(--llc-skin-6);
+
+  --color-cast-maya: var(--llc-cast-maya);
+  --color-cast-theo: var(--llc-cast-theo);
+  --color-cast-amara: var(--llc-cast-amara);
+  --color-cast-jun: var(--llc-cast-jun);
+  --color-cast-nora: var(--llc-cast-nora);
+  --color-cast-glim: var(--llc-cast-glim);
+
+  /* Module theme — resolves against the nearest [data-module] ancestor. */
+  --color-module-accent: var(--module-accent);
+  --color-module-accent-strong: var(--module-accent-strong);
+  --color-module-accent-soft: var(--module-accent-soft);
+  --color-module-tint: var(--module-tint);
+  --color-module-tint-deep: var(--module-tint-deep);
 
   /*
-   * Accessible counterparts, measured against both #ffffff and the cream
-   * background. The palette above is warm but light: as text or behind white
-   * text it lands between 3.1:1 and 4.2:1, which clears WCAG AA only for large
-   * text. docs/DESIGN_SYSTEM.md requires sufficient contrast, so:
-   *
-   *   - the base hues are for borders, tints, decorative fills, and the focus
-   *     ring (3.18:1 on the background, above the 3:1 non-text threshold);
-   *   - the -strong hues are for anything carrying text, in either direction.
-   *
-   * Ratios with white / with #fffaf2:
-   *   brand-primary-strong        5.47 / 5.26
-   *   brand-primary-strong-hover  6.93 / 6.67
-   *   brand-secondary-strong      6.12 / 5.89
-   *   success-strong              6.10 / 5.87
-   *   warning-strong              5.90 / 5.68
-   *   danger (unchanged)          4.57 / 4.40
+   * Legacy Kindlyo colour tokens — SUPERSEDED onto the Little Learner's Club
+   * palette so existing components adopt the warm skin without edits. These
+   * aliases are retained only until those components migrate onto the llc.*
+   * tokens; new screens must not use them.
    */
-  --color-brand-primary-strong: #b0492f;
-  --color-brand-primary-strong-hover: #983d27;
+  --color-background: var(--llc-color-canvas);
+  --color-surface-muted: var(--llc-color-paper);
+  --color-text-primary: var(--llc-color-ink);
+  --color-text-secondary: var(--llc-color-ink-soft);
+  --color-brand-primary: var(--llc-color-brand);
+  --color-brand-primary-hover: var(--llc-color-brand-strong);
+  /* -strong is used for text in 8 places, so it maps to the text-safe step. */
+  --color-brand-primary-strong: var(--llc-color-brand-strong);
+  --color-brand-primary-strong-hover: var(--llc-color-brand-strong);
+  --color-success: var(--llc-color-feedback-helpful);
+  --color-success-strong: var(--llc-color-feedback-helpful);
+  --color-warning: var(--llc-color-feedback-mixed);
+  --color-warning-strong: var(--llc-color-feedback-mixed);
+
+  /*
+   * Legacy tokens with no direct Little Learner's Club equivalent, kept at
+   * their previous values for not-yet-migrated components and the placeholder
+   * vector art (avatarArt / illustrations / icons consume these via var()).
+   */
+  --color-brand-secondary: #6f9b8f;
   --color-brand-secondary-strong: #3f6a5d;
-  --color-success-strong: #3d6b58;
-  --color-warning-strong: #8a5a1c;
-
-  /* Foreground for filled brand surfaces, so components never hardcode white. */
-  --color-on-brand: #ffffff;
-
-  /* Tints for avatars and status chips. Deliberately low-saturation: the
-     design system avoids neon palettes and badge clutter. */
+  --color-brand-accent: #e5ad4f;
   --color-tint-clay: #f4ded6;
   --color-tint-sage: #dde9e5;
   --color-tint-honey: #f7e7c8;
   --color-tint-sand: #ece2d4;
 
-  --radius-sm: 0.5rem;
-  --radius-md: 0.875rem;
-  --radius-lg: 1.25rem;
-  --radius-xl: 1.75rem;
+  /* ---- Radius — DESIGN.md §4 (values updated to the exact scale) ---- */
+  --radius-sm: var(--llc-radius-sm);
+  --radius-md: var(--llc-radius-md);
+  --radius-lg: var(--llc-radius-lg);
+  --radius-xl: var(--llc-radius-xl);
+  --radius-round: var(--llc-radius-round);
 
-  --spacing-1: 0.25rem;
-  --spacing-2: 0.5rem;
-  --spacing-3: 0.75rem;
-  --spacing-4: 1rem;
-  --spacing-6: 1.5rem;
-  --spacing-8: 2rem;
-  --spacing-12: 3rem;
+  /* ---- Spacing — matches the 4px base scale; adds space-16 ---- */
+  --spacing-1: var(--llc-space-1);
+  --spacing-2: var(--llc-space-2);
+  --spacing-3: var(--llc-space-3);
+  --spacing-4: var(--llc-space-4);
+  --spacing-6: var(--llc-space-6);
+  --spacing-8: var(--llc-space-8);
+  --spacing-12: var(--llc-space-12);
+  --spacing-16: var(--llc-space-16);
 
-  /* One highly readable sans-serif family, per the design system.
-     Kept as a system stack rather than a downloaded webfont: it already meets
-     the legibility requirements, and it costs no network request on a device
-     a child may be sharing over a slow connection. */
-  --font-sans:
-    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+  /* ---- Typography families — DESIGN.md §3 ---- */
+  --font-display: var(--llc-type-display);
+  --font-body: var(--llc-type-body);
+  /* Kindlyo's existing `font-sans` / var(--font-sans) now resolve to the body
+     family (Source Sans 3 with the same system fallbacks it used before). */
+  --font-sans: var(--llc-type-body);
+
+  /* ---- Type scale — DESIGN.md §3 (6 named stops) ----
+     child-facing text never below body-500 (19px); parent floor body-300
+     (14px). label-200 is sans 600, all-caps, +10% tracking (applied in
+     components via `uppercase tracking-[0.1em] font-semibold`). */
+  --text-display-800: 2.5rem;
+  --text-display-800--line-height: 2.875rem;
+  --text-display-600: 1.625rem;
+  --text-display-600--line-height: 2.125rem;
+  --text-body-500: 1.1875rem;
+  --text-body-500--line-height: 1.8125rem;
+  --text-body-400: 1.0625rem;
+  --text-body-400--line-height: 1.625rem;
+  --text-body-300: 0.875rem;
+  --text-body-300--line-height: 1.3125rem;
+  --text-label-200: 0.6875rem;
+  --text-label-200--line-height: 0.9375rem;
 
   /*
-   * Type scale. Nudged above Tailwind's defaults throughout: this interface is
-   * read by children aged 5-9, often on a phone held at arm's length, and
-   * frequently read aloud by an adult sitting beside them.
+   * Kindlyo's existing type scale, retained for not-yet-migrated components.
+   * Nudged above Tailwind's defaults for children reading at arm's length.
    */
   --text-xs: 0.8125rem;
   --text-xs--line-height: 1.5;
@@ -101,18 +423,25 @@
   --text-5xl: 3.25rem;
   --text-5xl--line-height: 1.1;
 
-  /* Soft shadows, used sparingly (docs/DESIGN_SYSTEM.md). */
-  --shadow-soft:
-    0 1px 2px rgb(47 41 37 / 0.04), 0 4px 12px rgb(47 41 37 / 0.06);
-  --shadow-lifted: 0 8px 32px rgb(47 41 37 / 0.14);
+  /* ---- Elevation — DESIGN.md §4 ---- */
+  --shadow-soft: var(--llc-shadow-soft);
+  /* Kindlyo extra, re-based on the ink colour; used sparingly. */
+  --shadow-lifted: 0 8px 32px rgb(49 40 28 / 0.14);
 
-  /* Gentle movement only. Tailwind has no `--duration-*` theme namespace, so
-     these override the defaults behind every `transition-*` utility rather
-     than inventing tokens that would generate nothing. The reduced-motion
-     block in globals.css collapses them for anyone who asks for less. */
-  --default-transition-duration: 160ms;
-  --default-transition-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+  /* ---- Motion easings — exposed as `ease-*` utilities (MOTION.md) ---- */
+  --ease-gentle-enter: var(--llc-ease-gentle-enter);
+  --ease-gentle-exit: var(--llc-ease-gentle-exit);
+  --ease-soft-settle: var(--llc-ease-soft-settle);
+  --ease-curious: var(--llc-ease-curious);
+  --ease-playful: var(--llc-ease-playful);
+  --ease-calm-scene: var(--llc-ease-calm-scene);
 
-  /* Minimum interactive target size (44x44 CSS px). */
-  --size-touch-target: 2.75rem;
+  /* Default transition behind every `transition-*` utility, on tokens.
+     Durations are also available per-behaviour as var(--llc-motion-*). The
+     reduced-motion block in globals.css collapses these when asked. */
+  --default-transition-duration: var(--llc-motion-ui);
+  --default-transition-timing-function: var(--llc-ease-gentle-enter);
+
+  /* ---- Minimum interactive target size (44x44) — DESIGN.md §4 ---- */
+  --size-touch-target: var(--llc-size-touch);
 }
