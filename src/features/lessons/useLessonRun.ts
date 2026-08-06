@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useReducer } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { getFamilyClient } from "@/features/families/familyClient";
 import type { Lesson } from "@/features/curriculum/schema";
 import {
@@ -46,11 +46,24 @@ export type LessonRun = {
   canGoBack: boolean;
   isComplete: boolean;
   hydrated: boolean;
+  /**
+   * When a valid mid-lesson run was found, the 0-based step it stopped on —
+   * offered as a resume choice rather than resumed silently. `null` otherwise.
+   */
+  resumeStep: number | null;
+  /** True when the saved run could not be loaded; a retry is offered. */
+  loadError: boolean;
   choose: (choiceId: string) => void;
   practise: (optionId: string) => void;
   next: () => void;
   back: () => void;
   restart: () => void;
+  /** Dismiss the resume prompt and continue from the saved step. */
+  keepGoing: () => void;
+  /** Clear the saved run and begin again from the first step. */
+  startOver: () => void;
+  /** Try loading the saved run again after a failure. */
+  retry: () => void;
 };
 
 export function useLessonRun(lesson: Lesson, profileId: string): LessonRun {
@@ -58,9 +71,15 @@ export function useLessonRun(lesson: Lesson, profileId: string): LessonRun {
   const reducer = useMemo(() => createLessonReducer(steps), [steps]);
   const [state, dispatch] = useReducer(reducer, initialLessonRunState);
 
+  // A pending resume decision and a load failure are UI concerns beside the
+  // machine, not part of the saved progress itself.
+  const [resumeStep, setResumeStep] = useState<number | null>(null);
+  const [loadError, setLoadError] = useState(false);
+  const [reloadNonce, setReloadNonce] = useState(0);
+
   useEffect(() => {
     let active = true;
-    void getFamilyClient()
+    getFamilyClient()
       .loadProgress(profileId)
       .then((progress) => {
         if (!active) return;
@@ -71,12 +90,24 @@ export function useLessonRun(lesson: Lesson, profileId: string): LessonRun {
           run !== undefined && run.lessonVersion === lesson.version
             ? run.state
             : null;
+        // Offer a resume choice for a run stopped mid-lesson; a fresh, finished,
+        // or stale run just opens where it should, with nothing to decide.
+        if (
+          saved !== null &&
+          saved.completedAt === null &&
+          saved.stepIndex > 0
+        ) {
+          setResumeStep(Math.min(saved.stepIndex, steps.length - 1));
+        }
         dispatch({ type: "hydrate", progress: saved });
+      })
+      .catch(() => {
+        if (active) setLoadError(true);
       });
     return () => {
       active = false;
     };
-  }, [profileId, lesson.id, lesson.version]);
+  }, [profileId, lesson.id, lesson.version, steps.length, reloadNonce]);
 
   useEffect(() => {
     if (!state.hydrated) return;
@@ -128,6 +159,19 @@ export function useLessonRun(lesson: Lesson, profileId: string): LessonRun {
     dispatch({ type: "restart" });
   }, [profileId, lesson.id]);
 
+  const keepGoing = useCallback(() => setResumeStep(null), []);
+
+  const startOver = useCallback(() => {
+    void getFamilyClient().clearRun(profileId, lesson.id);
+    dispatch({ type: "restart" });
+    setResumeStep(null);
+  }, [profileId, lesson.id]);
+
+  const retry = useCallback(() => {
+    setLoadError(false);
+    setReloadNonce((nonce) => nonce + 1);
+  }, []);
+
   // The reducer clamps the index, so this fallback should be unreachable; it
   // exists so a bad restore can never render an empty screen.
   const step = getCurrentStep(steps, state) ?? getLastStep(steps);
@@ -144,10 +188,15 @@ export function useLessonRun(lesson: Lesson, profileId: string): LessonRun {
     canGoBack: canGoBackFrom(state),
     isComplete: isCompleteFrom(state),
     hydrated: state.hydrated,
+    resumeStep,
+    loadError,
     choose,
     practise,
     next,
     back,
     restart,
+    keepGoing,
+    startOver,
+    retry,
   };
 }

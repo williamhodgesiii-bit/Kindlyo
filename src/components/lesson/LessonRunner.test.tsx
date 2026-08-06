@@ -272,7 +272,7 @@ describe("LessonRunner", () => {
     );
   });
 
-  it("resumes where the child left off after a reload", async () => {
+  it("offers to resume after a reload rather than deciding, then keeps going", async () => {
     const user = userEvent.setup();
     const first = render(<LessonRunner lesson={lesson} />);
     await screen.findByRole("heading", { name: "The opening" });
@@ -285,12 +285,51 @@ describe("LessonRunner", () => {
 
     render(<LessonRunner lesson={lesson} />);
 
+    // A welcome-back prompt naming the place, not a silent jump.
     expect(
-      await screen.findByRole("heading", { name: "What could you do?" }),
+      await screen.findByRole("heading", { name: "Welcome back" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/step 2 of 7/i)).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Keep going" }));
+
+    expect(
+      screen.getByRole("heading", { name: "What could you do?" }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /Do the second thing/ }),
     ).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("can start over from the resume prompt, clearing the answer", async () => {
+    const user = userEvent.setup();
+    const first = render(<LessonRunner lesson={lesson} />);
+    await screen.findByRole("heading", { name: "The opening" });
+
+    await user.click(next());
+    await user.click(
+      screen.getByRole("button", { name: /Do the second thing/ }),
+    );
+    first.unmount();
+
+    render(<LessonRunner lesson={lesson} />);
+    await screen.findByRole("heading", { name: "Welcome back" });
+    await user.click(screen.getByRole("button", { name: "Start over" }));
+
+    // Back at the beginning.
+    expect(
+      screen.getByRole("heading", { name: "The opening" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("progressbar")).toHaveAttribute(
+      "aria-valuenow",
+      "1",
+    );
+
+    // The earlier answer is gone: reaching the decision again shows no pick.
+    await user.click(next());
+    expect(
+      screen.getByRole("button", { name: /Do the second thing/ }),
+    ).toHaveAttribute("aria-pressed", "false");
   });
 
   it("starts fresh when the saved progress belongs to an older version", async () => {

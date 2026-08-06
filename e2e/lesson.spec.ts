@@ -93,7 +93,9 @@ test.describe("lesson one", () => {
     ).toBeVisible();
   });
 
-  test("keeps its place across a reload", async ({ page }) => {
+  test("offers to resume across a reload, then keeps the place", async ({
+    page,
+  }) => {
     await page.goto(lessonPath);
 
     await next(page);
@@ -102,6 +104,12 @@ test.describe("lesson one", () => {
       .click();
 
     await page.reload();
+
+    // Coming back mid-lesson asks before resuming (COMPONENT_STATES §14).
+    await expect(
+      page.getByRole("heading", { name: "Welcome back" }),
+    ).toBeVisible();
+    await page.getByRole("button", { name: "Keep going" }).click();
 
     await expect(
       page.getByRole("button", { name: /Wave, without saying anything/ }),
