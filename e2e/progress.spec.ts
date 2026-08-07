@@ -1,9 +1,25 @@
+import { randomUUID } from "node:crypto";
 import { expect, test, type Page } from "@playwright/test";
-import { STORAGE_STATE } from "./support/auth";
+import { E2E_PARENT_PASSWORD, STORAGE_STATE } from "./support/auth";
 import { seedProfiles } from "./support/family";
 
 // The parent and learning areas are gated: reuse the signed-in parent session.
 test.use({ storageState: STORAGE_STATE });
+
+/**
+ * Sign in as a brand-new parent nobody else uses, so the "creates two child
+ * profiles" test below meets a pristine, un-onboarded account regardless of
+ * what order the e2e files run in — other specs onboard the shared
+ * STORAGE_STATE account via `seedProfiles` (see profiles.spec.ts for the same
+ * isolation trick).
+ */
+async function signInAsNewParent(page: Page): Promise<void> {
+  const email = `progress-${randomUUID()}@example.com`;
+  const response = await page.request.post("/api/auth/signin", {
+    data: { email, password: E2E_PARENT_PASSWORD },
+  });
+  expect(response.ok()).toBe(true);
+}
 
 /**
  * Progression and profile separation, in a real production build.
@@ -74,6 +90,7 @@ test.describe("the parent sets up profiles", () => {
   test("creates two child profiles through the parent area", async ({
     page,
   }) => {
+    await signInAsNewParent(page);
     await page.goto("/parent");
 
     // A first visit lands on onboarding, which ends by creating a child.
@@ -167,6 +184,14 @@ test.describe("progression", () => {
     await page
       .getByRole("link", { name: "Continue lesson 1", exact: true })
       .click();
+
+    // Coming back to a saved place asks first (docs/design/COMPONENT_STATES.md
+    // §14, ResumeCard) rather than dropping the child straight back in.
+    await expect(
+      page.getByRole("heading", { name: "Welcome back" }),
+    ).toBeVisible();
+    await page.getByRole("button", { name: "Keep going" }).click();
+
     await expect(
       page.getByRole("button", { name: /Wave, without saying anything/ }),
     ).toHaveAttribute("aria-pressed", "true");
