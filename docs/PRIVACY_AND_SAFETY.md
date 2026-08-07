@@ -53,6 +53,13 @@ Parents must be able to:
 - Delete their account
 - Request data export
 
+All four are implemented and reachable from the parent area: deleting a child
+profile and resetting its progress from the dashboard, and account deletion and
+data export from the Account screen. Deletion removes everything the app stores
+about the family (in production the subscription row cascades away too); it does
+not delete the auth login itself or cancel a live Stripe subscription — see
+decision 038.
+
 ## Content safety
 
 Lessons must not teach children to remain polite during unsafe interactions.

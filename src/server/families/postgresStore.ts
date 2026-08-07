@@ -430,5 +430,14 @@ export function createPostgresFamilyStore(): FamilyStore {
         .eq("child_profile_id", profileId);
       if (missions.error !== null) throw new Error(missions.error.message);
     },
+
+    async deleteFamily(familyId) {
+      // One delete does it all: family_memberships, child_profiles (and their
+      // lesson_progress and mission_completions), and family_subscriptions all
+      // reference families with ON DELETE CASCADE (migrations 0001/0002), so the
+      // whole account goes with the row.
+      const { error } = await db.from("families").delete().eq("id", familyId);
+      if (error !== null) throw new Error(error.message);
+    },
   };
 }

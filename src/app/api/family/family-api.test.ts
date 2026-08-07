@@ -17,7 +17,8 @@ vi.mock("@/features/auth/session", () => ({
   getSessionUser: () => Promise.resolve(signedInUser),
 }));
 
-const { GET: getFamily } = await import("./route");
+const { GET: getFamily, DELETE: deleteAccount } = await import("./route");
+const { GET: exportAccount } = await import("./export/route");
 const { POST: createProfile } = await import("./profiles/route");
 const { DELETE: deleteProfile } = await import("./profiles/[profileId]/route");
 
@@ -99,5 +100,40 @@ describe("input is validated", () => {
     signedInUser = parentA;
     const response = await createProfile(createRequest({ nickname: "Ada" }));
     expect(response.status).toBe(400);
+  });
+});
+
+describe("account export and deletion at the route", () => {
+  it("require a session", async () => {
+    signedInUser = null;
+    expect((await exportAccount()).status).toBe(401);
+    expect((await deleteAccount()).status).toBe(401);
+  });
+
+  it("export downloads the caller's own family as JSON", async () => {
+    signedInUser = { id: "rt-export", email: "rt-export@example.com" };
+    await create("Export-kid");
+
+    const response = await exportAccount();
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-disposition")).toContain("attachment");
+
+    const body = (await response.json()) as {
+      account: { email: string };
+      family: { profiles: { nickname: string }[] };
+    };
+    expect(body.account.email).toBe("rt-export@example.com");
+    expect(body.family.profiles.map((p) => p.nickname)).toContain("Export-kid");
+  });
+
+  it("delete removes the account so nothing remains", async () => {
+    signedInUser = { id: "rt-delete", email: "rt-delete@example.com" };
+    await create("Delete-kid");
+
+    const response = await deleteAccount();
+    expect(response.status).toBe(200);
+
+    // Signing back in (same user) now sees a fresh, empty family.
+    expect(await listNicknames()).not.toContain("Delete-kid");
   });
 });

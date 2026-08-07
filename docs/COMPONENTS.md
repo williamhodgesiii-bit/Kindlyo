@@ -173,6 +173,11 @@ accessible name never changes mid-interaction. Defaults to `type="button"`.
 `ButtonLink` is a separate export wrapping `next/link` with the same styling —
 a control that navigates should be an anchor. There is no `asChild`.
 
+`buttonClasses(variant, size, fullWidth, className?)` is exported for the rare
+anchor that must stay a plain `<a>` rather than a Next `<Link>` — a download
+endpoint, say, where client-side routing would break the browser's own file
+handling (the Account screen's "Download my data" is the current user).
+
 Neither carries `"use client"`. A caller that passes `onClick` is itself the
 client component.
 
@@ -286,6 +291,16 @@ one-tap link — used by the shell header ("For parents") and the profile picker
 so the learning area holds no plain link to account, billing, settings, or the
 open web (decision 037; docs/design/ACCESSIBILITY.md). There is no success
 toast: the navigation that follows is the confirmation.
+
+### `AccountPanel`
+
+The interactive half of the Account screen: the two data rights parents are owed
+(docs/PRIVACY_AND_SAFETY.md). Export is a plain `<a>` to `/api/family/export`, so
+it works without scripting and lets the browser save the file. Deletion is
+guarded — a danger-toned confirm `Dialog` names exactly what goes and offers
+signing out as the gentler alternative; on confirm it `DELETE`s `/api/family`
+then submits a POST sign-out form, since the data is gone and there is nothing
+left to stay signed in to (decision 038).
 
 ### Marketing components — `src/components/marketing/`
 

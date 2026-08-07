@@ -143,5 +143,17 @@ export function createMemoryFamilyStore(): FamilyStore {
       resetProfileProgress(profileId, storageFor(familyId));
       return Promise.resolve();
     },
+
+    deleteFamily(familyId) {
+      // Drop the family's storage and the user→family mapping that points at it,
+      // so a signed-back-in parent is provisioned a fresh, empty family. In the
+      // database this is one cascading delete of the families row; here the two
+      // maps are cleared to match.
+      storageByFamily.delete(familyId);
+      for (const [userId, id] of familyIdByUser) {
+        if (id === familyId) familyIdByUser.delete(userId);
+      }
+      return Promise.resolve();
+    },
   };
 }

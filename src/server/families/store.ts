@@ -78,4 +78,12 @@ export interface FamilyStore {
     markedByUserId: string,
   ): Promise<void>;
   resetProgress(familyId: string, profileId: string): Promise<void>;
+
+  /**
+   * Removes the whole family: every profile, all their progress and missions,
+   * and the user→family mapping, so a parent who deletes their account and signs
+   * back in starts from nothing. This is the account-deletion right in
+   * `docs/PRIVACY_AND_SAFETY.md`.
+   */
+  deleteFamily(familyId: string): Promise<void>;
 }

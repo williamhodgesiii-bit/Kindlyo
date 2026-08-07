@@ -253,3 +253,47 @@ describe("a parent's own family", () => {
     expect(cleared.ok && cleared.state.selectedProfileId).toBeNull();
   });
 });
+
+describe("account export and deletion", () => {
+  it("exports the parent's own profiles and progress, and no one else's", async () => {
+    const adaId = await createProfileFor(parentA, "Ada");
+    await service.recordCompletion(
+      parentA,
+      adaId,
+      "saying-hello",
+      1,
+      "2026-08-07T00:00:00.000Z",
+    );
+    await createProfileFor(parentB, "Ben");
+
+    const exported = await service.exportAccount(parentA);
+
+    expect(exported.account.email).toBe(parentA.email);
+    expect(exported.family.profiles.map((p) => p.nickname)).toEqual(["Ada"]);
+    expect(exported.progressByProfileId[adaId]).toHaveProperty("saying-hello");
+    expect(exported.exportedAt).toEqual(expect.any(String));
+  });
+
+  it("deletes the account, leaving a fresh empty family behind", async () => {
+    await createProfileFor(parentA, "Ada");
+    await service.completeOnboarding(parentA);
+
+    const result = await service.deleteAccount(parentA);
+    expect(result).toEqual({ ok: true });
+
+    // Signing back in provisions a new family: nothing survives the deletion.
+    const family = await service.getFamily(parentA);
+    expect(family.profiles).toEqual([]);
+    expect(family.onboardedAt).toBeNull();
+  });
+
+  it("removes only the caller's family, never a sibling account's", async () => {
+    await createProfileFor(parentA, "Ada");
+    const benId = await createProfileFor(parentB, "Ben");
+
+    await service.deleteAccount(parentA);
+
+    const family = await service.getFamily(parentB);
+    expect(family.profiles.map((p) => p.id)).toContain(benId);
+  });
+});

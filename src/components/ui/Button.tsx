@@ -44,7 +44,12 @@ const sizes = {
   lg: "px-6 py-3 text-lg",
 } satisfies Record<ButtonSize, string>;
 
-function buttonClasses(
+/**
+ * The button look as a bare class string, for the rare anchor that must stay a
+ * plain `<a>` rather than a Next `<Link>` — a download endpoint, say, where
+ * client-side routing would break the browser's own file handling.
+ */
+export function buttonClasses(
   variant: ButtonVariant,
   size: ButtonSize,
   fullWidth: boolean,

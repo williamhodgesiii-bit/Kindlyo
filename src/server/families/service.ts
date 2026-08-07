@@ -32,6 +32,20 @@ import type { FamilyStore } from "./store";
 /** A profile the parent's family does not own — reported without confirming it exists. */
 export type NotFound = { ok: false; error: "not-found" };
 
+/**
+ * Everything the account holds about a family, in one serialisable object — the
+ * data-export right in `docs/PRIVACY_AND_SAFETY.md`. It is the parent's own
+ * account email, their profiles and selection, and each child's progress; no
+ * other family's data can appear, because it is all resolved from the one
+ * `familyId` the parent's user id maps to.
+ */
+export type AccountExport = {
+  exportedAt: string;
+  account: { email: string };
+  family: FamilyState;
+  progressByProfileId: Record<string, ProfileProgress>;
+};
+
 export type FamilyService = {
   getFamily(user: AuthUser): Promise<FamilyState>;
   completeOnboarding(user: AuthUser): Promise<FamilyState>;
@@ -86,6 +100,11 @@ export type FamilyService = {
     user: AuthUser,
     profileId: string,
   ): Promise<{ ok: true } | NotFound>;
+
+  /** A full copy of the parent's own account data (the export right). */
+  exportAccount(user: AuthUser): Promise<AccountExport>;
+  /** Permanently removes the parent's family and everything under it. */
+  deleteAccount(user: AuthUser): Promise<{ ok: true }>;
 };
 
 const notFound: NotFound = { ok: false, error: "not-found" };
@@ -205,6 +224,31 @@ export function createFamilyService(store: FamilyStore): FamilyService {
         store.resetProgress(familyId, profileId),
       );
       return result.ok ? { ok: true } : result;
+    },
+
+    async exportAccount(user) {
+      const familyId = await store.ensureFamily(user.id);
+      const family = await store.getFamily(familyId);
+      const progressByProfileId: Record<string, ProfileProgress> = {};
+      for (const profile of family.profiles) {
+        progressByProfileId[profile.id] = await store.getProgress(
+          familyId,
+          profile.id,
+        );
+      }
+      return {
+        exportedAt: new Date().toISOString(),
+        account: { email: user.email },
+        family,
+        progressByProfileId,
+      };
+    },
+
+    async deleteAccount(user) {
+      // No ownership check to make: a parent can only ever resolve their own
+      // family, and that is the only one removed.
+      await store.deleteFamily(await store.ensureFamily(user.id));
+      return { ok: true };
     },
   };
 }
