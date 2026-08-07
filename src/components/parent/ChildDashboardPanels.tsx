@@ -7,7 +7,7 @@ import { MissionCard } from "@/components/ui/MissionCard";
 import { ParentInsightCard } from "@/components/ui/ParentInsightCard";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { CheckIcon, CompassIcon, SparkIcon } from "@/components/ui/icons";
-import { Heading, Text } from "@/components/ui/Typography";
+import { Heading, type HeadingLevel, Text } from "@/components/ui/Typography";
 import { meetingPeopleModule } from "@/content/modules";
 import { skillAreaLabels } from "@/features/curriculum/schema";
 import {
@@ -94,10 +94,16 @@ export function ProgressOverview({ dashboard }: { dashboard: ChildDashboard }) {
   );
 }
 
-export function SkillAreaSummary({ dashboard }: { dashboard: ChildDashboard }) {
+export function SkillAreaSummary({
+  dashboard,
+  headingLevel = 4,
+}: {
+  dashboard: ChildDashboard;
+  headingLevel?: HeadingLevel;
+}) {
   return (
     <Card as="section" aria-labelledby="skill-areas" elevation="soft">
-      <Heading level={4} id="skill-areas">
+      <Heading level={headingLevel} id="skill-areas">
         Skill areas
       </Heading>
       <Text tone="secondary" size="sm" className="mt-2 max-w-prose">
@@ -169,16 +175,18 @@ export function RecentActivity({ dashboard }: { dashboard: ChildDashboard }) {
 export function CurrentMission({
   dashboard,
   onToggle,
+  headingLevel = 4,
 }: {
   dashboard: ChildDashboard;
   onToggle: (lessonId: string, done: boolean) => void;
+  headingLevel?: HeadingLevel;
 }) {
   const mission = dashboard.activeMission;
 
   if (mission === null) {
     return (
       <EmptyState
-        headingLevel={4}
+        headingLevel={headingLevel}
         title="No mission yet"
         description="A mission to try together appears here once a lesson is finished."
       />
@@ -187,14 +195,14 @@ export function CurrentMission({
 
   return (
     <section aria-labelledby="mission">
-      <Heading level={4} id="mission" className="sr-only">
+      <Heading level={headingLevel} id="mission" className="sr-only">
         Current mission
       </Heading>
       <MissionCard
         status={mission.done ? "done" : "suggested"}
         statusLabel={mission.done ? "Done" : "Try together"}
         title={mission.lesson.title}
-        headingLevel={4}
+        headingLevel={headingLevel}
         description={
           <>
             <span className="block">
@@ -221,13 +229,19 @@ export function CurrentMission({
   );
 }
 
-export function TalkingPoints({ dashboard }: { dashboard: ChildDashboard }) {
+export function TalkingPoints({
+  dashboard,
+  headingLevel = 4,
+}: {
+  dashboard: ChildDashboard;
+  headingLevel?: HeadingLevel;
+}) {
   const points = dashboard.talkingPoints;
 
   return (
     <ParentInsightCard
       eyebrow="Worth talking about"
-      headingLevel={4}
+      headingLevel={headingLevel}
       title={
         points.length === 0
           ? "Nothing flagged yet"
@@ -262,6 +276,59 @@ export function TalkingPoints({ dashboard }: { dashboard: ChildDashboard }) {
         )
       }
     />
+  );
+}
+
+/**
+ * Lessons a child has been through once (COMPONENT_STATES.md §8).
+ *
+ * Framed as an open invitation, never a finish line or a re-lock: going back is
+ * always welcome, costs no progress, and often lands differently the second
+ * time. The status word stays in the neutral vocabulary — "Practised", not a
+ * grade — and there is no "again" pressure, only the offer.
+ */
+export function ReadyToReview({
+  dashboard,
+  headingLevel = 4,
+}: {
+  dashboard: ChildDashboard;
+  headingLevel?: HeadingLevel;
+}) {
+  const done = dashboard.path.lessons.filter(
+    (entry) => entry.state === "complete" && entry.lesson !== undefined,
+  );
+
+  return (
+    <Card as="section" aria-labelledby="ready-review" elevation="soft">
+      <Heading level={headingLevel} id="ready-review">
+        Ready to review
+      </Heading>
+      <Text tone="secondary" size="sm" className="mt-2 max-w-prose">
+        Lessons your child has been through once. Going back is always welcome —
+        revisiting never costs progress, and a second look often lands
+        differently.
+      </Text>
+
+      {done.length === 0 ? (
+        <Text tone="secondary" className="mt-4">
+          Nothing to revisit yet — this fills in as lessons are practised.
+        </Text>
+      ) : (
+        <ul className="mt-4 grid gap-3">
+          {done.map((entry) => (
+            <li
+              key={entry.order}
+              className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3 last:border-0 last:pb-0"
+            >
+              <span className="font-semibold">{entry.title}</span>
+              <span className="rounded-md bg-surface-muted px-3 py-1 text-sm font-semibold text-text-secondary">
+                {practiceStatusLabels.practised}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Card>
   );
 }
 

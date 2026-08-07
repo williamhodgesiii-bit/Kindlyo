@@ -24,6 +24,7 @@ import {
   TalkingPoints,
 } from "./ChildDashboardPanels";
 import { AccountStorageNotice } from "./AccountStorageNotice";
+import { ChildSelector } from "./ChildSelector";
 import { ProfileForm } from "./ProfileForm";
 
 /**
@@ -47,54 +48,6 @@ import { ProfileForm } from "./ProfileForm";
 /** Bumped to re-read progress from storage after a change. */
 function useProgressVersion() {
   return useReducer((version: number) => version + 1, 0);
-}
-
-function ChildSelector({
-  profiles,
-  selectedId,
-  onSelect,
-}: {
-  profiles: readonly ChildProfile[];
-  selectedId: string;
-  onSelect: (profileId: string) => void;
-}) {
-  // A single child needs no chooser — just say whose dashboard this is.
-  if (profiles.length < 2) return null;
-
-  return (
-    <div
-      role="tablist"
-      aria-label="Choose a child"
-      className="flex flex-wrap gap-2"
-    >
-      {profiles.map((profile) => {
-        const selected = profile.id === selectedId;
-        return (
-          <button
-            key={profile.id}
-            type="button"
-            role="tab"
-            aria-selected={selected}
-            onClick={() => onSelect(profile.id)}
-            className={
-              "inline-flex min-h-11 items-center gap-2 rounded-lg border-2 px-4 py-2 font-semibold transition-colors " +
-              (selected
-                ? "border-brand-secondary bg-brand-secondary/10"
-                : "border-border bg-surface hover:bg-surface-muted")
-            }
-          >
-            <Avatar
-              nickname={profile.nickname}
-              {...(profile.avatarId ? { avatarId: profile.avatarId } : {})}
-              size="sm"
-              decorative
-            />
-            {profile.nickname}
-          </button>
-        );
-      })}
-    </div>
-  );
 }
 
 function ChildPanel({

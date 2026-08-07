@@ -1,27 +1,21 @@
 import type { Metadata } from "next";
 import { ParentSurface } from "@/components/nav/ParentSurface";
-import { PageContainer } from "@/components/ui/PageContainer";
-import { Heading, Text } from "@/components/ui/Typography";
+import { MissionsSection } from "@/components/parent/MissionsSection";
 
 export const metadata: Metadata = {
   title: "Missions",
 };
 
 /**
- * Placeholder for the parent Missions section (COMPONENT_STATES.md §4). The
- * current-mission view and its "mark practised together" flow are built in step
- * 7; this stub keeps the Missions destination reachable from the parent nav.
+ * The parent Missions section (COMPONENT_STATES.md §4/§6, §9): this week's
+ * offline mission with the mark-practised toggle, and the conversation prompts.
+ * A thin server shell over the client section, which loads the child's data
+ * through the scoped family client after mount.
  */
 export default function MissionsPage() {
   return (
     <ParentSurface>
-      <PageContainer>
-        <Heading level={1}>Missions</Heading>
-        <Text tone="secondary" className="mt-4 max-w-prose">
-          This week&rsquo;s real-world mission and a prompt for afterwards will
-          live here. This section is being built.
-        </Text>
-      </PageContainer>
+      <MissionsSection />
     </ParentSurface>
   );
 }
