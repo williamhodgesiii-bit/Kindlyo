@@ -12,6 +12,8 @@ Newest first.
 
 ## 2026-08-07
 
+- feat(design): parent account — data export & account deletion (handoff step 7)
+- Shipped from `6c3b4ed` (`claude/next-design-step-crrz43`)
 - feat(design): "Ask a grown-up" parental gate & safe return (handoff step 7)
 - Shipped from `857bbab` (`claude/next-design-step-crrz43`)
 

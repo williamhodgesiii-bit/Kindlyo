@@ -708,3 +708,40 @@ Format:
   (not a real payment). The gate is a UX barrier, not authentication — the server
   remains the sole authority for entitlement and account actions. See
   docs/COMPONENTS.md and docs/design/ACCESSIBILITY.md.
+
+## 038. Data export and account deletion complete the parent Account screen
+
+- Date: 2026-08-07
+- Status: accepted
+- Context: `docs/PRIVACY_AND_SAFETY.md` requires that parents can delete a child
+  profile, delete lesson progress, **delete their account**, and **request a
+  data export**. The first two shipped with the dashboard; the last two were
+  unbuilt, and `/parent/account` (COMPONENT_STATES.md §4/§10, §12) was a
+  placeholder stub.
+- Decision: Extend the one persistence seam (decision 033) rather than add a new
+  one. `FamilyStore` gains `deleteFamily(familyId)`; the PostgreSQL adapter does
+  it in a single `DELETE FROM families`, relying on the `ON DELETE CASCADE`
+  foreign keys (migrations 0001/0002) that already carry memberships, profiles,
+  progress, missions, and the subscription row away with it — the same cascade
+  `deleteProfile` uses; the in-memory stand-in drops the family storage and the
+  user→family mapping to match. `FamilyService` gains `deleteAccount(user)` and a
+  read-only `exportAccount(user)` that composes existing reads into one
+  serialisable object; both resolve the family from the user id alone, so a
+  parent can only ever export or delete their own. Two routes: `DELETE
+/api/family`, and `GET /api/family/export` which streams pretty JSON with a
+  `Content-Disposition: attachment`. The Account screen becomes real — a plain
+  privacy statement, a link to membership, a "Download my data" link (a bare
+  `<a>`, not a Next `<Link>`, so the browser handles the file — `buttonClasses`
+  is now exported for exactly this), and a danger zone whose delete is guarded by
+  a confirm dialog that names what goes and offers signing out as the gentler
+  alternative. On confirm the client deletes, then submits a POST sign-out form,
+  because the data is gone and there is nothing left to stay signed in to.
+- Consequences: The four deletion/export rights are all met. Deletion is honest
+  about scope: it removes everything the app stores about the family (and, in
+  production, the subscription row via cascade); it does not delete the parent's
+  auth login (they can sign back in to a fresh, empty account) nor cancel a live
+  Stripe subscription — billing is not live in the beta, and cancellation is the
+  membership page's Stripe portal. Communication/analytics preference toggles
+  (COMPONENT_STATES.md §10) are deferred until there is an email or analytics
+  system for a toggle to honestly control. See docs/PRIVACY_AND_SAFETY.md and
+  docs/COMPONENTS.md.
