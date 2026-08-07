@@ -12,6 +12,8 @@ Newest first.
 
 ## 2026-08-07
 
+- feat(content): author worlds 2–12 and connect the neighborhood (handoff step 8)
+- Shipped from `bb4af64` (`claude/learners-club-content-pass-quwpym`)
 - Add project-specific Claude Code agent definitions
 - Shipped from `c04b67a` (`claude/2026-08-07`)
 - feat(design): parent Missions & Skills sections — finish step 7

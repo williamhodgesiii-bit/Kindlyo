@@ -1,22 +1,34 @@
-import {
-  skillAreaLabels,
-  skillAreas,
-  type SkillArea,
-} from "@/features/curriculum/schema";
+import { skillAreaLabels, type SkillArea } from "@/features/curriculum/schema";
 
 /**
- * Public descriptions of the six skill areas.
+ * Public descriptions of the six Meeting People skill areas.
  *
- * The areas and their labels come from the curriculum schema rather than being
- * retyped here, and the descriptions are keyed by the same union with
- * `satisfies Record<SkillArea, string>` — so adding a seventh area to the
- * curriculum fails the typecheck until somebody writes what to say about it in
- * public. That is the intended friction.
+ * Deliberately only the flagship module's six areas — not the whole `SkillArea`
+ * union. The other neighborhood worlds (2–12) are authored but still draft, and
+ * the marketing site stays narrow on purpose ("one module done properly"): it
+ * describes what has actually shipped, not the whole map. The learning area and
+ * the parent dashboard use the full union; this public list does not grow with
+ * it. When a world is ready to be advertised, add its area here on purpose.
+ *
+ * The labels still come from the schema rather than being retyped, and the keys
+ * are pinned to the Meeting People subset with `satisfies`, so a typo or a
+ * removed area is still caught.
  *
  * These describe areas of *practice*, never traits of a child, for the reason
  * given in `schema.ts`: there is no "polite" or "confident" area and there must
  * not be one.
  */
+
+const meetingPeopleAreas = [
+  "greeting",
+  "introducing",
+  "including",
+  "listening",
+  "ending",
+  "review",
+] as const satisfies readonly SkillArea[];
+
+type MeetingPeopleArea = (typeof meetingPeopleAreas)[number];
 
 export const skillAreaDescriptions = {
   greeting:
@@ -31,7 +43,7 @@ export const skillAreaDescriptions = {
     "Leaving a conversation kindly, instead of drifting away or waiting to be released.",
   review:
     "Putting the pieces together in a longer situation, and trying it for real away from the screen.",
-} satisfies Record<SkillArea, string>;
+} satisfies Record<MeetingPeopleArea, string>;
 
 export type PublicSkill = {
   area: SkillArea;
@@ -39,8 +51,10 @@ export type PublicSkill = {
   description: string;
 };
 
-export const publicSkills: readonly PublicSkill[] = skillAreas.map((area) => ({
-  area,
-  label: skillAreaLabels[area],
-  description: skillAreaDescriptions[area],
-}));
+export const publicSkills: readonly PublicSkill[] = meetingPeopleAreas.map(
+  (area) => ({
+    area,
+    label: skillAreaLabels[area],
+    description: skillAreaDescriptions[area],
+  }),
+);

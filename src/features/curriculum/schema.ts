@@ -28,14 +28,40 @@ export type ContentStatus = "draft" | "reviewed" | "published";
 /**
  * The kind of social move a lesson practises.
  *
- * A closed set, so the parent dashboard can group eight lessons into something
- * a tired adult can read at a glance. These are areas of *practice*, never
- * traits of a child: there is no "polite" or "confident" member and there must
- * not be, because that would turn a summary of what was practised into a
+ * A closed set, so the parent dashboard can group a child's lessons into
+ * something a tired adult can read at a glance. These are areas of *practice*,
+ * never traits of a child: there is no "polite" or "confident" member and there
+ * must not be, because that would turn a summary of what was practised into a
  * report card on who somebody is.
+ *
+ * The first six group the flagship module, Meeting People (Hello Garden), at
+ * the level of its individual greetings skills. Each of the other eleven
+ * neighborhood worlds contributes one area named for what that whole world
+ * practises (docs/design/MODULE_WORLDS.md) — a world's lessons share its area,
+ * so the parent view reads as "Talking and listening: practised 5 of 8" rather
+ * than fragmenting one theme into a dozen labels. All of them describe a kind
+ * of practice, not a kind of child.
  */
 export type SkillArea =
-  "greeting" | "introducing" | "including" | "listening" | "ending" | "review";
+  // Meeting People (Hello Garden) — the six greetings sub-skills.
+  | "greeting"
+  | "introducing"
+  | "including"
+  | "listening"
+  | "ending"
+  | "review"
+  // One per neighborhood world, worlds 2–12.
+  | "conversation"
+  | "friendship"
+  | "cooperation"
+  | "repair"
+  | "gratitude"
+  | "hosting"
+  | "public-spaces"
+  | "dining"
+  | "digital"
+  | "safety"
+  | "culture";
 
 export const skillAreas = [
   "greeting",
@@ -44,6 +70,17 @@ export const skillAreas = [
   "listening",
   "ending",
   "review",
+  "conversation",
+  "friendship",
+  "cooperation",
+  "repair",
+  "gratitude",
+  "hosting",
+  "public-spaces",
+  "dining",
+  "digital",
+  "safety",
+  "culture",
 ] as const satisfies readonly SkillArea[];
 
 /** Shown in the parent dashboard. Descriptive of the skill, not the child. */
@@ -54,6 +91,17 @@ export const skillAreaLabels = {
   listening: "Listening",
   ending: "Ending conversations",
   review: "Putting it together",
+  conversation: "Talking and listening",
+  friendship: "Friendship and including",
+  cooperation: "Working together",
+  repair: "Saying sorry and repairing",
+  gratitude: "Kindness and thanks",
+  hosting: "Being a guest and a host",
+  "public-spaces": "Sharing public places",
+  dining: "Eating together",
+  digital: "Being kind on screens",
+  safety: "Safety and boundaries",
+  culture: "Many customs",
 } satisfies Record<SkillArea, string>;
 
 /**

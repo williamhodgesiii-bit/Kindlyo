@@ -1,60 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { meetingPeopleModule } from "@/content/modules";
-import { getFamilyClient } from "@/features/families/familyClient";
+import { useMemo } from "react";
+import { meetingPeopleModule, type CurriculumModule } from "@/content/modules";
 import { getLessonBySlug } from "@/features/curriculum/catalog";
 import { buildModulePath, type ModulePath } from "./moduleProgress";
+import { useProgress } from "./useProgress";
 
 /**
- * One child's module path, loaded from the server after mount.
+ * One child's path through a given module, derived from their progress.
  *
- * Progress is fetched in an effect rather than read during render, the same
- * reason as before (server and client markup must agree) plus the round-trip.
- * Until it arrives the answer is `null`, which callers show as a loading state.
- *
- * `revision` is a caller-controlled refresh signal: bump it after a write
- * (marking a mission, resetting a profile) to re-fetch. A revision bump does
- * not blank the current path first, so a save re-reads in place without a
- * flash; only a change of child clears it, so one child's path never lingers
- * under another's name.
+ * Defaults to Meeting People (Hello Garden) so the many existing call sites and
+ * the `/learn` home need no argument; a per-world learning path passes the
+ * module it is rendering. The path itself is pure and cheap to recompute, so it
+ * is memoised on the child, the module, and the loaded progress rather than
+ * being stored — a save re-reads in place, and a change of child yields `null`
+ * (loading) rather than the previous child's path.
  */
 export function useModulePath(
   profileId: string | null,
+  module: CurriculumModule = meetingPeopleModule,
   revision = 0,
 ): ModulePath | null {
-  const [loaded, setLoaded] = useState<{
-    forProfileId: string;
-    path: ModulePath;
-  } | null>(null);
+  const progress = useProgress(profileId, revision);
 
-  useEffect(() => {
-    if (profileId === null) return;
-    let active = true;
-    void getFamilyClient()
-      .loadProgress(profileId)
-      .then((progress) => {
-        if (active) {
-          setLoaded({
-            forProfileId: profileId,
-            path: buildModulePath(
-              meetingPeopleModule,
-              getLessonBySlug,
-              progress,
-            ),
-          });
-        }
-      });
-    return () => {
-      active = false;
-    };
-  }, [profileId, revision]);
-
-  if (profileId === null) return null;
-  // Tie the loaded path to the child it belongs to: while a new child's path is
-  // loading, the previous child's must not linger under their name. A revision
-  // bump keeps the same child, so a re-fetch shows in place without a flash.
-  return loaded !== null && loaded.forProfileId === profileId
-    ? loaded.path
-    : null;
+  return useMemo(() => {
+    if (profileId === null || progress === null) return null;
+    return buildModulePath(module, getLessonBySlug, progress);
+  }, [profileId, module, progress]);
 }

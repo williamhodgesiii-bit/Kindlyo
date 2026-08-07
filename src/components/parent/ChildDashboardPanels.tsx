@@ -8,7 +8,7 @@ import { ParentInsightCard } from "@/components/ui/ParentInsightCard";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { CheckIcon, CompassIcon, SparkIcon } from "@/components/ui/icons";
 import { Heading, type HeadingLevel, Text } from "@/components/ui/Typography";
-import { meetingPeopleModule } from "@/content/modules";
+import { modulePathHref } from "@/content/worlds";
 import { skillAreaLabels } from "@/features/curriculum/schema";
 import {
   practiceStatusLabels,
@@ -49,8 +49,14 @@ export function describeWhen(iso: string, now: Date = new Date()): string {
 }
 
 export function ProgressOverview({ dashboard }: { dashboard: ChildDashboard }) {
-  const { path, lastActiveAt } = dashboard;
-  const next = path.resume;
+  const { completedCount, lessonCount, resume, lastActiveAt } = dashboard;
+
+  // Worlds the child has actually got into — ones with a finished lesson, plus
+  // the world they are currently in — so the breakdown shows where they have
+  // been without listing all twelve untouched.
+  const started = dashboard.modules.filter(
+    (m) => m.path.completedCount > 0 || m.module.id === resume?.module.id,
+  );
 
   return (
     <Card as="section" aria-labelledby="overview" elevation="soft">
@@ -60,11 +66,24 @@ export function ProgressOverview({ dashboard }: { dashboard: ChildDashboard }) {
 
       <ProgressBar
         className="mt-4 max-w-md"
-        label={`${meetingPeopleModule.title} — lessons practised`}
-        value={path.completedCount}
-        max={path.lessonCount}
+        label="Lessons practised across the neighborhood"
+        value={completedCount}
+        max={lessonCount}
         tone="calm"
       />
+
+      {started.length > 0 ? (
+        <dl className="mt-6 grid gap-2">
+          {started.map((m) => (
+            <div key={m.module.id} className="flex justify-between gap-3">
+              <dt className="text-sm text-text-secondary">{m.module.title}</dt>
+              <dd className="text-sm font-semibold">
+                {m.path.completedCount} of {m.path.lessonCount}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      ) : null}
 
       <dl className="mt-6 grid gap-4 sm:grid-cols-2">
         <div>
@@ -76,20 +95,27 @@ export function ProgressOverview({ dashboard }: { dashboard: ChildDashboard }) {
         <div>
           <dt className="text-sm text-text-secondary">Next up</dt>
           <dd className="mt-1 font-semibold">
-            {next?.lesson
-              ? `${next.order}. ${next.title}`
+            {resume?.entry.lesson
+              ? `${resume.module.title} · ${resume.entry.order}. ${resume.entry.title}`
               : "Every lesson has been practised"}
           </dd>
         </div>
       </dl>
 
-      {next?.lesson ? (
-        <div className="mt-6">
-          <ButtonLink href="/learn" variant="secondary">
+      <div className="mt-6">
+        {resume?.entry.lesson ? (
+          <ButtonLink
+            href={modulePathHref(resume.module.id)}
+            variant="secondary"
+          >
             Open the learning area
           </ButtonLink>
-        </div>
-      ) : null}
+        ) : (
+          <ButtonLink href="/learn/map" variant="secondary">
+            Explore the neighborhood map
+          </ButtonLink>
+        )}
+      </div>
     </Card>
   );
 }
@@ -294,9 +320,7 @@ export function ReadyToReview({
   dashboard: ChildDashboard;
   headingLevel?: HeadingLevel;
 }) {
-  const done = dashboard.path.lessons.filter(
-    (entry) => entry.state === "complete" && entry.lesson !== undefined,
-  );
+  const done = dashboard.reviewable;
 
   return (
     <Card as="section" aria-labelledby="ready-review" elevation="soft">
@@ -315,12 +339,17 @@ export function ReadyToReview({
         </Text>
       ) : (
         <ul className="mt-4 grid gap-3">
-          {done.map((entry) => (
+          {done.map(({ module, entry }) => (
             <li
-              key={entry.order}
+              key={`${module.id}-${entry.order}`}
               className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3 last:border-0 last:pb-0"
             >
-              <span className="font-semibold">{entry.title}</span>
+              <span className="min-w-0">
+                <span className="block font-semibold">{entry.title}</span>
+                <span className="block text-sm text-text-secondary">
+                  {module.title}
+                </span>
+              </span>
               <span className="rounded-md bg-surface-muted px-3 py-1 text-sm font-semibold text-text-secondary">
                 {practiceStatusLabels.practised}
               </span>
