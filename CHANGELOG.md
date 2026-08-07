@@ -12,6 +12,8 @@ Newest first.
 
 ## 2026-08-07
 
+- Add project-specific Claude Code agent definitions
+- Shipped from `c04b67a` (`claude/2026-08-07`)
 - feat(design): parent Missions & Skills sections — finish step 7
 - Shipped from `f9cbadc` (`claude/next-design-step-crrz43`)
 - feat(design): parent account — data export & account deletion (handoff step 7)
