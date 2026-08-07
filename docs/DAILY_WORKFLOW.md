@@ -45,9 +45,12 @@ The end-of-day release. In order:
 
 1. Confirms the working tree is clean and there is something to ship.
 2. Runs the full verification suite: `lint`, `format:check`, `typecheck`,
-   `test`, `build`. **Any failure stops the ship.** This enforces the rule in
-   `CLAUDE.md` that nothing is complete while checks are failing. Add
-   `RUN_E2E=1` to include Playwright.
+   `test`, `test:e2e`, `build`. **Any failure stops the ship.** This enforces
+   the rule in `CLAUDE.md` that nothing is complete while checks are failing,
+   and matches the required checks in `docs/TESTING_STRATEGY.md`. Playwright
+   runs by default; `SKIP_E2E=1` skips only the end-to-end step for emergencies
+   (the browsers may be unavailable in a given environment) while keeping every
+   other check.
 3. Writes a dated section into `CHANGELOG.md` listing every commit that is about
    to land, and commits it.
 4. Merges into `main` with `--no-ff`, so `main`'s history shows exactly one
@@ -65,8 +68,10 @@ than kept: a tag nobody else can see is not a release marker, and leaving it
 behind would take the name the next ship wants. The release is unaffected, and
 the shipped commit is in the changelog either way.
 
-`SKIP_CHECKS=1` exists for emergencies. Reaching for it routinely defeats the
-purpose of the command.
+`SKIP_CHECKS=1` (all checks) and `SKIP_E2E=1` (end-to-end only) exist for
+emergencies. Reaching for either routinely defeats the purpose of the command —
+CI on `main` runs the full suite regardless, so a check skipped at ship time
+resurfaces there.
 
 ### `cleanup`
 

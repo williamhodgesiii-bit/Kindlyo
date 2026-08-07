@@ -47,8 +47,15 @@ Verify:
 
 ```bash
 npm run lint
+npm run format:check
 npm run typecheck
 npm run test
 npm run test:e2e
 npm run build
 ```
+
+These are the checks `scripts/day.sh ship` runs before merging to `main`, and
+the same set CI runs on every branch. They must all pass — including the
+end-to-end suite — before a change is considered complete. `ship` runs
+Playwright by default; `SKIP_E2E=1` skips only that step for an environment
+where the browsers are unavailable, and never for convenience.

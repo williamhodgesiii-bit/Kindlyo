@@ -12,7 +12,8 @@
 #   BRANCH_PREFIX=claude   Namespace for daily branches
 #   STALE_DAYS=14          Age before a merged branch is cleanup-eligible
 #   SKIP_CHECKS=1          Skip verification during `ship` (not recommended)
-#   RUN_E2E=1              Also run Playwright during `ship`
+#   SKIP_E2E=1             Skip Playwright during `ship` (not recommended; see
+#                          docs/TESTING_STRATEGY.md's required checks)
 #
 set -euo pipefail
 
@@ -219,7 +220,11 @@ cmd_ship() {
     npm run typecheck
     npm run test
     npm run build
-    if [ "${RUN_E2E:-0}" = "1" ]; then npm run test:e2e; fi
+    if [ "${SKIP_E2E:-0}" = "1" ]; then
+      note "Skipping end-to-end tests (SKIP_E2E=1)"
+    else
+      npm run test:e2e
+    fi
   fi
 
   info "Recording the day in $CHANGELOG"
@@ -371,7 +376,7 @@ Environment overrides:
   BRANCH_PREFIX=claude   Namespace for daily branches
   STALE_DAYS=14          Age before a merged branch is cleanup-eligible
   SKIP_CHECKS=1          Skip verification during `ship` (not recommended)
-  RUN_E2E=1              Also run Playwright during `ship`
+  SKIP_E2E=1             Skip Playwright during `ship` (not recommended)
 USAGE
 }
 
