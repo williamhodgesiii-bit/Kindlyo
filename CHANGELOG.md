@@ -12,6 +12,8 @@ Newest first.
 
 ## 2026-08-07
 
+- feat(content): author worlds 2–12 and connect the neighborhood (handoff step 8)
+- Shipped from `bb4af64` (`claude/learners-club-content-pass-quwpym`)
 - feat(design): parent Missions & Skills sections — finish step 7
 - Shipped from `f9cbadc` (`claude/next-design-step-crrz43`)
 - feat(design): parent account — data export & account deletion (handoff step 7)
