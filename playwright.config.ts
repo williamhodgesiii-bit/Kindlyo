@@ -22,7 +22,12 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  // The specs share one dev server backed by a single in-memory store, so they
+  // are only safe run serially: two workers racing on the same account and
+  // progress state produce spurious failures. Pin one worker everywhere, not
+  // just under CI, so a local run — including `scripts/day.sh ship`, which now
+  // runs e2e by default — is as deterministic as CI's.
+  workers: 1,
   reporter: process.env.CI ? "list" : "html",
   use: {
     baseURL,

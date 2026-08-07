@@ -853,3 +853,38 @@ worlds/`, using the canon cast and rotation rule (`CHARACTER_BIBLE.md`). Give
   This does not change that `ship` still does not run e2e by default; a
   standing gap worth a deliberate follow-up so a future regression like this
   one surfaces before merge, not after.
+
+## 042. `ship` runs the end-to-end suite by default (closing decision 041's gap)
+
+- Date: 2026-08-07
+- Status: accepted
+- Context: Decision 041 fixed four Playwright specs that had been red on `main`
+  since 2026-08-05 and named the root cause of their going unnoticed: `scripts/
+day.sh ship` only ran the end-to-end suite when `RUN_E2E=1` was explicitly
+  set, so every ship in between passed its gate while `main`'s CI was failing.
+  That left the merge gate weaker than both `docs/TESTING_STRATEGY.md`, which
+  lists `test:e2e` among the required checks, and the `qa-gate` agent, which
+  runs it. Decision 041 flagged closing this as a deliberate follow-up.
+- Decision: Invert the default. `ship` now runs `npm run test:e2e` as part of
+  its verification suite unless `SKIP_E2E=1` is set, mirroring the existing
+  `SKIP_CHECKS=1` opt-out and its "for emergencies" framing. The narrow escape
+  hatch exists only for an environment where the Playwright browsers cannot be
+  installed; it skips the single end-to-end step while keeping lint,
+  format:check, typecheck, the unit suite, and the build. `RUN_E2E` is gone.
+  The required-checks list in `docs/TESTING_STRATEGY.md` also regained
+  `format:check`, which `ship` and CI have always run but the doc had omitted.
+- Ancillary decision: `playwright.config.ts` now pins `workers: 1` everywhere,
+  not just under CI. The specs share one dev server backed by a single
+  in-memory store, so two workers racing on the same fixture account and
+  progress state produce spurious failures (observed: seven dashboard/progress
+  specs fail under multi-worker, all pass single-worker). CI already ran one
+  worker; local runs used all cores. Since `ship` runs e2e outside CI, leaving
+  the local default multi-worker would have made `ship` itself flaky — the
+  opposite of the reliability this change is for. One worker is the correct
+  default for a shared-store suite regardless of where it runs.
+- Consequences: A regression like the 2026-08-05 one now stops the ship that
+  introduced it, before it reaches `main`, rather than surfacing only in CI
+  after merge. The merge gate, the required-checks doc, the `qa-gate` agent,
+  and CI now describe the same required set. Ship is slower by the cost of the
+  Playwright run, which is the intended trade; an environment without browsers
+  uses `SKIP_E2E=1` and relies on CI to run e2e on the pushed branch.

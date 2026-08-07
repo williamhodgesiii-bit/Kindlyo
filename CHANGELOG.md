@@ -12,6 +12,8 @@ Newest first.
 
 ## 2026-08-07
 
+- ci(ship): run e2e by default and serialize the suite (close decision 041's gap)
+- Shipped from `88b4b3d` (`claude/e2e-required-in-ship`)
 - feat(content): author worlds 2–12 and connect the neighborhood (handoff step 8)
 - Shipped from `bb4af64` (`claude/learners-club-content-pass-quwpym`)
 - Add project-specific Claude Code agent definitions
