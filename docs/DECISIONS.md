@@ -675,3 +675,36 @@ Format:
   analytics events are left for launch, so this foundation does not change how
   the app behaves for the families currently testing it. Turning it on is four
   environment variables. See docs/BILLING.md.
+
+## 037. The "Ask a grown-up" gate guards every exit from the child area
+
+- Date: 2026-08-07
+- Status: accepted
+- Context: Design step 7 (the parent experience) requires a parental gate:
+  "any exit to the open web or a purchase sits behind a written, multi-step
+  numeric answer a young child can't tap through," and "the child area contains
+  no link to account, billing, or settings" (docs/design/ACCESSIBILITY.md,
+  COMPONENT_STATES.md §4). Until now the child shell linked straight to `/parent`
+  and its wordmark linked out to the marketing site — both one-tap exits a child
+  could take by accident.
+- Decision: Add a `ParentalGate` — a controlled modal reusing the hand-rolled
+  `Dialog` (decision 014) — that asks a small addition sum with the numbers
+  spelled out in words ("what is seven plus five?") and enables Continue only
+  once the numeric answer is correct. The sum is generated fresh on every open
+  from a pure, injectable-RNG helper (`src/features/parental-gate/puzzle.ts`), so
+  it cannot be memorised and stays deterministic in tests. A `ParentAreaExit`
+  button (never a link) replaces both child→parent exits — the shell header
+  ("For parents") and the profile picker ("For grown-ups") — routing to the
+  parent area only after the gate is solved (`purpose: "return"`). The membership
+  page opens the same gate before a live Stripe checkout (`purpose: "purchase"`).
+  The child-shell wordmark now points to the Clubhouse (`/learn`) instead of the
+  marketing home, removing the last open-web exit. There is no success toast: the
+  navigation that follows is the confirmation (consistent with decision 016).
+- Consequences: The learning area has exactly one gated way out and no path to
+  account, billing, settings, or the open web. Two deliberate exceptions stay
+  ungated, because no child session exists to protect at those points: the
+  no-profile "First, a grown-up sets up a profile" setup CTA (the screen exists
+  to route a grown-up into first-run setup), and the dev-only billing simulator
+  (not a real payment). The gate is a UX barrier, not authentication — the server
+  remains the sole authority for entitlement and account actions. See
+  docs/COMPONENTS.md and docs/design/ACCESSIBILITY.md.

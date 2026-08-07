@@ -3,9 +3,11 @@ import { describe, expect, it, vi } from "vitest";
 import { ChildAppShell } from "./ChildAppShell";
 import { ParentAppShell } from "./ParentAppShell";
 
-// ChildAppShell renders the BottomNav, which reads the current path.
+// ChildAppShell renders the BottomNav (reads the path) and the gated
+// ParentAreaExit (holds a router).
 vi.mock("next/navigation", () => ({
   usePathname: () => "/learn",
+  useRouter: () => ({ push: vi.fn() }),
 }));
 
 /**
@@ -72,18 +74,36 @@ describe("ChildAppShell", () => {
     expect(screen.getByRole("main")).toHaveAttribute("id", "main-content");
   });
 
-  it("keeps a visible way for an adult to reach their own area", () => {
-    // e2e/shell.spec.ts navigates to the parent area from inside /learn, and
-    // an adult sitting beside the child needs the exit anyway.
+  it("gives an adult a gated way to their own area, never a one-tap link", () => {
+    // An adult beside the child needs the exit, but it must pass through the
+    // "Ask a grown-up" gate — so it is a button, not a link a child could tap
+    // straight through. The gate flow itself is covered in ParentAreaExit.test.
     render(
       <ChildAppShell>
         <p>Lesson content</p>
       </ChildAppShell>,
     );
 
-    expect(screen.getByRole("link", { name: "For parents" })).toHaveAttribute(
+    expect(
+      screen.getByRole("button", { name: "For parents" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "For parents" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("keeps the wordmark inside the child area", () => {
+    // No exit to the open web from the learning area: tapping the wordmark goes
+    // to the Clubhouse, not out to the marketing site (§4 "Safe return").
+    render(
+      <ChildAppShell>
+        <p>Lesson content</p>
+      </ChildAppShell>,
+    );
+
+    expect(screen.getByRole("link", { name: "Kindlyo" })).toHaveAttribute(
       "href",
-      "/parent",
+      "/learn",
     );
   });
 

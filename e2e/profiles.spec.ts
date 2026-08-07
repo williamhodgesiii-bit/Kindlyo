@@ -1,6 +1,8 @@
+import { randomUUID } from "node:crypto";
 import { expect, test, type Page } from "@playwright/test";
-import { STORAGE_STATE } from "./support/auth";
+import { E2E_PARENT_PASSWORD, STORAGE_STATE } from "./support/auth";
 import { seedProfiles } from "./support/family";
+import { solveParentalGate } from "./support/parentalGate";
 
 // The parent and learning areas are gated: reuse the signed-in parent session.
 test.use({ storageState: STORAGE_STATE });
@@ -26,10 +28,25 @@ async function fillProfile(
   if (avatar) await page.getByRole("radio", { name: avatar }).check();
 }
 
+/**
+ * Sign in as a brand-new parent nobody else uses, so the first-visit tests each
+ * meet a pristine, un-onboarded account no matter what order they run in. The
+ * offline gateway sessions any well-formed credentials and derives the account
+ * from the email (see shell.spec.ts for the same isolation trick).
+ */
+async function signInAsNewParent(page: Page): Promise<void> {
+  const email = `first-visit-${randomUUID()}@example.com`;
+  const response = await page.request.post("/api/auth/signin", {
+    data: { email, password: E2E_PARENT_PASSWORD },
+  });
+  expect(response.ok()).toBe(true);
+}
+
 test.describe("a parent's first visit", () => {
   test("is welcomed, told what is collected, and creates a child", async ({
     page,
   }) => {
+    await signInAsNewParent(page);
     await page.goto("/parent");
 
     await expect(
@@ -41,8 +58,9 @@ test.describe("a parent's first visit", () => {
     await expect(page.getByText("An email address")).toBeVisible();
     await expect(page.getByText("A full legal name")).toBeVisible();
     await expect(page.getByText("An exact birthday")).toBeVisible();
+    // What *is* kept, and where it lives (AccountStorageNotice; decision 034).
     await expect(
-      page.getByText(/Prototype — stored on this device only/),
+      page.getByText("Saved to your account", { exact: true }),
     ).toBeVisible();
 
     await page.getByRole("button", { name: "Add your first child" }).click();
@@ -62,6 +80,7 @@ test.describe("a parent's first visit", () => {
   test("asks for a nickname, and nothing that could identify a child", async ({
     page,
   }) => {
+    await signInAsNewParent(page);
     await page.goto("/parent");
     await page.getByRole("button", { name: "Get started" }).click();
     await page.getByRole("button", { name: "Add your first child" }).click();
@@ -75,6 +94,7 @@ test.describe("a parent's first visit", () => {
   });
 
   test("does not show onboarding again on a later visit", async ({ page }) => {
+    await signInAsNewParent(page);
     await page.goto("/parent");
     await page.getByRole("button", { name: "Skip for now" }).click();
     await expect(
@@ -200,7 +220,9 @@ test.describe("choosing a child and coming back", () => {
   test("returns to the parent area from the child shell", async ({ page }) => {
     await page.goto("/learn");
 
-    await page.getByRole("link", { name: "For parents" }).click();
+    // The exit is gated: a grown-up answers the "Ask a grown-up" sum first.
+    await page.getByRole("button", { name: "For parents" }).click();
+    await solveParentalGate(page);
 
     await expect(page).toHaveURL(/\/parent$/);
     await expect(
@@ -212,7 +234,8 @@ test.describe("choosing a child and coming back", () => {
     await page.goto("/learn");
     await page.getByRole("button", { name: "Switch" }).click();
 
-    await page.getByRole("link", { name: "For grown-ups" }).click();
+    await page.getByRole("button", { name: "For grown-ups" }).click();
+    await solveParentalGate(page);
 
     await expect(page).toHaveURL(/\/parent$/);
     await expect(

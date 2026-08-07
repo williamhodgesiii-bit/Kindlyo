@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { BottomNav } from "@/components/nav/BottomNav";
+import { ParentAreaExit } from "@/components/nav/ParentAreaExit";
 import { SiteFooter } from "@/components/SiteFooter";
 
 /**
@@ -16,10 +17,11 @@ import { SiteFooter } from "@/components/SiteFooter";
  * Left unset, the surface uses the default Hello Garden theme — right for the
  * cross-world clubhouse and map.
  *
- * The "For parents" link is the deliberate exception: an adult sitting beside
- * the child needs a way into their own area. In step 7 this moves behind the
- * "Ask a grown-up" parental gate (docs/design/ACCESSIBILITY.md); for now it is a
- * direct link so the surfaces stay reachable.
+ * There is exactly one way out, and it is gated: an adult sitting beside the
+ * child reaches their own area through the "Ask a grown-up" parental gate
+ * (ParentAreaExit; docs/design/ACCESSIBILITY.md). The child area otherwise holds
+ * no link to account, billing, settings, or the open web — even the wordmark
+ * goes to the Clubhouse rather than out to the marketing site (§4 "Safe return").
  *
  * Body text sits one step larger here (`text-lg` = body-500) for the 5-9 age
  * range, which is the child-facing floor (DESIGN.md §3).
@@ -40,17 +42,15 @@ export function ChildAppShell({ children, moduleId }: ChildAppShellProps) {
       <header className="border-b border-border bg-surface">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-4 py-4">
           <Link
-            href="/"
+            href="/learn"
             className="inline-flex items-center text-xl font-bold text-brand-primary-strong"
           >
             Kindlyo
           </Link>
-          <Link
-            href="/parent"
+          <ParentAreaExit
+            label="For parents"
             className="inline-flex items-center rounded-md px-3 py-2 font-medium text-text-secondary hover:bg-surface-muted hover:text-text-primary"
-          >
-            For parents
-          </Link>
+          />
         </div>
       </header>
       <main id="main-content" className="flex-1 text-lg">

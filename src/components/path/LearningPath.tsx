@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { ParentAreaExit } from "@/components/nav/ParentAreaExit";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -169,9 +169,10 @@ export function LearningPath() {
         </ul>
 
         <Text tone="secondary" className="mt-12">
-          <Link href="/parent" className="underline">
-            For grown-ups
-          </Link>
+          <ParentAreaExit
+            label="For grown-ups"
+            className="underline text-text-secondary hover:text-text-primary"
+          />
         </Text>
       </PageContainer>
     );
