@@ -104,20 +104,58 @@ Handle the branch bookkeeping yourself; the user should not have to ask.
 
 See `docs/DAILY_WORKFLOW.md` for the full description.
 
+`scripts/day.sh start` always fetches `origin/$MAIN_BRANCH` before branching.
+Never hand-run `git checkout -b <branch> main` from whatever the local `main`
+ref happens to point at — if it hasn't been fetched recently it can be stale
+and missing files a later commit added, `.claude/agents/` included. Losing
+those files mid-session has deregistered the custom agents below for the
+rest of a session before; always fetch `origin/main` first if you branch by
+hand instead of through the script.
+
+## Custom agents
+
+Five project-specific agents live in `.claude/agents/`. Use them — don't do
+their job inline in the main session:
+
+- **kindlyo-planner** — turns a plain-English goal into a vertical slice
+  before any code changes: acceptance criteria, affected files, risks. Use
+  it for steps 3–7 of the working process below on anything nontrivial.
+- **child-learning-researcher** — pedagogy and lesson-design research (age
+  5–9 appropriateness, story and choice design, spaced review). Use it
+  before authoring or changing curriculum content.
+- **safety-skeptic** — adversarial review of privacy/COPPA, consent,
+  cultural assumptions, accessibility, shame/obedience framing, moral
+  scoring, and MVP scope creep. Use it on anything privacy-relevant,
+  safety-relevant, or curriculum-touching, before calling the work done.
+- **story-motion-reviewer** — reviews story and motion changes (narrative,
+  characters, dialogue, animation) for overstimulation, manipulative
+  rewards, and reduced-motion support. Use it on any content or animation
+  change.
+- **qa-gate** — runs the required checks (lint, format:check, typecheck,
+  test, test:e2e, build) and reports pass/fail. It cannot edit, fix, or
+  bypass anything. Use it instead of running checks by hand at step 10 below
+  and before declaring a task complete.
+
+If a task genuinely fits none of the five, say so and proceed directly —
+don't force a fit. Otherwise, default to the matching agent rather than
+doing its job yourself.
+
 ## Working process
 
 For every substantial task:
 
 1. Read the relevant files in `/docs`.
 2. Inspect the existing implementation.
-3. Enter planning mode before editing.
+3. Enter planning mode before editing; for anything nontrivial, run it
+   through `kindlyo-planner` first.
 4. State assumptions.
 5. Identify affected files.
-6. Identify risks and privacy implications.
+6. Identify risks and privacy implications; get a `safety-skeptic` pass on
+   anything privacy- or safety-relevant.
 7. Create a small implementation plan.
 8. Implement one coherent vertical slice.
 9. Add or update tests.
-10. Run verification commands.
+10. Run verification through the `qa-gate` agent rather than by hand.
 11. Summarize changes and unresolved issues.
 
 ## Design expectations
@@ -157,8 +195,8 @@ A feature is complete only when:
 - Loading and empty states are handled.
 - Accessibility has been considered.
 - Tests cover critical behavior.
-- Lint passes.
-- Typecheck passes.
-- Tests pass.
-- Production build passes.
+- Verification (lint, typecheck, tests, production build) was run through
+  the `qa-gate` agent, not by hand, and it reports GREEN.
+- Privacy- or safety-relevant changes, and any curriculum change, carry a
+  `safety-skeptic` pass.
 - Documentation is updated where appropriate.
