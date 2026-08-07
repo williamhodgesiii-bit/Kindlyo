@@ -21,6 +21,9 @@ vi.mock("@/features/families/familyClient", async (importOriginal) => {
   };
 });
 
+// The picker's gated "For grown-ups" exit (ParentAreaExit) holds a router.
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
+
 /**
  * The path screen, driven the way a family would drive it.
  *
@@ -261,22 +264,27 @@ describe("the child-facing picker", () => {
 
     // One button per child, named by the child. The avatar is decorative, so
     // it adds nothing to the accessible name. No age bands, no instructions.
-    const choices = screen.getAllByRole("button");
+    // Scoped to the child list so the "For grown-ups" exit does not count.
+    const choices = within(screen.getByRole("list")).getAllByRole("button");
     expect(choices).toHaveLength(2);
     expect(choices[0]).toHaveAccessibleName("Ada");
     expect(choices[1]).toHaveAccessibleName("Ben");
     expect(screen.queryByText(/Ages/)).toBeNull();
   });
 
-  it("keeps a way back to the parent area", async () => {
+  it("keeps a gated way back to the parent area", async () => {
     seedProfile("Ada");
     render(<LearningPath />);
     await screen.findByRole("heading", { name: "Who is learning?" });
 
-    expect(screen.getByRole("link", { name: "For grown-ups" })).toHaveAttribute(
-      "href",
-      "/parent",
-    );
+    // The way out is the "Ask a grown-up" gate, so it is a button — never a
+    // one-tap link a child could follow straight through (decision 037).
+    expect(
+      screen.getByRole("button", { name: "For grown-ups" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "For grown-ups" }),
+    ).not.toBeInTheDocument();
   });
 
   it("remembers the choice, so a reload does not ask again", async () => {

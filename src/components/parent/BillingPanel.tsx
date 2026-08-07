@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { ParentalGate } from "@/components/parent/ParentalGate";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { InlineFeedback } from "@/components/ui/InlineFeedback";
@@ -48,6 +49,13 @@ export function BillingPanel({
   const router = useRouter();
   const [busy, setBusy] = useState<BusyKey>(null);
   const [error, setError] = useState<string | null>(null);
+  // A chosen plan waiting on the "Ask a grown-up" gate. Real checkout — the exit
+  // to Stripe's payment page — only starts once a grown-up answers the gate
+  // (docs/design/COMPONENT_STATES.md §4). The dev simulator is not a payment and
+  // stays ungated.
+  const [pendingPlan, setPendingPlan] = useState<PlanDefinition["plan"] | null>(
+    null,
+  );
 
   async function redirectVia(
     key: string,
@@ -126,9 +134,7 @@ export function BillingPanel({
           plans={plans}
           mode={mode}
           busy={busy}
-          onChoose={(plan) =>
-            redirectVia(`checkout-${plan}`, "/api/billing/checkout", { plan })
-          }
+          onChoose={(plan) => setPendingPlan(plan)}
           onSimulate={simulate}
         />
       )}
@@ -139,6 +145,21 @@ export function BillingPanel({
           subscription states Stripe would produce.
         </Text>
       ) : null}
+
+      <ParentalGate
+        open={pendingPlan !== null}
+        purpose="purchase"
+        onCancel={() => setPendingPlan(null)}
+        onVerified={() => {
+          const plan = pendingPlan;
+          setPendingPlan(null);
+          if (plan !== null) {
+            void redirectVia(`checkout-${plan}`, "/api/billing/checkout", {
+              plan,
+            });
+          }
+        }}
+      />
     </div>
   );
 }

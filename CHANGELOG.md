@@ -10,6 +10,11 @@ Newest first.
 
 <!-- new-entries-below -->
 
+## 2026-08-07
+
+- feat(design): "Ask a grown-up" parental gate & safe return (handoff step 7)
+- Shipped from `857bbab` (`claude/next-design-step-crrz43`)
+
 ## 2026-08-06
 
 - feat(design): system states — loading, resume, recoverable error (handoff step 6)

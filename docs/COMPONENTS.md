@@ -269,6 +269,24 @@ label ("For grown-ups") and a sand tint make it obviously not addressed to the
 child. Holds a paragraph and a few concrete suggestions; parent participation
 should be useful but lightweight.
 
+### `ParentalGate`, `ParentAreaExit` — the "Ask a grown-up" gate
+
+The barrier a young child cannot tap through by accident. `ParentalGate` reuses
+`Dialog` and asks a small addition sum with the numbers spelled out in words
+("what is seven plus five?"); Continue enables only when the typed number is
+right. The sum comes from `src/features/parental-gate/puzzle.ts`, a pure helper
+that takes its randomness as an argument — fresh on every open so it cannot be
+memorised, deterministic under test. It is a UX gate, not authentication; the
+server stays the authority for anything it precedes. Two purposes tailor the
+copy: `return` (leaving the child area) and `purchase` (before a live checkout).
+
+`ParentAreaExit` is the visible affordance in the child area — a button, never a
+one-tap link — used by the shell header ("For parents") and the profile picker
+("For grown-ups"). It opens the gate and routes to `/parent` only once solved,
+so the learning area holds no plain link to account, billing, settings, or the
+open web (decision 037; docs/design/ACCESSIBILITY.md). There is no success
+toast: the navigation that follows is the confirmation.
+
 ### Marketing components — `src/components/marketing/`
 
 Public-site pieces, kept out of `ui/` because they carry product voice rather
