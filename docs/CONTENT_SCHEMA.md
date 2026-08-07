@@ -8,7 +8,15 @@ components.
 ## The model
 
 Implemented in `src/features/curriculum/schema.ts`, which is now the canonical
-version. Lessons are authored in `src/content/lessons/`.
+version. Lessons are authored in `src/content/lessons/`: Hello Garden's eight
+are individual files there, and each of the other eleven neighborhood worlds is
+one file under `src/content/lessons/worlds/` exporting that world's eight
+lessons (decision 040). Every lesson is registered in `index.ts`, where it
+passes through `parseLesson` at import.
+
+The canonical `Lesson` type carries a required `skillArea` (a closed union;
+decision 028) that the parent dashboard groups by — the summary below predates
+it, so treat `schema.ts` as the source of truth where they differ.
 
 ```ts
 export type ContentStatus = "draft" | "reviewed" | "published";

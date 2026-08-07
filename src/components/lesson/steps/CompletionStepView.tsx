@@ -2,6 +2,7 @@ import { Button, ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { MissionCard } from "@/components/ui/MissionCard";
 import { Heading, Text } from "@/components/ui/Typography";
+import { modulePathHref } from "@/content/worlds";
 import type { Lesson } from "@/features/curriculum/schema";
 import type { LessonRunState } from "@/features/lessons/lessonMachine";
 import { GlimBubble } from "@/components/character/GlimBubble";
@@ -80,7 +81,7 @@ export function CompletionStepView({
             ))}
             {practised ? (
               <div>
-                <dt className="text-text-secondary">The hello you practised</dt>
+                <dt className="text-text-secondary">What you practised</dt>
                 <dd className="mt-1 font-semibold">{practised.text}</dd>
               </div>
             ) : null}
@@ -97,7 +98,11 @@ export function CompletionStepView({
       />
 
       <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <ButtonLink href="/learn" variant="primary" size="lg">
+        <ButtonLink
+          href={modulePathHref(lesson.moduleId)}
+          variant="primary"
+          size="lg"
+        >
           Back to the lessons
         </ButtonLink>
         <Button variant="secondary" size="lg" onClick={onRestart}>

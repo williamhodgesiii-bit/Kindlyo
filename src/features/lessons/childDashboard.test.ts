@@ -1,16 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { meetingPeopleModule } from "@/content/modules";
+import { meetingPeopleModule, talkingListeningModule } from "@/content/modules";
 import { getLessonBySlug } from "@/features/curriculum/catalog";
 import { buildChildDashboard, practiceStatusLabels } from "./childDashboard";
 import type { ProfileProgress } from "./progressStorage";
 
 /**
- * Built against the real module, because the questions this answers are about
- * the real curriculum's shape — how many skill areas there are, which lesson
- * comes next.
+ * Built against the real Meeting People module, because the questions this
+ * answers are about the real curriculum's shape — how many skill areas there
+ * are, which lesson comes next. The dashboard now spans every world; passing a
+ * single module keeps these unit tests focused on one world's figures, and the
+ * aggregation across worlds has its own tests below.
  */
 function build(progress: ProfileProgress) {
-  return buildChildDashboard(meetingPeopleModule, getLessonBySlug, progress);
+  return buildChildDashboard([meetingPeopleModule], getLessonBySlug, progress);
 }
 
 function completed(at: string) {
@@ -33,7 +35,7 @@ describe("a child who has not started", () => {
   });
 
   it("still points at the first lesson as what to practise next", () => {
-    expect(build({}).path.resume?.order).toBe(1);
+    expect(build({}).resume?.entry.order).toBe(1);
   });
 
   it("lists every skill area as not started yet", () => {
@@ -51,7 +53,7 @@ describe("what has been practised", () => {
   it("counts finished lessons", () => {
     const dashboard = build({ "saying-hello": completed(AUG_4) });
 
-    expect(dashboard.path.completedCount).toBe(1);
+    expect(dashboard.completedCount).toBe(1);
     expect(dashboard.isEmpty).toBe(false);
   });
 
@@ -102,9 +104,9 @@ describe("what has been practised", () => {
 
 describe("what to practise next", () => {
   it("points at the lesson unlocked by the last one", () => {
-    expect(build({ "saying-hello": completed(AUG_4) }).path.resume?.order).toBe(
-      2,
-    );
+    expect(
+      build({ "saying-hello": completed(AUG_4) }).resume?.entry.order,
+    ).toBe(2);
   });
 
   it("has nothing left to suggest once the module is done", () => {
@@ -116,7 +118,7 @@ describe("what to practise next", () => {
       ),
     );
 
-    expect(build(all).path.resume).toBeNull();
+    expect(build(all).resume).toBeNull();
   });
 });
 
@@ -263,6 +265,77 @@ describe("things worth talking about", () => {
   it("ignores choices recorded against different content", () => {
     // The scenes may have changed, so the question no longer matches.
     expect(build(chose("wave-instead", 99)).talkingPoints).toEqual([]);
+  });
+});
+
+describe("across the whole neighborhood", () => {
+  /** Meeting People first, then Talking and Listening (Echo Treehouse). */
+  function buildAll(progress: ProfileProgress) {
+    return buildChildDashboard(
+      [meetingPeopleModule, talkingListeningModule],
+      getLessonBySlug,
+      progress,
+    );
+  }
+
+  it("keeps a world's progress separate but sums the totals", () => {
+    const dashboard = buildAll({
+      "saying-hello": completed(AUG_4),
+      "echo-treehouse-whole-self-listening": completed(AUG_5),
+    });
+
+    expect(dashboard.completedCount).toBe(2);
+    expect(dashboard.lessonCount).toBe(16);
+    expect(dashboard.modules).toHaveLength(2);
+    expect(dashboard.modules[0]?.path.completedCount).toBe(1);
+    expect(dashboard.modules[1]?.path.completedCount).toBe(1);
+  });
+
+  it("resumes in the first world that still has something to do", () => {
+    // Meeting People untouched, so the child is still there — not in world two.
+    const dashboard = buildAll({
+      "echo-treehouse-whole-self-listening": completed(AUG_5),
+    });
+
+    expect(dashboard.resume?.module.id).toBe(meetingPeopleModule.id);
+    expect(dashboard.resume?.entry.order).toBe(1);
+  });
+
+  it("moves the resume on to the next world once one is finished", () => {
+    const meetingPeopleDone: ProfileProgress = Object.fromEntries(
+      meetingPeopleModule.lessons.flatMap((entry) =>
+        entry.slug === undefined
+          ? []
+          : [[getLessonBySlug(entry.slug)?.id ?? "", completed(AUG_4)]],
+      ),
+    );
+
+    const dashboard = buildAll(meetingPeopleDone);
+
+    expect(dashboard.resume?.module.id).toBe(talkingListeningModule.id);
+    expect(dashboard.resume?.entry.order).toBe(1);
+  });
+
+  it("takes the active mission from the most recent finish in any world", () => {
+    const dashboard = buildAll({
+      "saying-hello": completed(AUG_4),
+      "echo-treehouse-whole-self-listening": completed(AUG_6),
+    });
+
+    expect(dashboard.activeMission?.lesson.id).toBe(
+      "echo-treehouse-whole-self-listening",
+    );
+  });
+
+  it("lists completed lessons from every world as reviewable", () => {
+    const dashboard = buildAll({
+      "saying-hello": completed(AUG_4),
+      "echo-treehouse-whole-self-listening": completed(AUG_5),
+    });
+
+    const worlds = dashboard.reviewable.map(({ module }) => module.id);
+    expect(worlds).toContain(meetingPeopleModule.id);
+    expect(worlds).toContain(talkingListeningModule.id);
   });
 });
 

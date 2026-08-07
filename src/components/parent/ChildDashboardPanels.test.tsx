@@ -16,7 +16,7 @@ import {
 const AUG_4 = "2026-08-04T10:00:00.000Z";
 
 function dashboardFor(progress: ProfileProgress) {
-  return buildChildDashboard(meetingPeopleModule, getLessonBySlug, progress);
+  return buildChildDashboard([meetingPeopleModule], getLessonBySlug, progress);
 }
 
 const practisedOne = dashboardFor({

@@ -88,6 +88,11 @@ Lessons:
 - Multiple currencies
 - Internationalization
 
+> Note: "Multiple curriculum modules" was later authored on explicit
+> instruction as the design handoff's content pass — all twelve neighborhood
+> worlds now have draft lessons and are playable (decision 040). The rest of
+> this exclusion list still holds.
+
 ## MVP completion criteria
 
 The MVP is complete when a parent can:

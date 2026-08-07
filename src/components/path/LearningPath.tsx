@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ParentAreaExit } from "@/components/nav/ParentAreaExit";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button, ButtonLink } from "@/components/ui/Button";
@@ -11,7 +12,7 @@ import { PageContainer } from "@/components/ui/PageContainer";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Heading, Text } from "@/components/ui/Typography";
-import { meetingPeopleModule } from "@/content/modules";
+import { meetingPeopleModule, type CurriculumModule } from "@/content/modules";
 import type { PathLesson } from "@/features/lessons/moduleProgress";
 import { useModulePath } from "@/features/lessons/useModulePath";
 import { useFamily } from "@/features/profiles/useFamily";
@@ -108,9 +109,13 @@ function LessonRow({ entry }: { entry: PathLesson }) {
   );
 }
 
-export function LearningPath() {
+export function LearningPath({
+  module = meetingPeopleModule,
+}: {
+  module?: CurriculumModule;
+} = {}) {
   const family = useFamily();
-  const path = useModulePath(family.selectedProfile?.id ?? null);
+  const path = useModulePath(family.selectedProfile?.id ?? null, module);
 
   if (!family.hydrated) {
     return (
@@ -191,7 +196,7 @@ export function LearningPath() {
   const profile = family.selectedProfile;
 
   return (
-    <PageContainer>
+    <PageContainer data-module={module.id}>
       <div className="flex flex-wrap items-center justify-between gap-4">
         <Heading level={1}>Learn</Heading>
         <div className="flex items-center gap-2">
@@ -211,18 +216,20 @@ export function LearningPath() {
         </div>
       </div>
 
-      <section
-        aria-labelledby={`module-${meetingPeopleModule.id}`}
-        className="mt-8"
-      >
-        <div className="flex flex-wrap items-center gap-3">
-          <Heading level={2} id={`module-${meetingPeopleModule.id}`}>
-            {meetingPeopleModule.title}
+      <section aria-labelledby={`module-${module.id}`} className="mt-8">
+        <Text tone="secondary" size="sm">
+          <Link href="/learn/map" className="underline hover:text-text-primary">
+            ← Neighborhood map
+          </Link>
+        </Text>
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <Heading level={2} id={`module-${module.id}`}>
+            {module.title}
           </Heading>
-          <ContentStatusBadge status={meetingPeopleModule.status} />
+          <ContentStatusBadge status={module.status} />
         </div>
         <Text tone="secondary" className="mt-3 max-w-2xl">
-          {meetingPeopleModule.description}
+          {module.description}
         </Text>
 
         <ProgressBar

@@ -57,15 +57,23 @@ describe("NeighborhoodMap", () => {
     expect(screen.getByText("World Garden")).toBeInTheDocument();
   });
 
-  it("starts a fresh journey in Hello Garden and holds the rest a little later", async () => {
+  it("starts a fresh journey with Hello Garden current and the next world up next", async () => {
     render(<NeighborhoodMap />);
     await screen.findByRole("heading", { name: "Neighborhood map" });
 
-    // Hello Garden is the one live node, linking into the learning path...
+    // Hello Garden is the current world, linking into the learning path...
     const hello = screen.getByRole("link", { name: /Hello Garden/ });
     expect(hello).toHaveAttribute("href", "/learn");
-    // ...and it is the ONLY link: every other world is information, not a button.
-    expect(screen.getAllByRole("link")).toHaveLength(1);
+
+    // ...and the world after it is reachable too: the neighborhood opens a
+    // little at a time — the current world plus the one up next — with every
+    // world beyond held "a little later".
+    const echo = screen.getByRole("link", { name: /Echo Treehouse/ });
+    expect(echo).toHaveAttribute("href", "/learn/module/echo-treehouse");
+    expect(within(echo).getByText("Up next")).toBeInTheDocument();
+
+    // Only those two are links; every world beyond is information, not a button.
+    expect(screen.getAllByRole("link")).toHaveLength(2);
     expect(screen.getAllByText("A little later").length).toBeGreaterThan(0);
   });
 

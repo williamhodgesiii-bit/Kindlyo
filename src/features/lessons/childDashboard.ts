@@ -12,10 +12,12 @@ import type { ProfileProgress } from "./progressStorage";
  * Everything the parent dashboard shows about one child, derived in one pure
  * place so the screen only has to lay it out.
  *
- * It answers five questions, and deliberately no others:
+ * It looks across the whole neighborhood — every world's module — not just the
+ * first one, so a parent sees what their child has practised wherever they have
+ * been. It answers five questions, and deliberately no others:
  *
- * 1. What has my child practised?      → `path`, `skillAreas`
- * 2. What should we practise next?     → `path.resume`
+ * 1. What has my child practised?      → `modules`, `skillAreas`
+ * 2. What should we practise next?     → `resume`
  * 3. Which offline mission is active?  → `activeMission`
  * 4. Where did they want more context? → `talkingPoints`
  * 5. When did they last use the app?   → `lastActiveAt`
@@ -48,6 +50,18 @@ export type SkillAreaSummary = {
   status: PracticeStatus;
   practisedCount: number;
   lessonCount: number;
+};
+
+/** One world's path, so the dashboard can show progress world by world. */
+export type ModuleProgress = {
+  module: CurriculumModule;
+  path: ModulePath;
+};
+
+/** A completed or resumable lesson tagged with the world it lives in. */
+export type WorldLesson = {
+  module: CurriculumModule;
+  entry: PathLesson;
 };
 
 export type RecentActivity = {
@@ -83,7 +97,16 @@ export type TalkingPoint = {
 };
 
 export type ChildDashboard = {
-  path: ModulePath;
+  /** Progress per world, in map order. */
+  modules: readonly ModuleProgress[];
+  /** Written lessons completed, across every world. */
+  completedCount: number;
+  /** Written lessons in total, across every world. */
+  lessonCount: number;
+  /** Where "Continue" goes next — the current world's resume — or null when all done. */
+  resume: WorldLesson | null;
+  /** Every completed lesson, across worlds, for "ready to review". */
+  reviewable: readonly WorldLesson[];
   skillAreas: readonly SkillAreaSummary[];
   recent: readonly RecentActivity[];
   activeMission: ActiveMission | null;
@@ -166,13 +189,44 @@ function talkingPointsFor(
 }
 
 export function buildChildDashboard(
-  module: CurriculumModule,
+  modules: readonly CurriculumModule[],
   getLesson: (slug: string) => Lesson | undefined,
   progress: ProfileProgress,
   { recentLimit = 3 }: { recentLimit?: number } = {},
 ): ChildDashboard {
-  const path = buildModulePath(module, getLesson, progress);
-  const written = path.lessons.filter((entry) => entry.lesson !== undefined);
+  const moduleProgress: ModuleProgress[] = modules.map((module) => ({
+    module,
+    path: buildModulePath(module, getLesson, progress),
+  }));
+
+  // Every path lesson, across every world, with the world it belongs to. The
+  // per-lesson questions (recent, mission, talking points) run over the flat
+  // list; the per-world ones (progress, resume) stay grouped.
+  const allLessons = moduleProgress.flatMap((m) => m.path.lessons);
+  const written = allLessons.filter((entry) => entry.lesson !== undefined);
+
+  const completedCount = moduleProgress.reduce(
+    (total, m) => total + m.path.completedCount,
+    0,
+  );
+  const lessonCount = moduleProgress.reduce(
+    (total, m) => total + m.path.lessonCount,
+    0,
+  );
+
+  // "Continue" goes to the first world (in map order) that still has something
+  // to do — that is where the child currently is on the journey.
+  const current = moduleProgress.find((m) => m.path.resume !== null);
+  const resume =
+    current && current.path.resume !== null
+      ? { module: current.module, entry: current.path.resume }
+      : null;
+
+  const reviewable: WorldLesson[] = moduleProgress.flatMap((m) =>
+    m.path.lessons
+      .filter((entry) => entry.state === "complete" && entry.lesson)
+      .map((entry) => ({ module: m.module, entry })),
+  );
 
   const recent = written
     .flatMap((entry) => {
@@ -187,7 +241,7 @@ export function buildChildDashboard(
     .slice(0, recentLimit);
 
   // The mission worth doing now is the one from the most recently finished
-  // lesson — the thing still fresh in everyone's mind.
+  // lesson anywhere — the thing still fresh in everyone's mind.
   const missionEntry = written
     .filter((entry) => entry.state === "complete" && entry.completedAt)
     .sort((a, b) =>
@@ -221,12 +275,16 @@ export function buildChildDashboard(
       : timestamps.reduce((latest, at) => (at > latest ? at : latest));
 
   return {
-    path,
-    skillAreas: summariseAreas(path.lessons),
+    modules: moduleProgress,
+    completedCount,
+    lessonCount,
+    resume,
+    reviewable,
+    skillAreas: summariseAreas(allLessons),
     recent,
     activeMission,
     talkingPoints,
     lastActiveAt,
-    isEmpty: path.completedCount === 0 && recent.length === 0,
+    isEmpty: completedCount === 0 && recent.length === 0,
   };
 }

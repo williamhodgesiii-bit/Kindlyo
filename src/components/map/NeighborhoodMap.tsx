@@ -1,17 +1,14 @@
 "use client";
 
-import { meetingPeopleModule } from "@/content/modules";
+import { getModuleById } from "@/content/modules";
 import { neighborhoodWorlds } from "@/content/worlds";
 import { getLessonBySlug } from "@/features/curriculum/catalog";
-import {
-  buildModulePath,
-  type ModulePath,
-} from "@/features/lessons/moduleProgress";
+import { buildModulePath } from "@/features/lessons/moduleProgress";
 import {
   buildNeighborhood,
   type WorldSummary,
 } from "@/features/lessons/neighborhood";
-import { useModulePath } from "@/features/lessons/useModulePath";
+import { useProgress } from "@/features/lessons/useProgress";
 import { useFamily } from "@/features/profiles/useFamily";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -22,11 +19,11 @@ import { MapNode } from "./MapNode";
  * The neighborhood map: every world in one place, and where this child is in
  * their journey (docs/design/COMPONENT_STATES.md §03).
  *
- * Only Hello Garden has authored content, so its state comes from the child's
- * module progress; every other world reads as "a little later" — the shape of
- * the neighborhood without pretending the lessons exist. The map is browsable
- * without a chosen child: with none selected it shows the fresh-start view
- * (Hello Garden current), and its one live node links into the learning path,
+ * Every world's state comes from the child's own progress in that world's
+ * module; a world whose lessons are all still ahead reads as "a little later" —
+ * the shape of the neighborhood, opening a little at a time. The map is
+ * browsable without a chosen child: with none selected it shows the fresh-start
+ * view (Hello Garden current), and its live nodes link into the learning path,
  * which handles who is learning.
  *
  * A vertical trail on phones; two columns from `tablet` up. The artful 2-D map
@@ -36,27 +33,35 @@ import { MapNode } from "./MapNode";
 export function NeighborhoodMap() {
   const family = useFamily();
   const profileId = family.selectedProfile?.id ?? null;
-  const loadedPath = useModulePath(profileId);
+  const progress = useProgress(profileId);
 
   if (!family.hydrated) return <MapSkeleton />;
   // A child is chosen but their progress has not arrived yet: wait rather than
   // flash the fresh-start view under their name.
-  if (profileId !== null && loadedPath === null) return <MapSkeleton />;
+  if (profileId !== null && progress === null) return <MapSkeleton />;
 
   // No child chosen: the fresh-start neighborhood (nothing completed yet).
-  const helloGardenPath: ModulePath =
-    loadedPath ?? buildModulePath(meetingPeopleModule, getLessonBySlug, {});
+  const effectiveProgress = progress ?? {};
 
   const summaryOf = (
     world: (typeof neighborhoodWorlds)[number],
-  ): WorldSummary =>
-    world.moduleId === meetingPeopleModule.id
-      ? {
-          hasContent: helloGardenPath.lessonCount > 0,
-          completed: helloGardenPath.completedCount,
-          total: helloGardenPath.lessonCount,
-        }
-      : { hasContent: false, completed: 0, total: 0 };
+  ): WorldSummary => {
+    const worldModule =
+      world.moduleId === undefined ? undefined : getModuleById(world.moduleId);
+    if (worldModule === undefined) {
+      return { hasContent: false, completed: 0, total: 0 };
+    }
+    const path = buildModulePath(
+      worldModule,
+      getLessonBySlug,
+      effectiveProgress,
+    );
+    return {
+      hasContent: path.lessonCount > 0,
+      completed: path.completedCount,
+      total: path.lessonCount,
+    };
+  };
 
   const nodes = buildNeighborhood(neighborhoodWorlds, summaryOf);
   const profile = family.selectedProfile;

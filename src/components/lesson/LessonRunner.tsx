@@ -5,6 +5,8 @@ import { Button, ButtonLink } from "@/components/ui/Button";
 import { ContentStatusBadge } from "@/components/ui/ContentStatusBadge";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { Heading, Text } from "@/components/ui/Typography";
+import { getModuleById, meetingPeopleModule } from "@/content/modules";
+import { modulePathHref } from "@/content/worlds";
 import type { Lesson } from "@/features/curriculum/schema";
 import { useLessonRun, type LessonRun } from "@/features/lessons/useLessonRun";
 import { useModulePath } from "@/features/lessons/useModulePath";
@@ -85,10 +87,13 @@ function LessonNotice({
   title,
   message,
   actionLabel,
+  href = "/learn",
 }: {
   title: string;
   message: string;
   actionLabel: string;
+  /** Where the one way onward goes. Defaults to the clubhouse home. */
+  href?: string;
 }) {
   return (
     <PageContainer width="narrow">
@@ -99,7 +104,7 @@ function LessonNotice({
         {message}
       </Text>
       <div className="mt-8">
-        <ButtonLink href="/learn" size="lg">
+        <ButtonLink href={href} size="lg">
           {actionLabel}
         </ButtonLink>
       </div>
@@ -116,7 +121,12 @@ function LessonNotice({
 export function LessonRunner({ lesson }: { lesson: Lesson }) {
   const family = useFamily();
   const profileId = family.selectedProfile?.id ?? null;
-  const path = useModulePath(profileId);
+  // Check this lesson against its own module's path, not always Hello Garden's,
+  // so a world-two lesson respects a world-two unlock chain.
+  const curriculumModule =
+    getModuleById(lesson.moduleId) ?? meetingPeopleModule;
+  const path = useModulePath(profileId, curriculumModule);
+  const backHref = modulePathHref(lesson.moduleId);
 
   if (!family.hydrated) return <LessonLoading />;
 
@@ -126,6 +136,7 @@ export function LessonRunner({ lesson }: { lesson: Lesson }) {
         title="Who is learning?"
         message="Pick your profile first, so your progress goes to the right place."
         actionLabel="Choose a profile"
+        href={backHref}
       />
     );
   }
@@ -143,6 +154,7 @@ export function LessonRunner({ lesson }: { lesson: Lesson }) {
         title="Not this one yet"
         message={`This lesson opens after lesson ${entry.order - 1}. Finish that one first, then come back — it will be waiting.`}
         actionLabel="Back to your lessons"
+        href={backHref}
       />
     );
   }

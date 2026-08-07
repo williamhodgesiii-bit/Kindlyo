@@ -772,3 +772,45 @@ Format:
   with the one documented exception of the email/analytics preference toggles
   (decision 038). No new data or persistence was added; the sections are layout
   over logic that already existed and was already tested. See docs/COMPONENTS.md.
+
+## 040. The content pass: worlds 2–12 authored and connected (handoff step 8)
+
+- Date: 2026-08-07
+- Status: accepted
+- Context: The design handoff's step 8 is the content pass — the remaining Hello
+  Garden lessons (already authored) and then the other eleven worlds to lesson
+  depth, then wiring them so a child can actually play them. This expands past
+  the single-module MVP (`docs/MVP_SCOPE.md` excludes "multiple curriculum
+  modules"), so it was done only on explicit instruction, not silently. Content
+  was grounded in a deep-research pass on age-5–9 social-emotional guidance
+  (turn-taking, inclusion, cooperation, repair-over-forced-apology, gratitude,
+  guest/host, public spaces, dining, digital citizenship, NSPCC-PANTS body
+  safety, anti-bias culture); the notes echo the existing curriculum principles.
+- Decision: Author eight lessons for each of worlds 2–12 (88 lessons, seven
+  teaching + a review each), one file per world under `src/content/lessons/
+worlds/`, using the canon cast and rotation rule (`CHARACTER_BIBLE.md`). Give
+  each world one thematic `skillArea` (extending the closed union from six to
+  seventeen; all lessons of a world share its area), and decouple the public
+  marketing skill list from the union so the narrow MVP marketing surface does
+  not grow with draft worlds. Each new module's `id` is its world slug, which is
+  also its `tokens.css` theme key, so a lesson themes itself by carrying its
+  `moduleId`. Add a module registry (`getModuleById`) and world↔module helpers
+  (`getWorldByModuleId`, `modulePathHref`). Generalise the reachability the MVP
+  built for one module: a shared `useProgress` loader, `useModulePath(module)`,
+  `LearningPath({ module })`, a `/learn/module/[moduleId]` route, and a
+  module-aware `LessonRunner`/`CompletionStepView` (lock check and back-links
+  follow the lesson's own world). The map and the parent dashboard now span the
+  whole neighborhood: `buildChildDashboard` takes every module and aggregates
+  progress, skills, recent activity, the active mission, and talking points
+  across worlds, while showing per-world progress.
+- Consequences: All twelve worlds are playable, and the neighborhood opens "a
+  little at a time" — the current world plus the one up next are reachable on the
+  map, the rest read "a little later" (never locked), exactly the existing
+  journey rule now that content exists behind every node. Everything stays
+  `status: "draft"`; nothing claims review. Brave Basecamp (safety, consent &
+  boundaries) and World Garden (culture) carry explicit safety/cultural notes
+  requiring qualified specialist review before publication — the safety module is
+  written PANTS-aligned, calm, non-graphic, and blame-free, and the culture
+  module teaches the child's respectful stance rather than cataloguing or
+  performing any culture. The `skillArea` union is now large; a future CMS or a
+  reshuffle of the taxonomy is the natural next revisit (see decision 028).
