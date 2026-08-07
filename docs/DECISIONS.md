@@ -745,3 +745,30 @@ Format:
   (COMPONENT_STATES.md §10) are deferred until there is an email or analytics
   system for a toggle to honestly control. See docs/PRIVACY_AND_SAFETY.md and
   docs/COMPONENTS.md.
+
+## 039. The parent sections share one per-child scaffold; step 7 is complete
+
+- Date: 2026-08-07
+- Status: accepted
+- Context: The Missions and Skills nav destinations were still placeholder stubs.
+  Both, like the dashboard, answer questions about one child at a time and need
+  the same four states — loading the family, no child yet, choosing which child,
+  loading that child's figures — and all the data they show is already derived by
+  the pure `buildChildDashboard`.
+- Decision: Factor the shared shell into `ParentChildSection`, a client scaffold
+  that owns those four states and hands each section one loaded `dashboard` for
+  the child in view via a render prop; the `ChildSelector` the dashboard used
+  inline is extracted so all three surfaces share it. `MissionsSection` (§6/§9)
+  reuses `CurrentMission` with its mark-practised toggle and `TalkingPoints`;
+  `SkillsSection` (§7/§8) reuses `SkillAreaSummary` and a new `ReadyToReview`
+  panel. The reused panels gained a `headingLevel` prop (default 4, unchanged for
+  the dashboard) so they sit under each page's `<h1>` without skipping a level.
+  Selection stays local to each section, never the `/learn` selection, so
+  glancing at Missions cannot change who the tablet thinks is learning.
+- Consequences: The parent experience (step 7) is complete to the design's §4 —
+  onboarding, account welcome, create/child selector, progress dashboard,
+  current mission, skills, ready to review, conversation prompt, privacy &
+  account, delete child, delete account, subscription, and the safe-return gate —
+  with the one documented exception of the email/analytics preference toggles
+  (decision 038). No new data or persistence was added; the sections are layout
+  over logic that already existed and was already tested. See docs/COMPONENTS.md.

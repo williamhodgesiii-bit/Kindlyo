@@ -302,6 +302,23 @@ signing out as the gentler alternative; on confirm it `DELETE`s `/api/family`
 then submits a POST sign-out form, since the data is gone and there is nothing
 left to stay signed in to (decision 038).
 
+### `ParentChildSection`, `MissionsSection`, `SkillsSection`
+
+The parent sections that answer questions about one child at a time.
+`ParentChildSection` is the shared scaffold: it owns the four states every such
+surface has — loading the family, no child yet, the `ChildSelector`, and loading
+that child's figures — and hands its render-prop child one loaded `dashboard`
+(decision 039). `MissionsSection` (§6/§9) composes `CurrentMission` and
+`TalkingPoints`; `SkillsSection` (§7/§8) composes `SkillAreaSummary` and
+`ReadyToReview`. Selection is local to the section, never the `/learn` selection.
+
+The dashboard panels in `ChildDashboardPanels.tsx` (`CurrentMission`,
+`SkillAreaSummary`, `TalkingPoints`, `ReadyToReview`) take a `headingLevel`
+(default 4) so the same panel sits correctly under the dashboard's `<h3>` child
+sections and under a section page's `<h1>` without skipping a level. All labels
+stay in the neutral vocabulary — practised, exploring, ready to review, not
+started yet — with no score anywhere.
+
 ### Marketing components — `src/components/marketing/`
 
 Public-site pieces, kept out of `ui/` because they carry product voice rather
