@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Source_Sans_3, Source_Serif_4 } from "next/font/google";
 import { SkipLink } from "@/components/SkipLink";
-import { LegacyLocalDataReset } from "@/components/system/LegacyLocalDataReset";
 import { absoluteUrl, siteDescription, siteName } from "@/lib/seo";
 import "@/styles/globals.css";
 
@@ -80,7 +79,6 @@ export default function RootLayout({
     >
       <body className="flex min-h-screen flex-col">
         <SkipLink />
-        <LegacyLocalDataReset />
         {children}
       </body>
     </html>

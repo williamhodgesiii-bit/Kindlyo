@@ -814,3 +814,42 @@ worlds/`, using the canon cast and rotation rule (`CHARACTER_BIBLE.md`). Give
   module teaches the child's respectful stance rather than cataloguing or
   performing any culture. The `skillArea` union is now large; a future CMS or a
   reshuffle of the taxonomy is the natural next revisit (see decision 028).
+
+## 041. `LegacyLocalDataReset` moves out of the root layout; two e2e specs updated to match shipped behaviour
+
+- Date: 2026-08-07
+- Status: accepted
+- Context: `scripts/day.sh ship` does not run Playwright by default (`RUN_E2E=1`
+  is opt-in), so end-to-end failures only surface in GitHub Actions, after a
+  merge to `main`. CI on `main` had been red since 2026-08-05, across every
+  ship since, on four specs, unnoticed until this audit. Investigating found
+  two distinct causes. First, `LegacyLocalDataReset` (decision 034) lived in
+  the root layout, which also wraps the public marketing pages — so it wrote
+  its `kindlyo.local-data-reset.v1` marker key to local storage on an
+  anonymous visitor's very first page load, breaking the sample scenario's
+  "saves nothing" guarantee (decision 032) for anyone who had not opted into
+  an account. Second, two `e2e/progress.spec.ts` cases had fallen out of date
+  with real product changes: "creates two child profiles" assumed the shared
+  `e2e-parent@example.com` fixture account was always freshly un-onboarded,
+  which broke once other spec files (using the same account against the
+  in-memory store) started completing onboarding first; "resumes an
+  unfinished lesson" predated the `ResumeCard` "Welcome back" confirmation
+  screen (the 2026-08-06 system-states work, `docs/design/COMPONENT_STATES.md`
+  §14) and never accounted for it.
+- Decision: Move `<LegacyLocalDataReset />` from `src/app/layout.tsx` into the
+  two layouts gated behind a signed-in parent session — `src/app/parent/layout.tsx`
+  and `src/app/learn/layout.tsx` — since a signed-out marketing visitor can
+  never have legacy local data to clear. Give the "creates two child profiles"
+  test its own throwaway account via `signInAsNewParent`, matching the
+  isolation pattern already used in `profiles.spec.ts` and `account.spec.ts`.
+  Update "resumes an unfinished lesson" to click through the `ResumeCard`'s
+  "Keep going" button, matching the shipped resume flow.
+- Consequences: All 90 Playwright specs pass locally under the same
+  single-worker, two-retry configuration CI uses, alongside lint, format,
+  typecheck, the unit suite, and the production build. `LegacyLocalDataReset`
+  now runs once per browser on first entry to either gated area rather than on
+  every anonymous page view, which is strictly narrower than before and closer
+  to the original intent. No product behaviour changed for a signed-in parent.
+  This does not change that `ship` still does not run e2e by default; a
+  standing gap worth a deliberate follow-up so a future regression like this
+  one surfaces before merge, not after.
