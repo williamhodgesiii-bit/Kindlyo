@@ -153,6 +153,18 @@ export type PracticeOption = {
   text: string;
   /** Encouragement for choosing it. Never a score, never a correction. */
   encouragement: string;
+  /**
+   * Optional. A short, authored invitation to rehearse *this* chosen action for
+   * real — the enactment beat that a passive re-read of `closing` is not
+   * (decision 044). It matches the option the child picked (chose "wave" → asked
+   * to wave, never "say it"), and must stay an autonomy-supportive invitation
+   * with an imagine-it path, never a demand or a thing to confirm: a child gives
+   * taps and selections only, never a self-report of an offline behaviour
+   * (decisions 010, 023). Rendered as a calm, buttonless coda; where it is
+   * absent the practice step is unchanged. Child-facing copy, so it lives here
+   * in reviewable content, not in the component.
+   */
+  rehearsalCue?: string;
 };
 
 export type LessonPractice = {

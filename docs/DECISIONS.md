@@ -888,3 +888,53 @@ day.sh ship` only ran the end-to-end suite when `RUN_E2E=1` was explicitly
   and CI now describe the same required set. Ship is slower by the cost of the
   Playwright run, which is the intended trade; an environment without browsers
   uses `SKIP_E2E=1` and relies on CI to run e2e on the pushed branch.
+
+## 044. The practice step gains an optional, authored per-option rehearsal cue
+
+- Date: 2026-08-08
+- Status: accepted
+- Context: The `practice` step is meant to be the lesson's rehearsal, but it
+  played as passive reading — the child taps an option, reads its
+  `encouragement`, and the `closing` line ("Try it once…") sits as static text
+  before "Next". The enactment effect (physically doing the greeting now, while
+  encoding) is the part of rehearsal with the most developmental support for
+  ages 5–9, and it was the part the screen was not actually prompting. The
+  obvious fixes each hit a wall: a matched "now try it" invitation hardcoded in
+  `PracticeStepView` would put child-facing curriculum copy in a UI component,
+  routing it around the content validator and the draft/reviewed status
+  machinery (decision 004); and an on-screen "I tried it" confirmation would be
+  a child self-report of an offline behaviour, which the product deliberately
+  does not collect — a child gives taps and selections only (decision 010) and
+  mission status is marked by the parent, not the child (decision 023).
+- Decision: Add an optional `rehearsalCue?: string` to `PracticeOption` in the
+  content schema, validated like the other optional strings. When the chosen
+  option carries one, `PracticeStepView` renders it as a calm, buttonless coda
+  in its own quiet register (a `surface-muted` region, not the tinted feedback
+  panel, not a choice card) beneath the unchanged `encouragement`, which still
+  appears the instant a choice is made. The cue is authored per option so it
+  matches the action the child actually picked (chose "wave" → asked to wave,
+  never "say it"), and every cue must carry an imagine-it path so a
+  non-speaking, non-moving, or signing child is never asked to perform. There
+  is nothing to press, nothing gated behind it (`canAdvance` still keys only on
+  `practiceOptionId`), nothing stored, and no analytics event. Where a lesson
+  has no cue, the practice step is byte-identical to before. Draft cues were
+  authored for lesson one ("Saying hello") only; its shared `closing` was
+  reworded to be modality-neutral and to include the imagine-it path so it no
+  longer says "out loud, or with your hands" over a child who chose a nod.
+- Consequences: The rehearsal beat is now an embodied invitation grounded in
+  the child's own choice, delivered through reviewable content rather than
+  component code, without adding a self-report surface or any reward/scoring
+  drift. The four specialist agents shaped it: child-learning-researcher (the
+  enactment effect and its limits — a single unfacilitated screen enactment is
+  a warm-up for the offline mission, not a substitute; autonomy-supportive,
+  non-praise, imagine-it path); story-motion-reviewer (keep the encouragement
+  ungated, one gentle `llc-reaction-enter`, no second celebration, a third
+  visual register); safety-skeptic (the 010/023 self-report blocker, the 004
+  content-not-component blocker, and a final copy pass). All content stays
+  `status: "draft"`; nothing here claims review. Only lesson one carries cues so
+  far; extending them to the other lessons is a future content pass, each
+  needing the same safety and qualified-human review before publication.
+- Note on numbering: two in-flight draft PRs (the PWA slice and the scene-
+  archetypes slice) both introduced a decision 043 and flagged that whichever
+  merges second must renumber; this record takes 044 to sit clear of that
+  contention. If a later merge lands another 044, renumber this one.
