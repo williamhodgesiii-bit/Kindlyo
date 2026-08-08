@@ -5,6 +5,7 @@ import {
   illustrationKeys,
   SceneIllustration,
 } from "@/components/lesson/illustrations";
+import { HeroScene } from "@/components/marketing/HeroScene";
 import { ParentAppShell } from "@/components/shells/ParentAppShell";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button, ButtonLink } from "@/components/ui/Button";
@@ -308,6 +309,15 @@ export default function GalleryPage() {
                 </figcaption>
               </figure>
             ))}
+          </div>
+        </Section>
+
+        <Section
+          title="Marketing hero scene"
+          intent="The homepage hero illustration. Decorative (aria-hidden), token-themed, no gradients; two friends waving hello — a wave, never a handshake. Watch the single one-shot entrance, and confirm it rests fully visible under an emulated reduced-motion preference."
+        >
+          <div className="max-w-md">
+            <HeroScene />
           </div>
         </Section>
 
