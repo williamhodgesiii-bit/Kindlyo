@@ -8,7 +8,9 @@ export function SceneStepView({ scene }: { scene: LessonScene }) {
     <StoryPanel
       title={scene.title}
       narration={scene.narration}
-      illustration={<SceneStage key={scene.id} />}
+      illustration={
+        <SceneStage key={scene.id} illustrationKey={scene.illustrationKey} />
+      }
     />
   );
 }

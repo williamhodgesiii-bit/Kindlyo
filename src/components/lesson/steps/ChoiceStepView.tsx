@@ -57,6 +57,7 @@ export function ChoiceStepView({
       illustration={
         <SceneStage
           key={scene.id}
+          illustrationKey={scene.illustrationKey}
           variant={selected ? "consequence" : "scene"}
         />
       }

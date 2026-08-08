@@ -888,3 +888,65 @@ day.sh ship` only ran the end-to-end suite when `RUN_E2E=1` was explicitly
   and CI now describe the same required set. Ship is slower by the cost of the
   Playwright run, which is the intended trade; an environment without browsers
   uses `SKIP_E2E=1` and relies on CI to run e2e on the pushed branch.
+
+## 043. Lesson scenes look like their place (scene archetypes)
+
+- Date: 2026-08-08
+- Status: accepted
+- Note: an in-flight PWA change (draft PR #4, a separate branch) also numbered
+  itself 043; whichever of the two merges second should renumber. They do not
+  otherwise overlap.
+- Context: every `LessonScene` carries an authored `illustrationKey` (~44
+  distinct values across the twelve worlds — `cafe-table`, `home-door`,
+  `treehouse-canopy`, …), but the lesson player discarded it. Both step views
+  rendered `<SceneStage>` with no scene input, and `SceneStage` drew one fixed
+  greeting-arch garden for every beat in every world. A café beat, a doorway
+  beat and a treehouse beat were pixel-identical. A parallel key→drawing system
+  (`illustrations.tsx` / `SceneIllustration`) existed but was wired only into
+  the dev gallery, so the content's per-scene keys reached nothing in the real
+  flow. This is the "lessons are visually flat" problem, and the pedagogy
+  research (child-learning-researcher) sharpened it: a repeated backdrop that
+  _contradicts_ the narrated situation is worse than none — congruent,
+  situational imagery is what supports comprehension (dual coding), while
+  extraneous or mismatched detail costs it (Mayer's coherence principle).
+- Decision: give `SceneStage` an optional `illustrationKey` and resolve it,
+  through a new `sceneArchetypes.tsx`, to one of a closed set of ten generic
+  scenery archetypes — `gathering` (the original arch, and the safe fallback),
+  `table`, `interior`, `doorway`, `open-outdoor`, `path`, `canopy`, `screen`,
+  `waterside`, `workshop`. The archetype swaps only the landmark layer (layer 3
+  of the scenery contract); the colour wash, ground band, cast, and motif are
+  unchanged, so per-world theming still stacks on top via `[data-module]`. The
+  mapping is an explicit table, not substring inference, so a reviewer can read
+  what each key looks like and a newly authored key that nobody mapped fails a
+  coverage test rather than silently collapsing onto the fallback. Both step
+  views now thread `scene.illustrationKey` through.
+- Scope: **scenery only, on purpose.** The characters and the equal-weight
+  `consequence` behaviour (the same warm greeting whatever the choice) are
+  untouched, and `SceneStage` still accepts no choice or consequence data of
+  any kind — so the archetype is a pure function of a scene-level value and the
+  picture cannot vary with, or grade, the child's choice. Deriving character
+  expression from the situation was considered and **deferred**: the
+  safety-skeptic pass showed every blocker clustered there (verdict-laden
+  states like `disappointed_gentle`/`proud`, culture-specific gesture poses,
+  and the need for airtight choice-independence), and the research found
+  character expression to be low-value enrichment with no evidence it aids
+  comprehension. If it is picked up later it needs its own reviewed decision
+  with a state allow-list and a byte-identical-across-choices guarantee.
+- Accessibility: the stage stays `aria-hidden` and wordless; the narration
+  beside it still carries the entire situation, and no archetype may be the
+  sole source of any meaning. This is now a standing content invariant — every
+  scene's narration must remain self-sufficient with the picture removed — that
+  human content reviewers own, because code cannot test "the words alone
+  suffice." Reduced motion is unchanged: the archetype is static geometry, a
+  render branch with no new transition or keyframe, so the global
+  `prefers-reduced-motion` rule still collapses the one entrance animation.
+- Originality: every archetype is built from the same primitive kit (soft
+  silhouettes, rounded rectangles, a 2px ink outline). The `screen` archetype
+  is deliberately a plain panel — no device chrome, UI, icons, or mascot — so
+  it neither imitates a known product nor valorises screen time.
+- Consequences: story beats now read as different places, which is the visible
+  win a parent or child notices first, with no schema, content, or
+  review-status change and no new dependency. `illustrations.tsx` and the dev
+  gallery are left in place this slice; reconciling the two key→scene systems
+  (fold the gallery onto `SceneStage`, or retire it) is a deliberate follow-up
+  so authors are not left maintaining two.
