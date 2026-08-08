@@ -2,6 +2,7 @@ import { useId } from "react";
 import { cn } from "@/lib/cn";
 import { CharacterRig } from "@/components/character/CharacterRig";
 import { motifPath } from "./motifs";
+import { ArchetypeScenery, resolveSceneArchetype } from "./sceneArchetypes";
 
 /**
  * The scene stage — a story moment built from the shared scenery kit and themed
@@ -25,12 +26,27 @@ import { motifPath } from "./motifs";
  * narration beside it carries the entire situation. Nothing in a lesson may be
  * understandable only through the picture (docs/design/ACCESSIBILITY.md).
  *
+ * The landmark layer (layer 3) is chosen by the scene's `illustrationKey`, so a
+ * café beat, a doorway beat and a treehouse beat read as different *places*
+ * instead of the one garden every beat used to show (docs/DECISIONS.md 043).
+ * The archetype is a pure function of the key — a scene-level value — so it
+ * never varies with the child's choice; the stage takes no choice or
+ * consequence data by design, which is what keeps the picture from grading a
+ * decision.
+ *
  * The `consequence` variant reflects that the child has chosen — the near child
  * turns and raises a hello — with the *same* visual weight whatever the choice
  * was. A scene never renders a choice as good or bad (COMPONENT_STATES.md §08).
  */
 
 export type SceneStageProps = {
+  /**
+   * The scene's authored illustration key, mapped to a scenery archetype. An
+   * unknown or missing key falls back to the neutral gathering place. This is
+   * intentionally the ONLY scene input — no choice or consequence is accepted,
+   * so the picture cannot depend on what the child picked.
+   */
+  illustrationKey?: string;
   /** `scene` is the situation; `consequence` reflects that a choice was made. */
   variant?: "scene" | "consequence";
   /** The module motif shape, drifting as decoration. Defaults to Hello Garden. */
@@ -43,6 +59,7 @@ export type SceneStageProps = {
 const INK = "var(--llc-color-ink)";
 
 export function SceneStage({
+  illustrationKey,
   variant = "scene",
   motif = "petal",
   moduleId,
@@ -51,12 +68,14 @@ export function SceneStage({
   // Unique so two stages on one page cannot share a clip path.
   const clipId = useId();
   const isConsequence = variant === "consequence";
+  const archetype = resolveSceneArchetype(illustrationKey);
 
   return (
     <div
       aria-hidden="true"
       data-module={moduleId}
       data-variant={variant}
+      data-archetype={archetype}
       className={cn("llc-scene-enter", className)}
     >
       <svg
@@ -95,50 +114,10 @@ export function SceneStage({
             fill="var(--module-tint-deep)"
           />
 
-          {/* 3 · Landmark & props — greeting arch + bloom bushes (accent, 2px ink) */}
-          <path
-            d="M116 74 Q160 44 204 74 L204 66 Q160 36 116 66 Z"
-            fill="var(--module-accent)"
-            stroke={INK}
-            strokeWidth="2"
-            strokeLinejoin="round"
-          />
-          <rect
-            x="116"
-            y="70"
-            width="10"
-            height="78"
-            rx="3"
-            fill="var(--module-accent)"
-            stroke={INK}
-            strokeWidth="2"
-          />
-          <rect
-            x="194"
-            y="70"
-            width="10"
-            height="78"
-            rx="3"
-            fill="var(--module-accent)"
-            stroke={INK}
-            strokeWidth="2"
-          />
-          <circle
-            cx="104"
-            cy="142"
-            r="16"
-            fill="var(--module-accent-soft)"
-            stroke={INK}
-            strokeWidth="2"
-          />
-          <circle
-            cx="216"
-            cy="142"
-            r="16"
-            fill="var(--module-accent-soft)"
-            stroke={INK}
-            strokeWidth="2"
-          />
+          {/* 3 · Landmark & props — the place, chosen by the scene's
+              illustrationKey. Generic kit geometry in the module accent with a
+              2px ink outline; an unknown key falls back to the greeting arch. */}
+          <ArchetypeScenery archetype={archetype} />
 
           {/* 4 · Ground band — paper tone with a 2px ink top rule */}
           <rect
