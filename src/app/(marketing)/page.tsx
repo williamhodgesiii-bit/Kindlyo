@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Faq } from "@/components/marketing/Faq";
+import { HeroScene } from "@/components/marketing/HeroScene";
 import { JsonLd } from "@/components/marketing/JsonLd";
 import { MarketingSection } from "@/components/marketing/MarketingSection";
 import { SampleScenarioSection } from "@/components/marketing/SampleScenarioSection";
@@ -54,35 +55,46 @@ export default function HomePage() {
 
       <section aria-labelledby="hero-heading">
         <PageContainer>
-          <div className="max-w-2xl">
-            <Heading level={1} size="display" id="hero-heading">
-              Kindness is a skill. Confidence takes practice.
-            </Heading>
-            <Text size="lg" tone="secondary" className="mt-6">
-              Some social moments are only hard the first time — walking into a
-              room where everyone already knows each other, asking to join a
-              game, working out how to leave a conversation. Kindlyo gives
-              children ages 5 to 9 somewhere to have that first time early,
-              where nothing is riding on it.
-            </Text>
-            <Text size="lg" tone="secondary" className="mt-4">
-              Five minutes of story on screen, one small thing to try offline
-              afterwards, and a grown-up who knows what to ask about at dinner.
-            </Text>
+          <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-12">
+            <div className="max-w-2xl">
+              <Heading level={1} size="display" id="hero-heading">
+                Kindness is a skill. Confidence takes practice.
+              </Heading>
+              <Text size="lg" tone="secondary" className="mt-6">
+                Some social moments are only hard the first time — walking into
+                a room where everyone already knows each other, asking to join a
+                game, working out how to leave a conversation. Kindlyo gives
+                children ages 5 to 9 somewhere to have that first time early,
+                where nothing is riding on it.
+              </Text>
+              <Text size="lg" tone="secondary" className="mt-4">
+                Five minutes of story on screen, one small thing to try offline
+                afterwards, and a grown-up who knows what to ask about at
+                dinner.
+              </Text>
 
-            <div className="mt-8 flex flex-wrap gap-4">
-              <ButtonLink href="/waitlist" size="lg">
-                Join the founding-family waitlist
-              </ButtonLink>
-              <ButtonLink href="#sample-heading" variant="secondary" size="lg">
-                Try a scenario first
-              </ButtonLink>
+              <div className="mt-8 flex flex-wrap gap-4">
+                <ButtonLink href="/waitlist" size="lg">
+                  Join the founding-family waitlist
+                </ButtonLink>
+                <ButtonLink
+                  href="#sample-heading"
+                  variant="secondary"
+                  size="lg"
+                >
+                  Try a scenario first
+                </ButtonLink>
+              </div>
+
+              <Text tone="secondary" size="sm" className="mt-6">
+                Kindlyo is in private beta and not yet open to the public. The
+                scenario below needs no account and saves nothing.
+              </Text>
             </div>
 
-            <Text tone="secondary" size="sm" className="mt-6">
-              Kindlyo is in private beta and not yet open to the public. The
-              scenario below needs no account and saves nothing.
-            </Text>
+            {/* Decorative — the copy above carries the whole message. Placed
+                after it in the DOM so the CTAs stay above the fold on phones. */}
+            <HeroScene className="mx-auto w-full max-w-sm lg:max-w-none" />
           </div>
         </PageContainer>
       </section>
