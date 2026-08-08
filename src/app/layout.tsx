@@ -41,6 +41,19 @@ export const metadata: Metadata = {
   },
   description: siteDescription,
   applicationName: siteName,
+  /**
+   * Installed-app metadata. `manifest` points at `src/app/manifest.ts` (Next
+   * would auto-link it, but naming it here keeps the source obvious).
+   * `appleWebApp` supplies the iOS home-screen title and a `default` status-bar
+   * style — never `black-translucent`, which draws content under the clock and
+   * routinely overlaps it.
+   */
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: siteName,
+    statusBarStyle: "default",
+  },
   openGraph: {
     type: "website",
     siteName,
@@ -59,6 +72,13 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  /**
+   * The status-bar / toolbar tint for an installed app. `#faf3e7` is the canvas
+   * token (matching the manifest's `theme_color` and `background_color`), so the
+   * chrome, splash, and app background are one calm cream. Kept as a literal
+   * because `Viewport` is evaluated before the stylesheet exists.
+   */
+  themeColor: "#faf3e7",
 };
 
 /**

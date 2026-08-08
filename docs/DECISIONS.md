@@ -888,3 +888,63 @@ day.sh ship` only ran the end-to-end suite when `RUN_E2E=1` was explicitly
   and CI now describe the same required set. Ship is slower by the cost of the
   Playwright run, which is the intended trade; an environment without browsers
   uses `SKIP_E2E=1` and relies on CI to run e2e on the pushed branch.
+
+## 043. Installable PWA: a manifest and generated icons, deliberately without a service worker
+
+- Date: 2026-08-08
+- Status: accepted
+- Context: "Installable PWA where practical" is listed under Platform in
+  `docs/MVP_SCOPE.md`, but nothing implemented it: there was no web app
+  manifest, no maskable or apple-touch icons, and no `theme-color` /
+  `apple-mobile-web-app` metadata. `public/` held only `.gitkeep`. A supporting
+  browser had nothing to offer an "Install" / "Add to Home Screen" from.
+- Decision: Add the smallest slice that makes the app installable and correctly
+  branded, and nothing more. A native App Router `src/app/manifest.ts` returns
+  the manifest (served at `/manifest.webmanifest`), reusing `siteName` /
+  `siteDescription` from `src/lib/seo.ts` so its copy cannot drift. The four
+  PNG install icons (a 192/512 "any" pair and a 192/512 maskable pair) and the
+  iOS `apple-icon` are drawn from a shared heart (`src/lib/brand-mark.tsx`) with
+  `next/og`, exactly as `opengraph-image.tsx` already draws its card — no image
+  tooling, no committed binaries, no new dependency. `src/app/layout.tsx` gains
+  a `theme-color` and `appleWebApp` (status-bar style `default`, never
+  `black-translucent`).
+- Boundary — no service worker, no offline caching: installability does not
+  require one, and a service-worker cache of a child's progress or profile would
+  be a second, on-device copy of children's data living outside the server
+  authorisation boundary (decisions 033/034) and outside account deletion
+  (decisions 035/038) — a privacy regression, not a feature. Offline support, if
+  ever wanted, is its own separately reviewed decision. The app never claims to
+  "work offline."
+- Field choices, each from the safety-skeptic pass on this slice:
+  - `start_url` / `scope` are the public root `/`. `/learn` and `/parent`
+    redirect a signed-out visitor to `/login`, so an installed icon that opened
+    there would dead-end on a login wall — worse for a child than a parent. No
+    tracking or campaign query params ride on `start_url`; `id` is `/` so app
+    identity stays stable if `start_url` ever moves.
+  - `display` is `minimal-ui`, not `standalone`: ages 5–9 must never be trapped
+    with no visible way back. minimal-ui keeps a browser back/refresh affordance
+    where honoured and degrades to standalone elsewhere; the child surface also
+    carries its own bottom navigation.
+  - `background_color` and `theme_color` are the canvas token `#faf3e7`, so an
+    installed app's splash, chrome tint, and app background are one calm cream
+    with no seam. No forced `orientation` lock, so a wall-mounted or landscape
+    tablet is respected.
+  - Omitted on purpose: `related_applications` / `prefer_related_applications` /
+    `iarc_rating_id` (would imply an app-store or content-rating presence we do
+    not have — and native apps are out of the MVP), `shortcuts` (a shortcut into
+    `/learn` would be an ungated one-tap route into the child area, undercutting
+    decision 037's gate), and `screenshots` (richer install UI that would need
+    honest Draft-badged captures). `categories` is `["education"]` only — no
+    "kids" category and its platform kids-policy expectations.
+- Consequences: A parent on a supporting browser can now install Kindlyo to the
+  home screen and launch it into a branded minimal-ui window on `/`. No child
+  data is cached on-device; nothing new is collected or sent; no native-app or
+  certification claim is made. The favicon (`icon.svg`, `#fffaf2`) and the
+  generated app icons (`#faf3e7`) sit on two near-identical creams — a
+  pre-existing `#fffaf2`/`#faf3e7` token inconsistency this slice did not try to
+  reconcile. Not added and left for deliberate follow-up: any offline behaviour,
+  a custom `beforeinstallprompt` "Install Kindlyo" affordance, and an
+  `appinstalled` analytics event (which would need a first-party entry in
+  `docs/ANALYTICS.md`). App-store and platform child/family policy review
+  remains owed before any public child-directed launch, as
+  `docs/PRIVACY_AND_SAFETY.md` already notes.
