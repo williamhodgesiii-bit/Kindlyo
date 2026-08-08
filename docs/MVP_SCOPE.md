@@ -49,6 +49,13 @@ Deliver one complete learning journey that proves the core lesson experience.
 - Accessibility
 - Automated testing
 
+> Note: "Installable PWA where practical" is delivered as a web app manifest
+> plus generated icons and install metadata — enough for a supporting browser
+> to offer "Add to Home Screen" and launch a branded minimal-ui window. There
+> is deliberately no service worker or offline caching: caching child data
+> on-device would live outside the server authorisation boundary and account
+> deletion. See decision 043.
+
 ## Initial lesson module
 
 Module title:
