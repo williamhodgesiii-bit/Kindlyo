@@ -247,11 +247,20 @@ function parsePracticeOption(
   value: unknown,
 ): PracticeOption {
   const raw = readRecord(ctx, path, value);
-  return {
+  const option: PracticeOption = {
     id: readId(ctx, `${path}.id`, raw.id),
     text: readString(ctx, `${path}.text`, raw.text),
     encouragement: readString(ctx, `${path}.encouragement`, raw.encouragement),
   };
+
+  const rehearsalCue = readOptionalString(
+    ctx,
+    `${path}.rehearsalCue`,
+    raw.rehearsalCue,
+  );
+  if (rehearsalCue !== undefined) option.rehearsalCue = rehearsalCue;
+
+  return option;
 }
 
 function parsePractice(ctx: Ctx, path: string, value: unknown): LessonPractice {
