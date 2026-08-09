@@ -97,28 +97,36 @@ export const sayingHello: Lesson = {
         text: "Say “Hi, I’m …” and your name",
         encouragement:
           "Good one. Saying your name gives the other person something to answer with.",
+        rehearsalCue:
+          "Say it out loud now if you like — “Hi, I’m …” — quietly, or just in your head. Any way you say it makes it easier with a real person later.",
       },
       {
         id: "wave-hello",
         text: "Wave",
         encouragement:
           "A wave carries just as much. Maya can tell straight away that you saw her.",
+        rehearsalCue:
+          "Give a little wave now, the way you would to Maya — or just picture yourself waving. Both count, and both make the real one easier.",
       },
       {
         id: "smile-and-nod",
         text: "Smile and nod",
         encouragement:
           "That works. A nod is a small hello, and it still reaches the other person.",
+        rehearsalCue:
+          "Try a small nod now, or imagine one. You never have to hold a smile for anyone — a nod on its own is a hello too.",
       },
       {
         id: "sign-hello",
         text: "Sign or gesture hello",
         encouragement:
           "Hello travels in lots of ways. Anything the other person can notice is a hello.",
+        rehearsalCue:
+          "Make your sign or gesture now, or picture yourself doing it. Your way of saying hello counts, and practising it makes the real one easier.",
       },
     ],
     closing:
-      "Try it once out loud, or with your hands, however you picked. Practising it now makes it easier when it is a real person.",
+      "However you picked, giving it a go now — even just in your head — makes it easier when it is a real person.",
   },
 
   offlineMission: {

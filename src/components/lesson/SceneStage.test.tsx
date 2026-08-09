@@ -42,4 +42,45 @@ describe("SceneStage", () => {
     const { container } = render(<SceneStage />);
     expect(container.querySelector(".llc-scene-enter")).not.toBeNull();
   });
+
+  it("renders a place chosen by the illustration key", () => {
+    const cafe = render(<SceneStage illustrationKey="cafe-table" />);
+    expect(
+      cafe.container.querySelector('[data-archetype="table"]'),
+    ).not.toBeNull();
+
+    const treehouse = render(<SceneStage illustrationKey="treehouse-canopy" />);
+    expect(
+      treehouse.container.querySelector('[data-archetype="canopy"]'),
+    ).not.toBeNull();
+  });
+
+  it("gives two different scenes different geometry", () => {
+    const cafe = render(<SceneStage illustrationKey="cafe-table" />);
+    const door = render(<SceneStage illustrationKey="home-door" />);
+    // The whole point: beats stop looking identical.
+    expect(cafe.container.innerHTML).not.toBe(door.container.innerHTML);
+  });
+
+  it("falls back to the neutral gathering place for an unknown key", () => {
+    const { container } = render(<SceneStage illustrationKey="mystery-key" />);
+    expect(
+      container.querySelector('[data-archetype="gathering"]'),
+    ).not.toBeNull();
+  });
+
+  it("keeps the same place once a choice is made", () => {
+    // The stage's only scene input is the key; making a choice flips the
+    // variant but must not move the child to a different place. The archetype
+    // is a pure function of the key, so it holds across scene → consequence —
+    // part of keeping the picture from grading a decision
+    // (docs/CURRICULUM_PRINCIPLES.md, "no right answer").
+    const archetypeOf = (variant: "scene" | "consequence") =>
+      render(<SceneStage illustrationKey="cafe-table" variant={variant} />)
+        .container.querySelector("[data-archetype]")
+        ?.getAttribute("data-archetype");
+
+    expect(archetypeOf("scene")).toBe("table");
+    expect(archetypeOf("consequence")).toBe("table");
+  });
 });

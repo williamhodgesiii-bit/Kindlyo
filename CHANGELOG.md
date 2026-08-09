@@ -10,6 +10,18 @@ Newest first.
 
 <!-- new-entries-below -->
 
+## 2026-08-09
+
+- feat(pwa): make Kindlyo installable — manifest, generated icons, no service worker
+- feat(lesson): scenes look like their place — scene archetypes
+- feat(child): build the "Me" page — a keepsake garden of practised lessons
+- feat(lesson): add an authored per-option rehearsal cue to the practice step
+- feat(lesson): give the explanation step a clear hierarchy and honest reduced-motion
+- feat(marketing): add a warm, decorative hero illustration to the homepage
+- feat(lesson): give the offline mission three clear beats and a decorative scene
+- docs(decisions): renumber merged PWA/scenes/practice decisions to 043/044/045
+- Shipped from `9c334ee` (`claude/routine-todo-approvals-f9dxdh`)
+
 ## 2026-08-07
 
 - ci(ship): run e2e by default and serialize the suite (close decision 041's gap)

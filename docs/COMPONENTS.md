@@ -336,6 +336,15 @@ than being neutral primitives. See `docs/MARKETING_SITE.md`.
 - `Faq` — native `<details>` disclosures, so the browser supplies the keyboard
   behaviour and the answers are reachable with scripting unavailable.
 - `BetaBadge` — the private-beta label, shown beside the wordmark on every page.
+- `HeroScene` — the homepage hero illustration. Decorative by contract
+  (`aria-hidden`, `role="presentation"`, `focusable="false"`, no baked-in text),
+  so the hero `<h1>` carries the whole message and the picture can never smuggle
+  in a claim. Built in the product's own "Storybook Geometry" language — flat
+  `--module-*` washes, 2px `--llc-color-ink` outlines, no gradients — and
+  composes the shared `CharacterRig` rather than inventing a mascot. The
+  greeting is a **wave**, never a handshake or forced eye contact. Motion is one
+  `.llc-scene-enter` entrance and nothing more; the global reduced-motion rule
+  collapses it. Caller owns layout/size via `className`.
 - `JsonLd` — emits a schema.org block.
 
 `ChoiceStepView` and `PrincipleStepView` gained a `headingLevel` prop so they

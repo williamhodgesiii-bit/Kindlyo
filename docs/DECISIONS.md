@@ -888,3 +888,168 @@ day.sh ship` only ran the end-to-end suite when `RUN_E2E=1` was explicitly
   and CI now describe the same required set. Ship is slower by the cost of the
   Playwright run, which is the intended trade; an environment without browsers
   uses `SKIP_E2E=1` and relies on CI to run e2e on the pushed branch.
+
+## 043. Installable PWA: a manifest and generated icons, deliberately without a service worker
+
+- Date: 2026-08-08
+- Status: accepted
+- Context: "Installable PWA where practical" is listed under Platform in
+  `docs/MVP_SCOPE.md`, but nothing implemented it: there was no web app
+  manifest, no maskable or apple-touch icons, and no `theme-color` /
+  `apple-mobile-web-app` metadata. `public/` held only `.gitkeep`. A supporting
+  browser had nothing to offer an "Install" / "Add to Home Screen" from.
+- Decision: Add the smallest slice that makes the app installable and correctly
+  branded, and nothing more. A native App Router `src/app/manifest.ts` returns
+  the manifest (served at `/manifest.webmanifest`), reusing `siteName` /
+  `siteDescription` from `src/lib/seo.ts` so its copy cannot drift. The four
+  PNG install icons (a 192/512 "any" pair and a 192/512 maskable pair) and the
+  iOS `apple-icon` are drawn from a shared heart (`src/lib/brand-mark.tsx`) with
+  `next/og`, exactly as `opengraph-image.tsx` already draws its card — no image
+  tooling, no committed binaries, no new dependency. `src/app/layout.tsx` gains
+  a `theme-color` and `appleWebApp` (status-bar style `default`, never
+  `black-translucent`).
+- Boundary — no service worker, no offline caching: installability does not
+  require one, and a service-worker cache of a child's progress or profile would
+  be a second, on-device copy of children's data living outside the server
+  authorisation boundary (decisions 033/034) and outside account deletion
+  (decisions 035/038) — a privacy regression, not a feature. Offline support, if
+  ever wanted, is its own separately reviewed decision. The app never claims to
+  "work offline."
+- Field choices, each from the safety-skeptic pass on this slice:
+  - `start_url` / `scope` are the public root `/`. `/learn` and `/parent`
+    redirect a signed-out visitor to `/login`, so an installed icon that opened
+    there would dead-end on a login wall — worse for a child than a parent. No
+    tracking or campaign query params ride on `start_url`; `id` is `/` so app
+    identity stays stable if `start_url` ever moves.
+  - `display` is `minimal-ui`, not `standalone`: ages 5–9 must never be trapped
+    with no visible way back. minimal-ui keeps a browser back/refresh affordance
+    where honoured and degrades to standalone elsewhere; the child surface also
+    carries its own bottom navigation.
+  - `background_color` and `theme_color` are the canvas token `#faf3e7`, so an
+    installed app's splash, chrome tint, and app background are one calm cream
+    with no seam. No forced `orientation` lock, so a wall-mounted or landscape
+    tablet is respected.
+  - Omitted on purpose: `related_applications` / `prefer_related_applications` /
+    `iarc_rating_id` (would imply an app-store or content-rating presence we do
+    not have — and native apps are out of the MVP), `shortcuts` (a shortcut into
+    `/learn` would be an ungated one-tap route into the child area, undercutting
+    decision 037's gate), and `screenshots` (richer install UI that would need
+    honest Draft-badged captures). `categories` is `["education"]` only — no
+    "kids" category and its platform kids-policy expectations.
+- Consequences: A parent on a supporting browser can now install Kindlyo to the
+  home screen and launch it into a branded minimal-ui window on `/`. No child
+  data is cached on-device; nothing new is collected or sent; no native-app or
+  certification claim is made. The favicon (`icon.svg`, `#fffaf2`) and the
+  generated app icons (`#faf3e7`) sit on two near-identical creams — a
+  pre-existing `#fffaf2`/`#faf3e7` token inconsistency this slice did not try to
+  reconcile. Not added and left for deliberate follow-up: any offline behaviour,
+  a custom `beforeinstallprompt` "Install Kindlyo" affordance, and an
+  `appinstalled` analytics event (which would need a first-party entry in
+  `docs/ANALYTICS.md`). App-store and platform child/family policy review
+  remains owed before any public child-directed launch, as
+  `docs/PRIVACY_AND_SAFETY.md` already notes.
+
+## 044. Lesson scenes look like their place (scene archetypes)
+
+- Date: 2026-08-08
+- Status: accepted
+- Context: every `LessonScene` carries an authored `illustrationKey` (~44
+  distinct values across the twelve worlds — `cafe-table`, `home-door`,
+  `treehouse-canopy`, …), but the lesson player discarded it. Both step views
+  rendered `<SceneStage>` with no scene input, and `SceneStage` drew one fixed
+  greeting-arch garden for every beat in every world. A café beat, a doorway
+  beat and a treehouse beat were pixel-identical. A parallel key→drawing system
+  (`illustrations.tsx` / `SceneIllustration`) existed but was wired only into
+  the dev gallery, so the content's per-scene keys reached nothing in the real
+  flow. This is the "lessons are visually flat" problem, and the pedagogy
+  research (child-learning-researcher) sharpened it: a repeated backdrop that
+  _contradicts_ the narrated situation is worse than none — congruent,
+  situational imagery is what supports comprehension (dual coding), while
+  extraneous or mismatched detail costs it (Mayer's coherence principle).
+- Decision: give `SceneStage` an optional `illustrationKey` and resolve it,
+  through a new `sceneArchetypes.tsx`, to one of a closed set of ten generic
+  scenery archetypes — `gathering` (the original arch, and the safe fallback),
+  `table`, `interior`, `doorway`, `open-outdoor`, `path`, `canopy`, `screen`,
+  `waterside`, `workshop`. The archetype swaps only the landmark layer (layer 3
+  of the scenery contract); the colour wash, ground band, cast, and motif are
+  unchanged, so per-world theming still stacks on top via `[data-module]`. The
+  mapping is an explicit table, not substring inference, so a reviewer can read
+  what each key looks like and a newly authored key that nobody mapped fails a
+  coverage test rather than silently collapsing onto the fallback. Both step
+  views now thread `scene.illustrationKey` through.
+- Scope: **scenery only, on purpose.** The characters and the equal-weight
+  `consequence` behaviour (the same warm greeting whatever the choice) are
+  untouched, and `SceneStage` still accepts no choice or consequence data of
+  any kind — so the archetype is a pure function of a scene-level value and the
+  picture cannot vary with, or grade, the child's choice. Deriving character
+  expression from the situation was considered and **deferred**: the
+  safety-skeptic pass showed every blocker clustered there (verdict-laden
+  states like `disappointed_gentle`/`proud`, culture-specific gesture poses,
+  and the need for airtight choice-independence), and the research found
+  character expression to be low-value enrichment with no evidence it aids
+  comprehension. If it is picked up later it needs its own reviewed decision
+  with a state allow-list and a byte-identical-across-choices guarantee.
+- Accessibility: the stage stays `aria-hidden` and wordless; the narration
+  beside it still carries the entire situation, and no archetype may be the
+  sole source of any meaning. This is now a standing content invariant — every
+  scene's narration must remain self-sufficient with the picture removed — that
+  human content reviewers own, because code cannot test "the words alone
+  suffice." Reduced motion is unchanged: the archetype is static geometry, a
+  render branch with no new transition or keyframe, so the global
+  `prefers-reduced-motion` rule still collapses the one entrance animation.
+- Originality: every archetype is built from the same primitive kit (soft
+  silhouettes, rounded rectangles, a 2px ink outline). The `screen` archetype
+  is deliberately a plain panel — no device chrome, UI, icons, or mascot — so
+  it neither imitates a known product nor valorises screen time.
+- Consequences: story beats now read as different places, which is the visible
+  win a parent or child notices first, with no schema, content, or
+  review-status change and no new dependency. `illustrations.tsx` and the dev
+  gallery are left in place this slice; reconciling the two key→scene systems
+  (fold the gallery onto `SceneStage`, or retire it) is a deliberate follow-up
+  so authors are not left maintaining two.
+
+## 045. The practice step gains an optional, authored per-option rehearsal cue
+
+- Date: 2026-08-08
+- Status: accepted
+- Context: The `practice` step is meant to be the lesson's rehearsal, but it
+  played as passive reading — the child taps an option, reads its
+  `encouragement`, and the `closing` line ("Try it once…") sits as static text
+  before "Next". The enactment effect (physically doing the greeting now, while
+  encoding) is the part of rehearsal with the most developmental support for
+  ages 5–9, and it was the part the screen was not actually prompting. The
+  obvious fixes each hit a wall: a matched "now try it" invitation hardcoded in
+  `PracticeStepView` would put child-facing curriculum copy in a UI component,
+  routing it around the content validator and the draft/reviewed status
+  machinery (decision 004); and an on-screen "I tried it" confirmation would be
+  a child self-report of an offline behaviour, which the product deliberately
+  does not collect — a child gives taps and selections only (decision 010) and
+  mission status is marked by the parent, not the child (decision 023).
+- Decision: Add an optional `rehearsalCue?: string` to `PracticeOption` in the
+  content schema, validated like the other optional strings. When the chosen
+  option carries one, `PracticeStepView` renders it as a calm, buttonless coda
+  in its own quiet register (a `surface-muted` region, not the tinted feedback
+  panel, not a choice card) beneath the unchanged `encouragement`, which still
+  appears the instant a choice is made. The cue is authored per option so it
+  matches the action the child actually picked (chose "wave" → asked to wave,
+  never "say it"), and every cue must carry an imagine-it path so a
+  non-speaking, non-moving, or signing child is never asked to perform. There
+  is nothing to press, nothing gated behind it (`canAdvance` still keys only on
+  `practiceOptionId`), nothing stored, and no analytics event. Where a lesson
+  has no cue, the practice step is byte-identical to before. Draft cues were
+  authored for lesson one ("Saying hello") only; its shared `closing` was
+  reworded to be modality-neutral and to include the imagine-it path so it no
+  longer says "out loud, or with your hands" over a child who chose a nod.
+- Consequences: The rehearsal beat is now an embodied invitation grounded in
+  the child's own choice, delivered through reviewable content rather than
+  component code, without adding a self-report surface or any reward/scoring
+  drift. The four specialist agents shaped it: child-learning-researcher (the
+  enactment effect and its limits — a single unfacilitated screen enactment is
+  a warm-up for the offline mission, not a substitute; autonomy-supportive,
+  non-praise, imagine-it path); story-motion-reviewer (keep the encouragement
+  ungated, one gentle `llc-reaction-enter`, no second celebration, a third
+  visual register); safety-skeptic (the 010/023 self-report blocker, the 004
+  content-not-component blocker, and a final copy pass). All content stays
+  `status: "draft"`; nothing here claims review. Only lesson one carries cues so
+  far; extending them to the other lessons is a future content pass, each
+  needing the same safety and qualified-human review before publication.

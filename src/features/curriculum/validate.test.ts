@@ -234,6 +234,51 @@ describe("safeParseLesson", () => {
     if (!result.ok) return;
     expect("reviewedBy" in result.lesson).toBe(false);
   });
+
+  it("accepts and preserves an optional rehearsalCue on a practice option", () => {
+    const lesson = makeTestLesson();
+    const cue = "Give it a little try now, or just picture it.";
+    const result = safeParseLesson({
+      ...lesson,
+      practice: {
+        ...lesson.practice,
+        options: [
+          { ...lesson.practice.options[0], rehearsalCue: cue },
+          lesson.practice.options[1],
+        ],
+      },
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.lesson.practice.options[0]?.rehearsalCue).toBe(cue);
+  });
+
+  it("leaves rehearsalCue absent when a practice option omits it", () => {
+    const result = safeParseLesson(makeTestLesson());
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect("rehearsalCue" in result.lesson.practice.options[0]!).toBe(false);
+  });
+
+  it("rejects a rehearsalCue that is not a string", () => {
+    const lesson = makeTestLesson();
+    const result = safeParseLesson({
+      ...lesson,
+      practice: {
+        ...lesson.practice,
+        options: [
+          { ...lesson.practice.options[0], rehearsalCue: 42 },
+          lesson.practice.options[1],
+        ],
+      },
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.issues.join("\n")).toContain("rehearsalCue");
+  });
 });
 
 describe("parseLesson", () => {

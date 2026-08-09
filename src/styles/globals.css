@@ -114,8 +114,9 @@ li a {
 }
 
 /* Choice-card entrance — 12px rise, one at a time on a +60ms stagger keyed by
-   --llc-enter-index (MOTION.md "Choice-card entrance"). Reduced motion drops the
-   stagger with everything else, so the cards simply appear together. */
+   --llc-enter-index (MOTION.md "Choice-card entrance"). Under reduced motion the
+   global rule zeroes both duration and delay, so the cards simply appear
+   together. */
 .llc-card-enter {
   --llc-rise: 12px;
   animation: llc-rise-in var(--llc-motion-card) var(--llc-ease-gentle-enter)
@@ -193,8 +194,16 @@ li a {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    /* Collapse any staggered entrance too. Without this, a start-from-hidden
+       animation with `both` fill (e.g. `.llc-card-enter`, keyed by
+       `--llc-enter-index`) keeps its per-item delay, so rows still appear one
+       by one — and content is held at `opacity: 0` until its delay elapses.
+       Zeroing the delay is what actually makes staggered items "appear
+       together" for someone who opted out of motion. */
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
     scroll-behavior: auto !important;
   }
 }
