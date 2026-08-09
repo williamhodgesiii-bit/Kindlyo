@@ -948,13 +948,11 @@ day.sh ship` only ran the end-to-end suite when `RUN_E2E=1` was explicitly
   `docs/ANALYTICS.md`). App-store and platform child/family policy review
   remains owed before any public child-directed launch, as
   `docs/PRIVACY_AND_SAFETY.md` already notes.
-## 043. Lesson scenes look like their place (scene archetypes)
+
+## 044. Lesson scenes look like their place (scene archetypes)
 
 - Date: 2026-08-08
 - Status: accepted
-- Note: an in-flight PWA change (draft PR #4, a separate branch) also numbered
-  itself 043; whichever of the two merges second should renumber. They do not
-  otherwise overlap.
 - Context: every `LessonScene` carries an authored `illustrationKey` (~44
   distinct values across the twelve worlds — `cafe-table`, `home-door`,
   `treehouse-canopy`, …), but the lesson player discarded it. Both step views
@@ -1009,7 +1007,8 @@ day.sh ship` only ran the end-to-end suite when `RUN_E2E=1` was explicitly
   gallery are left in place this slice; reconciling the two key→scene systems
   (fold the gallery onto `SceneStage`, or retire it) is a deliberate follow-up
   so authors are not left maintaining two.
-## 044. The practice step gains an optional, authored per-option rehearsal cue
+
+## 045. The practice step gains an optional, authored per-option rehearsal cue
 
 - Date: 2026-08-08
 - Status: accepted
@@ -1054,7 +1053,3 @@ day.sh ship` only ran the end-to-end suite when `RUN_E2E=1` was explicitly
   `status: "draft"`; nothing here claims review. Only lesson one carries cues so
   far; extending them to the other lessons is a future content pass, each
   needing the same safety and qualified-human review before publication.
-- Note on numbering: two in-flight draft PRs (the PWA slice and the scene-
-  archetypes slice) both introduced a decision 043 and flagged that whichever
-  merges second must renumber; this record takes 044 to sit clear of that
-  contention. If a later merge lands another 044, renumber this one.
