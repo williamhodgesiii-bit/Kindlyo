@@ -12,6 +12,8 @@ Newest first.
 
 ## 2026-08-09
 
+- refactor(lesson): retire the parallel scene-drawing system
+- Shipped from `95d63c9` (`claude/routine-todo-approvals-f9dxdh`)
 - feat(pwa): make Kindlyo installable — manifest, generated icons, no service worker
 - feat(lesson): scenes look like their place — scene archetypes
 - feat(child): build the "Me" page — a keepsake garden of practised lessons
