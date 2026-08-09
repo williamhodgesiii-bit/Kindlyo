@@ -1053,3 +1053,29 @@ day.sh ship` only ran the end-to-end suite when `RUN_E2E=1` was explicitly
   `status: "draft"`; nothing here claims review. Only lesson one carries cues so
   far; extending them to the other lessons is a future content pass, each
   needing the same safety and qualified-human review before publication.
+
+## 046. Retire the parallel scene-drawing system; the gallery reviews the real SceneStage
+
+- Date: 2026-08-09
+- Status: accepted
+- Context: Decision 044 shipped the scenery archetypes but deliberately left
+  `src/components/lesson/illustrations.tsx` — a second key→drawing system
+  (`SceneIllustration` plus five invented keys like `art-table-morning`) — in
+  place, wired only into the dev component gallery. Its keys were not the
+  content's authored `illustrationKey`s and it reached nothing in the real
+  lesson flow, so authors and reviewers faced two unrelated systems for the one
+  job. Reconciling them was the follow-up 044 flagged as owed.
+- Decision: retire `illustrations.tsx` entirely and point the gallery at the
+  live `SceneStage`. The gallery's "Scene stage — scenery archetypes" section
+  now renders one representative authored key per archetype (plus an unknown
+  key, to show the neutral gathering fallback), derived from
+  `illustrationKeyArchetypes`, and the StoryPanel demo draws its scene through
+  `SceneStage`. There is now one scene system, and the gallery reviews what
+  lessons actually render.
+- Scope: dev-tooling and dead-code removal only. No change to any lesson,
+  content, schema, `illustrationKey`, review status, or child-facing surface;
+  the gallery route still 404s outside development, and no dependency is added.
+- Consequences: ~320 lines of unreachable, duplicate drawing code are gone, and
+  a reviewer opening the gallery now sees the real archetypes. The other open
+  044 follow-up — situation-driven character expression — is untouched and
+  remains owed as its own human-reviewed decision.

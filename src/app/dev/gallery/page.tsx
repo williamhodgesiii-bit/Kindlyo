@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import {
-  illustrationKeys,
-  SceneIllustration,
-} from "@/components/lesson/illustrations";
+  illustrationKeyArchetypes,
+  sceneArchetypes,
+} from "@/components/lesson/sceneArchetypes";
+import { SceneStage } from "@/components/lesson/SceneStage";
 import { HeroScene } from "@/components/marketing/HeroScene";
 import { ParentAppShell } from "@/components/shells/ParentAppShell";
 import { Avatar } from "@/components/ui/Avatar";
@@ -67,6 +68,20 @@ function Section({
     </section>
   );
 }
+
+/**
+ * One representative authored illustrationKey per scenery archetype, so the
+ * gallery reviews the real `SceneStage` archetype set (docs/DECISIONS.md
+ * 044/046) instead of a second, parallel drawing system.
+ */
+const archetypeSamples = sceneArchetypes.map((archetype) => {
+  const keys = Object.keys(
+    illustrationKeyArchetypes,
+  ) as (keyof typeof illustrationKeyArchetypes)[];
+  const illustrationKey =
+    keys.find((key) => illustrationKeyArchetypes[key] === archetype) ?? "";
+  return { archetype, illustrationKey };
+});
 
 export default function GalleryPage() {
   if (!isDevRouteEnabled()) {
@@ -270,12 +285,7 @@ export default function GalleryPage() {
           <StoryPanel
             title="The first morning at art club"
             narration="Maya is already at the long table, laying out paintbrushes. She looks up when you come in."
-            illustration={
-              <SceneIllustration
-                illustrationKey="art-table-morning"
-                className="h-auto w-full"
-              />
-            }
+            illustration={<SceneStage illustrationKey="art-table-morning" />}
           />
         </Section>
 
@@ -294,21 +304,24 @@ export default function GalleryPage() {
         </Section>
 
         <Section
-          title="Scene illustrations"
-          intent="Local shapes only — no remote images anywhere. An unknown key falls back to a neutral drawing rather than throwing."
+          title="Scene stage — scenery archetypes"
+          intent="Every authored illustrationKey resolves to one of ten generic places (docs/DECISIONS.md 044); the stage renders that place, themed by the module world. Local shapes only, aria-hidden, and an unknown key falls back to the neutral gathering place rather than throwing."
         >
           <div className="grid gap-4 sm:grid-cols-3">
-            {[...illustrationKeys, "no-such-key"].map((key) => (
-              <figure key={key}>
-                <SceneIllustration
-                  illustrationKey={key}
-                  className="h-auto w-full"
-                />
+            {archetypeSamples.map(({ archetype, illustrationKey }) => (
+              <figure key={archetype}>
+                <SceneStage illustrationKey={illustrationKey} />
                 <figcaption className="mt-2 text-sm text-text-secondary">
-                  {key}
+                  {archetype} · <code>{illustrationKey}</code>
                 </figcaption>
               </figure>
             ))}
+            <figure key="fallback">
+              <SceneStage illustrationKey="no-such-key" />
+              <figcaption className="mt-2 text-sm text-text-secondary">
+                gathering (fallback) · <code>no-such-key</code>
+              </figcaption>
+            </figure>
           </div>
         </Section>
 
