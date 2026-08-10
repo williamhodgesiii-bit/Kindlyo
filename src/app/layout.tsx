@@ -41,6 +41,19 @@ export const metadata: Metadata = {
   },
   description: siteDescription,
   applicationName: siteName,
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: siteName,
+    // Not "black-translucent": that draws content under the iOS status bar and
+    // causes contrast/overlap trouble at the top of the screen.
+    statusBarStyle: "default",
+  },
+  icons: {
+    // The document favicon stays src/app/icon.svg (auto-linked by Next). This
+    // is the opaque home-screen icon iOS uses when the app is added.
+    apple: "/icons/icon.svg",
+  },
   openGraph: {
     type: "website",
     siteName,
@@ -59,6 +72,10 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  // Tints the browser/OS UI around an installed window. Literal hex mirroring
+  // the manifest `theme_color` (brand `#be5136` in src/styles/tokens.css),
+  // since neither a manifest nor viewport metadata can read CSS variables.
+  themeColor: "#be5136",
 };
 
 /**

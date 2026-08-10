@@ -41,7 +41,9 @@ Deliver one complete learning journey that proves the core lesson experience.
 ### Platform
 
 - Responsive web application
-- Installable PWA where practical
+- Installable PWA where practical (delivered in part: a web app manifest and
+  install metadata make the app installable/add-to-home-screen — decision 043.
+  Offline caching via a service worker is deliberately deferred for privacy.)
 - Authentication
 - Database persistence
 - Basic first-party analytics

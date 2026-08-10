@@ -888,3 +888,56 @@ day.sh ship` only ran the end-to-end suite when `RUN_E2E=1` was explicitly
   and CI now describe the same required set. Ship is slower by the cost of the
   Playwright run, which is the intended trade; an environment without browsers
   uses `SKIP_E2E=1` and relies on CI to run e2e on the pushed branch.
+
+## 043. Installable web app: a manifest and install metadata, no service worker
+
+- Date: 2026-08-07
+- Status: accepted
+- Context: "Installable PWA where practical" is a listed MVP Platform item
+  (`docs/MVP_SCOPE.md`) that was entirely unimplemented — no web app manifest,
+  no `theme-color`, no `appleWebApp` metadata, no app icons. The honest reading
+  of "where practical" for a privacy-first children's product is: make the app
+  installable, and stop short of anything that persists family data on the
+  device or invents an engagement surface.
+- Decision: Add a Next `src/app/manifest.ts` Metadata Route serving
+  `/manifest.webmanifest` (`name`/`short_name`/`description` from the vetted
+  `@/lib/seo` copy, `display: standalone`, `start_url`/`scope`/`id` all `/`,
+  `theme_color` brand `#be5136`, `background_color` canvas `#faf3e7`, `lang`
+  `en-GB`, `categories: ["education"]`), two SVG icons under `public/icons`
+  (an opaque `any` icon and a padded full-bleed `maskable` icon), and root
+  layout install metadata (`appleWebApp` with `statusBarStyle: "default"`,
+  viewport `themeColor`, an apple-touch icon, an explicit `manifest` link).
+- Ancillary decision: icons are committed SVG rather than generated raster.
+  It keeps the whole slice verifiable by the required checks (no runtime image
+  render that lint/typecheck/test/build cannot exercise) and matches the repo's
+  "draw SVG, don't commit binaries" convention (`src/app/opengraph-image.tsx`).
+- Deliberately out of scope, with reasons: (1) No service worker / offline
+  cache — it would persist child progress, nickname, and authenticated
+  responses in on-device storage that survives the parent's deletion controls
+  (`docs/PRIVACY_AND_SAFETY.md`) and could leak across accounts on a shared
+  family tablet; offline is its own reviewed slice, and installability does not
+  require it. (2) No `share_target`, `shortcuts`, `protocol_handlers`,
+  `screenshots`, or native `related_applications` — each is scope beyond the
+  MVP and a data or claim surface we do not want; `manifest.test.ts` locks
+  their absence. (3) `orientation` is not set, so no mounted or assistive setup
+  is forced into portrait.
+- Colours in the manifest and viewport are literal hex copied from
+  `src/styles/tokens.css`; a manifest cannot read CSS custom properties, so
+  they carry a keep-in-sync comment, the same caveat as `opengraph-image.tsx`.
+- Known limitation: SVG manifest icons install cleanly on modern Chromium and
+  add-to-home-screen on iOS, but some browsers' automatic install prompt and
+  iOS's home-screen rendering prefer raster PNG. Generating brand PNG icons
+  (192/512/maskable/apple-touch) with visual QA is a sensible fast-follow.
+- Standing concern for the roadmap (not fixed here): an installed one-tap icon
+  makes it easier for a child to relaunch a parent's still-valid session and
+  reach `/learn` without a grown-up initiating. `start_url: "/"` keeps the
+  launch on the parent-facing home rather than a lesson, but the persistent
+  session means "installed" must not be read as "supervised" — `docs/PROFILES.md`
+  already says a lock a child cannot pass is no substitute for a parent nearby.
+  A parent gate or session re-check on the installed app is worth a deliberate
+  decision later.
+- Consequences: A parent can install Kindlyo to a home screen with a branded
+  icon and a standalone window, no new dependency and no third-party request
+  (icons are first-party SVG). No child-facing surface changed. Unit tests
+  assert the manifest shape, the colour and copy constraints, the excluded
+  fields, and that each icon file exists.

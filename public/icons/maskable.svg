@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Kindlyo">
+  <!--
+    The "maskable" purpose icon: the OS clips this to its own shape (circle,
+    squircle, rounded square). It must be full-bleed and keep the mark inside
+    the ~80% safe zone, so the heart is scaled to 80% about the centre and
+    never reaches an edge that could be cropped.
+
+    Colours are literal hex copied from src/styles/tokens.css (brand #be5136,
+    on-brand #fffdf8) because this asset renders outside the document. Keep
+    them in sync.
+  -->
+  <rect width="64" height="64" fill="#be5136" />
+  <g transform="translate(32 32) scale(0.8) translate(-32 -32)">
+    <path
+      d="M32 50C22 42.5 14 36.4 14 28.4 14 22.6 18.4 18 23.9 18c3.2 0 6.2 1.6 8.1 4.1 1.9-2.5 4.9-4.1 8.1-4.1 5.5 0 9.9 4.6 9.9 10.4 0 8-8 14.1-18 21.6Z"
+      fill="#fffdf8"
+    />
+  </g>
+</svg>
