@@ -24,7 +24,7 @@ describe("absoluteUrl", () => {
 describe("pageMetadata", () => {
   const input = {
     title: "How it works",
-    description: "A Kindlyo lesson takes about five minutes.",
+    description: "A Little Learner's Club lesson takes about five minutes.",
     path: "/how-it-works",
   };
 
@@ -35,18 +35,20 @@ describe("pageMetadata", () => {
   });
 
   it("passes the title through the root template by default", () => {
-    // A plain string is what lets the layout's "%s | Kindlyo" template apply.
+    // A plain string is what lets the "%s | Little Learner's Club" template apply.
     expect(pageMetadata(input).title).toBe("How it works");
   });
 
   it("lets the homepage bypass the template", () => {
     const metadata = pageMetadata({
       ...input,
-      absoluteTitle: "Kindlyo — social skills for children ages 5 to 9",
+      absoluteTitle:
+        "Little Learner's Club — social skills for children ages 5 to 9",
     });
 
     expect(metadata.title).toEqual({
-      absolute: "Kindlyo — social skills for children ages 5 to 9",
+      absolute:
+        "Little Learner's Club — social skills for children ages 5 to 9",
     });
   });
 

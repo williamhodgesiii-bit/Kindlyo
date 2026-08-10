@@ -7,7 +7,8 @@
  * not modelled here is ignored on purpose.
  *
  * The `family_id` we set on the Checkout Session and on the subscription's
- * metadata is what ties a Stripe object back to a Kindlyo family without ever
+ * metadata is what ties a Stripe object back to a Little Learner's Club family
+ * without ever
  * trusting the browser — the webhook is signature-verified, and the family is
  * resolved from Stripe's own copy of the id (or, failing that, from the stored
  * customer mapping).
@@ -54,7 +55,7 @@ export function priceIdOf(subscription: StripeSubscription): string | null {
   return subscription.items.data[0]?.price.id ?? null;
 }
 
-/** The Kindlyo family id carried on a subscription's metadata, when present. */
+/** The Little Learner's Club family id carried on a subscription's metadata. */
 export function familyIdOf(object: {
   metadata?: { family_id?: string } | null;
 }): string | null {

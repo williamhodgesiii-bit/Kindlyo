@@ -5,9 +5,11 @@ import { cn } from "@/lib/cn";
  * Site footer.
  *
  * Carries the secondary navigation the header does not have room for: the
- * legal placeholders, and the two in-progress product surfaces. Those are
- * labelled "preview" because that is what they are — the learning area and the
- * parent area both run on prototype local storage, with no account behind them.
+ * legal placeholders, and the in-progress product surfaces (the learning app,
+ * the parent dashboard, and sign-in) so the whole product is reachable from
+ * here. Those surfaces are early previews — they run on prototype local storage
+ * with no account behind them — which the draft-content notice below and the
+ * marketing copy keep explicit.
  *
  * `navigation` exists for the child shell, which passes `false`. A child
  * working through a scenario should not be offered a menu of somewhere else to
@@ -26,7 +28,7 @@ type FooterGroup = {
 
 const groups: readonly FooterGroup[] = [
   {
-    heading: "Kindlyo",
+    heading: "Little Learner's Club",
     links: [
       { href: "/how-it-works", label: "How it works" },
       { href: "/curriculum", label: "Curriculum" },
@@ -44,10 +46,11 @@ const groups: readonly FooterGroup[] = [
     ],
   },
   {
-    heading: "Preview the product",
+    heading: "Open the product",
     links: [
-      { href: "/learn", label: "Learning area preview" },
-      { href: "/parent", label: "Parent area preview" },
+      { href: "/learn", label: "Learning app" },
+      { href: "/parent", label: "Parent dashboard" },
+      { href: "/login", label: "Sign in" },
     ],
   },
 ];
@@ -94,9 +97,9 @@ export function SiteFooter({ navigation = true }: SiteFooterProps = {}) {
           )}
         >
           <p>
-            Kindlyo is an early-stage product in private beta. All learning
-            content is draft content and has not yet been reviewed by qualified
-            specialists.
+            Little Learner&apos;s Club is an early-stage product in private
+            beta. All learning content is draft content and has not yet been
+            reviewed by qualified specialists.
           </p>
           <p>
             No advertising, no third-party advertising code, and no sale of

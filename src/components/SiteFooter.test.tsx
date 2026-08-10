@@ -18,15 +18,20 @@ describe("SiteFooter", () => {
     ).toHaveAttribute("href", "/safety");
   });
 
-  it("labels the product surfaces as previews rather than the real thing", () => {
+  it("reaches the live product surfaces", () => {
     render(<SiteFooter />);
 
+    expect(screen.getByRole("link", { name: "Learning app" })).toHaveAttribute(
+      "href",
+      "/learn",
+    );
     expect(
-      screen.getByRole("link", { name: "Learning area preview" }),
-    ).toHaveAttribute("href", "/learn");
-    expect(
-      screen.getByRole("link", { name: "Parent area preview" }),
+      screen.getByRole("link", { name: "Parent dashboard" }),
     ).toHaveAttribute("href", "/parent");
+    expect(screen.getByRole("link", { name: "Sign in" })).toHaveAttribute(
+      "href",
+      "/login",
+    );
   });
 
   it("keeps the draft-content notice", () => {

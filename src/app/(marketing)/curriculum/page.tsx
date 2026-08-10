@@ -28,14 +28,14 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "Curriculum",
   description:
-    "Kindlyo teaches social skills through situations rather than rules. The first module, Meeting People, is eight short lessons for children ages 5 to 9. All content is currently draft and has not been reviewed by qualified specialists.",
+    "Little Learner's Club teaches social skills through situations rather than rules. The first module, Meeting People, is eight short lessons for children ages 5 to 9. All content is currently draft and has not been reviewed by qualified specialists.",
   path: "/curriculum",
 });
 
 const principles = [
   {
     title: "Situations, not rules",
-    body: "A rule tells a child what to do. A situation lets them work out why it matters here and what they would want if they were the other person. Kindlyo teaches the second.",
+    body: "A rule tells a child what to do. A situation lets them work out why it matters here and what they would want if they were the other person. Little Learner's Club teaches the second.",
   },
   {
     title: "Context is part of the lesson",
@@ -68,7 +68,7 @@ export default function CurriculumPage() {
         <PageContainer>
           <div className="max-w-2xl">
             <Heading level={1} size="display" id="curriculum-hero-heading">
-              What Kindlyo teaches, and how
+              What Little Learner&apos;s Club teaches, and how
             </Heading>
             <Text size="lg" tone="secondary" className="mt-6">
               The first module is “{meetingPeopleModule.title}”:{" "}
@@ -94,12 +94,12 @@ export default function CurriculumPage() {
         <Card className="mt-8">
           <ContentStatusBadge status={meetingPeopleModule.status} />
           <Text className="mt-4 max-w-prose">
-            Every lesson in Kindlyo is currently draft content. It was written
-            against our published curriculum principles, and it has not been
-            reviewed by educators, psychologists, or clinicians. We will not
-            describe it as reviewed, evidence-based, or expert-approved until
-            that review has actually happened, and the label on each lesson will
-            change when it does.
+            Every lesson in Little Learner&apos;s Club is currently draft
+            content. It was written against our published curriculum principles,
+            and it has not been reviewed by educators, psychologists, or
+            clinicians. We will not describe it as reviewed, evidence-based, or
+            expert-approved until that review has actually happened, and the
+            label on each lesson will change when it does.
           </Text>
         </Card>
       </MarketingSection>

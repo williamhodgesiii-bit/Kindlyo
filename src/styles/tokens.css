@@ -16,7 +16,7 @@
  *   2. `[data-module=...]`  — the twelve per-world theme overrides.
  *   3. `@theme`             — maps the tokens into Tailwind v4 utility
  *                            namespaces (bg-*, text-*, rounded-*, font-*, ...)
- *                            and aliases Kindlyo's older token names onto the
+ *                            and aliases the legacy (pre-rebrand) token names onto the
  *                            new values, so existing components adopt the
  *                            palette without breaking (to be removed as those
  *                            components migrate onto the llc.* tokens).
@@ -30,8 +30,13 @@
   --llc-color-surface: #fffdf8; /* cards, bars (elevation 1) */
   --llc-color-paper: #f0e6d2; /* paper layers, offsets, scene ground band */
   --llc-color-border: #e4d7bf; /* hairlines */
-  --llc-color-brand: #be5136; /* primary action fill, brand moments */
-  --llc-color-brand-strong: #a03f27; /* brand as text, hover/pressed */
+  /* Brand hue — a warm, friendly tomato for the Little Learner's Club rebrand.
+     It sits in the same warm family as the cream ground and the sage scene, so
+     the whole palette reads as one storybook world rather than clashing accents.
+     White on -strong is 5.0:1 (AA for all text); the base step is for fills,
+     large display text, and the focus ring. */
+  --llc-color-brand: #e4572e; /* primary action fill, brand moments */
+  --llc-color-brand-strong: #c2451f; /* brand as text, hover/pressed */
   --llc-color-on-brand: #fffdf8; /* text/icon on a filled brand surface */
 
   /* ---- Colour · feedback trio (global, module-independent) — DESIGN.md §2 ----
@@ -350,7 +355,7 @@
   --color-module-tint-deep: var(--module-tint-deep);
 
   /*
-   * Legacy Kindlyo colour tokens — SUPERSEDED onto the Little Learner's Club
+   * Legacy (pre-rebrand) colour tokens — SUPERSEDED onto the Little Learner's Club
    * palette so existing components adopt the warm skin without edits. These
    * aliases are retained only until those components migrate onto the llc.*
    * tokens; new screens must not use them.
@@ -374,13 +379,17 @@
    * their previous values for not-yet-migrated components and the placeholder
    * vector art (avatarArt / illustrations / icons consume these via var()).
    */
-  --color-brand-secondary: #6f9b8f;
-  --color-brand-secondary-strong: #3f6a5d;
-  --color-brand-accent: #e5ad4f;
-  --color-tint-clay: #f4ded6;
-  --color-tint-sage: #dde9e5;
-  --color-tint-honey: #f7e7c8;
-  --color-tint-sand: #ece2d4;
+  /* A single companion for the tomato brand: a muted sage-pine (the calm,
+     natural role), which matches the default lesson scene so the greens flow
+     together. Marigold is a small warm highlight only. -strong carries text
+     (>= 4.5:1 on surface); the tints are soft, warm backgrounds only. */
+  --color-brand-secondary: #2f6b57;
+  --color-brand-secondary-strong: #215243;
+  --color-brand-accent: #f2b134;
+  --color-tint-clay: #f7ded2; /* soft tomato */
+  --color-tint-sage: #dfe9e1; /* soft sage */
+  --color-tint-honey: #f8e6c2; /* soft marigold */
+  --color-tint-sand: #efe1cb; /* warm paper */
 
   /* ---- Radius — DESIGN.md §4 (values updated to the exact scale) ---- */
   --radius-sm: var(--llc-radius-sm);
@@ -402,7 +411,7 @@
   /* ---- Typography families — DESIGN.md §3 ---- */
   --font-display: var(--llc-type-display);
   --font-body: var(--llc-type-body);
-  /* Kindlyo's existing `font-sans` / var(--font-sans) now resolve to the body
+  /* The legacy `font-sans` / var(--font-sans) now resolve to the body
      family (Source Sans 3 with the same system fallbacks it used before). */
   --font-sans: var(--llc-type-body);
 
@@ -424,7 +433,7 @@
   --text-label-200--line-height: 0.9375rem;
 
   /*
-   * Kindlyo's existing type scale, retained for not-yet-migrated components.
+   * The legacy type scale, retained for not-yet-migrated components.
    * Nudged above Tailwind's defaults for children reading at arm's length.
    */
   --text-xs: 0.8125rem;
@@ -448,7 +457,7 @@
 
   /* ---- Elevation — DESIGN.md §4 ---- */
   --shadow-soft: var(--llc-shadow-soft);
-  /* Kindlyo extra, re-based on the ink colour; used sparingly. */
+  /* Legacy extra, re-based on the ink colour; used sparingly. */
   --shadow-lifted: 0 8px 32px rgb(49 40 28 / 0.14);
 
   /* ---- Motion easings — exposed as `ease-*` utilities (MOTION.md) ---- */

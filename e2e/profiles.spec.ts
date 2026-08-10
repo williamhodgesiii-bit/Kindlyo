@@ -50,7 +50,7 @@ test.describe("a parent's first visit", () => {
     await page.goto("/parent");
 
     await expect(
-      page.getByRole("heading", { name: "Welcome to Kindlyo" }),
+      page.getByRole("heading", { name: "Welcome to Little Learner's Club" }),
     ).toBeVisible();
     await page.getByRole("button", { name: "Get started" }).click();
 
@@ -107,7 +107,7 @@ test.describe("a parent's first visit", () => {
       page.getByRole("heading", { name: "For parents" }),
     ).toBeVisible();
     await expect(
-      page.getByRole("heading", { name: "Welcome to Kindlyo" }),
+      page.getByRole("heading", { name: "Welcome to Little Learner's Club" }),
     ).toHaveCount(0);
   });
 });

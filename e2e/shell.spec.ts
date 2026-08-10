@@ -40,7 +40,16 @@ test.describe("application shell", () => {
 
     await page.goto("/");
 
-    await page.getByRole("link", { name: "Learning area preview" }).click();
+    // Scoped to the footer: the homepage's "Jump into the product" band also
+    // links to the same surfaces, so an unscoped name would match twice.
+    await page
+      .getByRole("contentinfo")
+      .getByRole("link", { name: "Learning app" })
+      .click();
+    // Wait for the route to change before asserting on a heading: the homepage
+    // now carries "Learn" as a substring in several headings ("Little Learner's
+    // Club", the "Learning app" card), so checking mid-navigation would race.
+    await expect(page).toHaveURL(/\/learn(\/|$)/);
     await expect(page.getByRole("heading", { name: "Learn" })).toBeVisible();
     // With no child profile on this device, the learning area asks a grown-up
     // to set one up rather than showing the module. Progression itself is
@@ -54,9 +63,16 @@ test.describe("application shell", () => {
     // A browser with no profiles is a parent's first visit, so the parent area
     // opens on onboarding. The flow itself is covered in profiles.spec.ts.
     await page.goto("/");
-    await page.getByRole("link", { name: "Parent area preview" }).click();
+    await page
+      .getByRole("contentinfo")
+      .getByRole("link", { name: "Parent dashboard" })
+      .click();
+    await expect(page).toHaveURL(/\/parent(\/|$)/);
     await expect(
-      page.getByRole("heading", { name: "Welcome to Kindlyo", level: 1 }),
+      page.getByRole("heading", {
+        name: "Welcome to Little Learner's Club",
+        level: 1,
+      }),
     ).toBeVisible();
   });
 

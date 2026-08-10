@@ -20,7 +20,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "How it works",
   description:
-    "A Kindlyo lesson takes about five minutes: an illustrated situation, a decision with no wrong answer, what tends to happen next, why it helps somebody else, a turn to rehearse, and one small mission to try offline.",
+    "A Little Learner's Club lesson takes about five minutes: an illustrated situation, a decision with no wrong answer, what tends to happen next, why it helps somebody else, a turn to rehearse, and one small mission to try offline.",
   path: "/how-it-works",
 });
 
@@ -140,7 +140,7 @@ export default function HowItWorksPage() {
         tone="sand"
         width="narrow"
         title="Want to try it with your own child?"
-        lead="Kindlyo is in private beta. Founding families join in small groups so we can talk to everyone who takes part."
+        lead="Little Learner's Club is in private beta. Founding families join in small groups so we can talk to everyone who takes part."
       >
         <div className="mt-8 flex flex-wrap gap-4">
           <ButtonLink href="/waitlist" size="lg">

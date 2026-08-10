@@ -14,10 +14,10 @@ import { env } from "@/lib/env";
  * will publish localhost canonicals, which is why `.env.example` calls it out.
  */
 
-export const siteName = "Kindlyo";
+export const siteName = "Little Learner's Club";
 
 export const siteDescription =
-  "Kindlyo helps children ages 5 to 9 practise kindness, communication, and social confidence through short story-based lessons and real-world missions they try offline with a grown-up.";
+  "Little Learner's Club helps children ages 5 to 9 practise kindness, communication, and social confidence through short story-based lessons and real-world missions they try offline with a grown-up.";
 
 const base = env.NEXT_PUBLIC_APP_URL.replace(/\/+$/, "");
 
@@ -34,11 +34,11 @@ export function absoluteUrl(path: string): string {
 }
 
 export type PageMetadataInput = {
-  /** Runs through the root layout's "%s | Kindlyo" template. */
+  /** Runs through the root layout's "%s | Little Learner's Club" template. */
   title: string;
   /**
    * The complete `<title>`, bypassing the template. The homepage uses this so
-   * it does not render as "Kindlyo | Kindlyo".
+   * it does not render as "Little Learner's Club | Little Learner's Club".
    */
   absoluteTitle?: string;
   description: string;

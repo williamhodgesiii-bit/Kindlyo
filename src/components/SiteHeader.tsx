@@ -67,9 +67,17 @@ export function SiteHeader({
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="inline-flex items-center text-xl font-bold text-brand-primary-strong"
+            className="inline-flex items-center gap-2 text-xl font-bold text-brand-primary-strong"
           >
-            Kindlyo
+            <span
+              aria-hidden="true"
+              className="grid h-8 w-8 place-items-center rounded-lg bg-brand-primary-strong text-on-brand"
+            >
+              <svg viewBox="0 0 64 64" className="h-5 w-5" fill="currentColor">
+                <path d="M32 50C22 42.5 14 36.4 14 28.4 14 22.6 18.4 18 23.9 18c3.2 0 6.2 1.6 8.1 4.1 1.9-2.5 4.9-4.1 8.1-4.1 5.5 0 9.9 4.6 9.9 10.4 0 8-8 14.1-18 21.6Z" />
+              </svg>
+            </span>
+            Little Learner&apos;s Club
           </Link>
           <BetaBadge />
         </div>

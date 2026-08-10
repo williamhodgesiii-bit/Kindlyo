@@ -14,14 +14,14 @@ import { pageMetadata } from "@/lib/seo";
  * reviewed, which is worse than admitting there is not one yet.
  *
  * The one thing this page does state substantively is the disclaimer that
- * CLAUDE.md requires — Kindlyo is not professional advice and the curriculum
- * has not been reviewed by specialists.
+ * CLAUDE.md requires — Little Learner's Club is not professional advice and the
+ * curriculum has not been reviewed by specialists.
  */
 
 export const metadata: Metadata = pageMetadata({
   title: "Terms of use",
   description:
-    "Kindlyo's terms of use are being prepared and will be published before the product opens to the public. Kindlyo is not a substitute for professional educational, psychological, or clinical advice.",
+    "The Little Learner's Club terms of use are being prepared and will be published before the product opens to the public. Little Learner's Club is not a substitute for professional educational, psychological, or clinical advice.",
   path: "/terms",
 });
 
@@ -43,8 +43,9 @@ export default function TermsPage() {
             Terms of use
           </Heading>
           <Text size="lg" tone="secondary" className="mt-6">
-            This is a placeholder. Kindlyo is in private beta, nothing is for
-            sale, and the formal terms have not been written or reviewed yet.
+            This is a placeholder. Little Learner&apos;s Club is in private
+            beta, nothing is for sale, and the formal terms have not been
+            written or reviewed yet.
           </Text>
 
           <InlineFeedback
@@ -53,8 +54,8 @@ export default function TermsPage() {
             className="mt-8"
           >
             Nothing on this page forms an agreement or constitutes legal advice.
-            Real terms will be published before Kindlyo is open to the public or
-            takes payment from anybody.
+            Real terms will be published before Little Learner&apos;s Club is
+            open to the public or takes payment from anybody.
           </InlineFeedback>
         </PageContainer>
       </section>
@@ -67,16 +68,17 @@ export default function TermsPage() {
       >
         <div className="mt-8 grid gap-4">
           <InlineFeedback tone="neutral" title="Not professional advice">
-            Kindlyo is a learning product for families. It is not education,
-            psychological, therapeutic, or clinical advice, and it is not a
-            substitute for support from a qualified professional. If you have
-            concerns about your child&rsquo;s development or wellbeing, please
-            speak to someone qualified to help.
+            Little Learner&apos;s Club is a learning product for families. It is
+            not education, psychological, therapeutic, or clinical advice, and
+            it is not a substitute for support from a qualified professional. If
+            you have concerns about your child&rsquo;s development or wellbeing,
+            please speak to someone qualified to help.
           </InlineFeedback>
           <InlineFeedback tone="neutral" title="Draft curriculum">
-            All lesson content currently in Kindlyo is draft. It has not been
-            reviewed by educators, psychologists, or clinicians, and we do not
-            describe it as validated, evidence-based, or expert-approved.
+            All lesson content currently in Little Learner&apos;s Club is draft.
+            It has not been reviewed by educators, psychologists, or clinicians,
+            and we do not describe it as validated, evidence-based, or
+            expert-approved.
           </InlineFeedback>
           <InlineFeedback
             tone="neutral"

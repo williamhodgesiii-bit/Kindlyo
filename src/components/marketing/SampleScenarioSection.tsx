@@ -50,7 +50,7 @@ export function SampleScenarioSection({
       tone={tone}
       className={className}
       title="Try the moment your child would meet"
-      lead="This is a real scene from a real lesson, not a mock-up. Pick any answer and read what tends to happen next — then pick a different one. Nothing is marked right or wrong, nothing is scored, and nothing you do here is saved."
+      lead="A real scene from a real lesson. Pick an answer, see what tends to happen next, then try another — nothing is scored, and nothing here is saved."
     >
       <SampleScenario
         lessonTitle={lesson.title}

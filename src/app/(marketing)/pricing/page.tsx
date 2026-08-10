@@ -23,7 +23,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "Pricing",
   description:
-    "Kindlyo is in private beta and pricing is not set. The plan is one family subscription covering the whole household, with a free trial and no advertising. Founding families will hear before anything is charged.",
+    "Little Learner's Club is in private beta and pricing is not set. The plan is one family subscription covering the whole household, with a free trial and no advertising. Founding families will hear before anything is charged.",
   path: "/pricing",
 });
 
@@ -56,9 +56,9 @@ export default function PricingPage() {
               We have not set a price yet
             </Heading>
             <Text size="lg" tone="secondary" className="mt-6">
-              Kindlyo is in private beta. Nothing is for sale, nothing can be
-              bought, and we would rather say that plainly than put a number on
-              this page that we might change.
+              Little Learner&apos;s Club is in private beta. Nothing is for
+              sale, nothing can be bought, and we would rather say that plainly
+              than put a number on this page that we might change.
             </Text>
           </div>
         </PageContainer>
@@ -74,7 +74,8 @@ export default function PricingPage() {
           <InlineFeedback tone="neutral" title="No prices, no tiers, no offers">
             There is no free plan, no paid plan, and no founding-member
             discount, because none of those has been decided. Anything you read
-            elsewhere quoting a Kindlyo price did not come from us.
+            elsewhere quoting a Little Learner&apos;s Club price did not come
+            from us.
           </InlineFeedback>
           <InlineFeedback tone="neutral" title="Nothing is charged in the beta">
             Founding families take part at no cost. If and when a subscription
@@ -108,7 +109,7 @@ export default function PricingPage() {
         tone="sand"
         width="narrow"
         title="Hear it first"
-        lead="Founding families on the waitlist find out what Kindlyo costs before anybody else, and before anything is ever charged."
+        lead="Founding families on the waitlist find out what Little Learner's Club costs before anybody else, and before anything is ever charged."
       >
         <WaitlistForm className="mt-8" submitLabel="Keep me posted" />
       </MarketingSection>

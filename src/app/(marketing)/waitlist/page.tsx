@@ -19,7 +19,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "Join the waitlist",
   description:
-    "Kindlyo is in private beta. Leave an email address to hear when founding-family places open. One field, no payment details, and no newsletter.",
+    "Little Learner's Club is in private beta. Leave an email address to hear when founding-family places open. One field, no payment details, and no newsletter.",
   path: "/waitlist",
 });
 
@@ -47,9 +47,9 @@ export default function WaitlistPage() {
             Be a founding family
           </Heading>
           <Text size="lg" tone="secondary" className="mt-6">
-            Kindlyo is in private beta and not yet open to the public. Leave an
-            email address and we will let you know when the next group of
-            founding families opens.
+            Little Learner&apos;s Club is in private beta and not yet open to
+            the public. Leave an email address and we will let you know when the
+            next group of founding families opens.
           </Text>
 
           <Card elevation="soft" className="mt-8">
@@ -81,7 +81,7 @@ export default function WaitlistPage() {
       <MarketingSection
         headingId="waitlist-meanwhile-heading"
         title="While you wait"
-        lead="You do not need an account, or a place in the beta, to see what Kindlyo actually is."
+        lead="You do not need an account, or a place in the beta, to see what Little Learner's Club actually is."
         width="narrow"
       >
         <div className="mt-8 flex flex-wrap gap-4">

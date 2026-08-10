@@ -18,7 +18,8 @@ export const dynamic = "force-dynamic";
 /**
  * Privacy & account (docs/design/COMPONENT_STATES.md §4/§10, §12).
  *
- * The adult-facing home for what Kindlyo holds and the controls over it: a plain
+ * The adult-facing home for what Little Learner's Club holds and the controls
+ * over it: a plain
  * statement of the data and how little of it there is, the way to the
  * membership, and — in `AccountPanel` — the two rights parents are owed, data
  * export and account deletion (docs/PRIVACY_AND_SAFETY.md).
@@ -35,7 +36,8 @@ export default async function AccountPage() {
       <PageContainer>
         <Heading level={1}>Account</Heading>
         <Text size="lg" tone="secondary" className="mt-4 max-w-prose">
-          What Kindlyo keeps, your membership, and the controls over your data.
+          What Little Learner&apos;s Club keeps, your membership, and the
+          controls over your data.
         </Text>
 
         <Card className="mt-10">

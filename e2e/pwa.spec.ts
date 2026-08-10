@@ -12,7 +12,7 @@ test.describe("installable PWA", () => {
     expect(response.status()).toBe(200);
 
     const manifest = await response.json();
-    expect(manifest.name).toBe("Kindlyo");
+    expect(manifest.name).toBe("Little Learner's Club");
     expect(manifest.start_url).toBe("/");
     // minimal-ui keeps a back affordance for young children.
     expect(manifest.display).toBe("minimal-ui");

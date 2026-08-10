@@ -1,6 +1,6 @@
 /**
- * The Kindlyo heart, shared by every generated app icon so the mark lives in
- * exactly one place.
+ * The Little Learner's Club heart, shared by every generated app icon so the
+ * mark lives in exactly one place.
  *
  * `src/app/icon.svg` (the favicon) draws the same coral heart on a cream tile;
  * the values here are copied from it so the installed-app icon matches the tab
@@ -17,8 +17,8 @@
 /** `--llc-color-canvas` — the real app background, and the PWA splash colour. */
 export const MARK_BACKGROUND = "#faf3e7";
 
-/** The coral heart fill, matching `src/app/icon.svg`. */
-export const MARK_FILL = "#d96f52";
+/** The tomato heart fill, matching `src/app/icon.svg`. */
+export const MARK_FILL = "#e4572e";
 
 /** The heart outline on a 64×64 grid, lifted verbatim from `icon.svg`. */
 const HEART_PATH =
