@@ -120,6 +120,20 @@
   --llc-motion-intro: 900ms; /* module-introduction beat */
   --llc-motion-celebrate-module: 1200ms; /* module celebration */
 
+  /* ---- Motion · idle cadence (character life) — CHARACTER_BIBLE.md ----
+     Cycle lengths for the rig's opt-in breathing and blink. Named rather than
+     inlined so the continuous motion honours "no arbitrary values" (MOTION.md);
+     these are rest-to-rest cycle lengths, a different kind of value from the
+     eight one-shot transition durations above. The breath keyframe spends most
+     of each cycle at rest ("long stillness between"); the -b / -phase variants
+     desync a second co-present figure so two never pulse in lockstep. */
+  --llc-motion-idle-breath: 4000ms;
+  --llc-motion-idle-breath-b: 4600ms;
+  --llc-motion-idle-blink: 6000ms;
+  --llc-motion-idle-blink-b: 7300ms;
+  --llc-motion-idle-phase-breath: -1600ms;
+  --llc-motion-idle-phase-blink: -2400ms;
+
   /* ---- Motion · easings (6 tokens) — MOTION.md ---- */
   --llc-ease-gentle-enter: cubic-bezier(0.22, 0.61, 0.36, 1); /* arriving */
   --llc-ease-gentle-exit: cubic-bezier(0.4, 0.05, 0.7, 0.4); /* leaving */

@@ -63,7 +63,7 @@ export function ChoiceCard({
         aria-pressed={selected}
         className={cn(
           "flex min-h-11 w-full items-start gap-3 rounded-lg border-2 p-4",
-          "text-left transition-colors",
+          "llc-press text-left",
           "disabled:cursor-not-allowed disabled:opacity-60",
           selected
             ? "border-brand-secondary bg-brand-secondary/10"
