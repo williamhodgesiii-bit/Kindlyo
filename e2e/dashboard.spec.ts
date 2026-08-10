@@ -20,9 +20,10 @@ async function completeLessonOne(page: Page) {
 
   const next = page.getByRole("button", { name: "Next" });
   await next.click();
-  // The "it depends" option, so a talking point appears on the dashboard.
+  // The "it depends" choice (waiting), so a talking point appears on the
+  // dashboard. Waving is now an affirmed "That helps", not the situational one.
   await page
-    .getByRole("button", { name: /Wave, without saying anything/ })
+    .getByRole("button", { name: /Wait, and let Maya speak first/ })
     .click();
   await next.click();
   await next.click();
