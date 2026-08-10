@@ -3,6 +3,7 @@ import { Faq } from "@/components/marketing/Faq";
 import { HeroScene } from "@/components/marketing/HeroScene";
 import { JsonLd } from "@/components/marketing/JsonLd";
 import { MarketingSection } from "@/components/marketing/MarketingSection";
+import { MomentExplorer } from "@/components/marketing/MomentExplorer";
 import { SampleScenarioSection } from "@/components/marketing/SampleScenarioSection";
 import { WaitlistForm } from "@/components/marketing/WaitlistForm";
 import { ButtonLink } from "@/components/ui/Button";
@@ -98,6 +99,14 @@ export default function HomePage() {
           </div>
         </PageContainer>
       </section>
+
+      <MarketingSection
+        headingId="moments-heading"
+        title="A whole neighbourhood of everyday moments"
+        lead="Kindlyo is twelve little worlds, each a place a child already knows — a café table, a treehouse, a front door. Pick one to see the kind of moment it turns into a short, gentle rehearsal, drawn in the same style your child meets inside."
+      >
+        <MomentExplorer className="mt-10" />
+      </MarketingSection>
 
       <SampleScenarioSection headingId="sample-heading" tone="muted" />
 
