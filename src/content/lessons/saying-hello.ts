@@ -111,8 +111,7 @@ export const sayingHello: Lesson = {
       {
         id: "spoken-hello",
         text: "Say “Hi, I’m …” and your name",
-        encouragement:
-          "Nice. Your name gives them something to answer with.",
+        encouragement: "Nice. Your name gives them something to answer with.",
         rehearsalCue:
           "Try it now: say “Hi, I’m …” out loud, or just in your head.",
       },
@@ -127,8 +126,7 @@ export const sayingHello: Lesson = {
       {
         id: "smile-and-nod",
         text: "Smile and nod",
-        encouragement:
-          "A nod is a small hello, and it still reaches someone.",
+        encouragement: "A nod is a small hello, and it still reaches someone.",
         rehearsalCue:
           "Try a small nod now, or imagine one. A nod on its own is a hello too.",
       },

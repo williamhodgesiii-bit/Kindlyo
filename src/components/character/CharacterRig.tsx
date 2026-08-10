@@ -109,17 +109,38 @@ function Face({
   const dy = face.eyes === "up" ? -3 : face.eyes === "down" ? 2 : 0;
   const parts: ReactNode[] = [];
 
-  if (face.eyes === "closed") {
-    parts.push(
-      <rect key="el" x={13} y={28} width={8} height={2} rx={1} fill={INK} />,
-      <rect key="er" x={31} y={28} width={8} height={2} rx={1} fill={INK} />,
-    );
-  } else {
-    parts.push(
-      <circle key="el" cx={16.5} cy={28.5 + dy} r={2.5} fill={INK} />,
-      <circle key="er" cx={35.5} cy={28.5 + dy} r={2.5} fill={INK} />,
-    );
-  }
+  const eyeEls =
+    face.eyes === "closed"
+      ? [
+          <rect
+            key="el"
+            x={13}
+            y={28}
+            width={8}
+            height={2}
+            rx={1}
+            fill={INK}
+          />,
+          <rect
+            key="er"
+            x={31}
+            y={28}
+            width={8}
+            height={2}
+            rx={1}
+            fill={INK}
+          />,
+        ]
+      : [
+          <circle key="el" cx={16.5} cy={28.5 + dy} r={2.5} fill={INK} />,
+          <circle key="er" cx={35.5} cy={28.5 + dy} r={2.5} fill={INK} />,
+        ];
+  // Grouped so the idle blink (globals.css `.rig-alive .rig-eye`) has one target.
+  parts.push(
+    <g key="eyes" className="rig-eye">
+      {eyeEls}
+    </g>,
+  );
 
   if (face.brows === "worry") {
     parts.push(
@@ -257,6 +278,15 @@ export type CharacterRigProps = Omit<SVGProps<SVGSVGElement>, "children"> & {
   size?: number;
   /** When set, the figure is a labelled image rather than decoration. */
   title?: string;
+  /**
+   * Opt into the idle "breathing" and blink (lesson scenes want it; the default
+   * stays the static pose-swap that SSR, tests, and every other caller render).
+   */
+  alive?: boolean;
+  /** Offsets the breathe/blink phase so two co-present figures never pulse together. */
+  beat?: "a" | "b";
+  /** Play a one-shot greeting reaction — a gentle perk-up. Only visible with `alive`. */
+  reacting?: boolean;
 };
 
 const ARM_LEN = 46;
@@ -267,6 +297,9 @@ export function CharacterRig({
   expression,
   size = 96,
   title,
+  alive = false,
+  beat = "a",
+  reacting = false,
   className,
   ...rest
 }: CharacterRigProps) {
@@ -298,85 +331,98 @@ export function CharacterRig({
       aria-hidden={labelled ? undefined : true}
       aria-label={title}
       focusable="false"
-      className={cn("block", className)}
+      data-beat={alive ? beat : undefined}
+      className={cn(
+        "block",
+        alive && "rig-alive",
+        reacting && "rig-reacting",
+        className,
+      )}
       {...rest}
     >
       {labelled ? <title>{title}</title> : null}
-      <g
-        transform={`translate(0 ${pose.hop ? -4 : 0}) rotate(${pose.tilt} 66 137)`}
-      >
-        {/* Body */}
-        <rect
-          x={30}
-          y={54}
-          width={60}
-          height={60}
-          rx={13}
-          fill={def.cast}
-          stroke={INK}
-          strokeWidth={2}
-        />
-        {/* Legs */}
-        <rect
-          x={40}
-          y={112}
-          width={15}
-          height={30}
-          rx={7}
-          fill={LEG}
-          stroke={INK}
-          strokeWidth={2}
-        />
-        <rect
-          x={64}
-          y={112}
-          width={15}
-          height={30}
-          rx={7}
-          fill={LEG}
-          stroke={INK}
-          strokeWidth={2}
-        />
-        {/* Arms */}
-        {arm(17, pose.rotL, pose.lenL)}
-        {arm(89, pose.rotR, pose.lenR)}
-        {/* Nora's card lanyard */}
-        {def.hair === "bob" ? (
-          <rect
-            x={52}
-            y={74}
-            width={16}
-            height={12}
-            rx={3}
-            fill={SURFACE}
-            stroke={INK}
-            strokeWidth={2}
-          />
-        ) : null}
-        {/* Head */}
-        <g transform="translate(34 4)">
-          <circle
-            cx={26}
-            cy={26}
-            r={26}
-            fill={def.skin}
-            stroke={INK}
-            strokeWidth={2}
-          />
-          <Hair hair={def.hair} hairColor={def.hairColor} cast={def.cast} />
-          <Face face={face} character={def} />
+      {/* Two inert wrapper groups: the CSS breathe/react animations target them
+          only when `alive`/`reacting` sets the classes above, so a plain rig is
+          byte-for-byte the static figure it was before. */}
+      <g className="rig-react">
+        <g className="rig-breath">
+          <g
+            transform={`translate(0 ${pose.hop ? -4 : 0}) rotate(${pose.tilt} 66 137)`}
+          >
+            {/* Body */}
+            <rect
+              x={30}
+              y={54}
+              width={60}
+              height={60}
+              rx={13}
+              fill={def.cast}
+              stroke={INK}
+              strokeWidth={2}
+            />
+            {/* Legs */}
+            <rect
+              x={40}
+              y={112}
+              width={15}
+              height={30}
+              rx={7}
+              fill={LEG}
+              stroke={INK}
+              strokeWidth={2}
+            />
+            <rect
+              x={64}
+              y={112}
+              width={15}
+              height={30}
+              rx={7}
+              fill={LEG}
+              stroke={INK}
+              strokeWidth={2}
+            />
+            {/* Arms */}
+            {arm(17, pose.rotL, pose.lenL)}
+            {arm(89, pose.rotR, pose.lenR)}
+            {/* Nora's card lanyard */}
+            {def.hair === "bob" ? (
+              <rect
+                x={52}
+                y={74}
+                width={16}
+                height={12}
+                rx={3}
+                fill={SURFACE}
+                stroke={INK}
+                strokeWidth={2}
+              />
+            ) : null}
+            {/* Head */}
+            <g transform="translate(34 4)">
+              <circle
+                cx={26}
+                cy={26}
+                r={26}
+                fill={def.skin}
+                stroke={INK}
+                strokeWidth={2}
+              />
+              <Hair hair={def.hair} hairColor={def.hairColor} cast={def.cast} />
+              <Face face={face} character={def} />
+            </g>
+            {/* Open palm at the extended hand (boundary / permission) */}
+            {pose.palm ? (
+              <circle
+                cx={122.5}
+                cy={62.5}
+                r={6.5}
+                fill={def.skin}
+                stroke={INK}
+                strokeWidth={2}
+              />
+            ) : null}
+          </g>
         </g>
-        {/* Open palm at the extended hand (boundary / permission) */}
-        {pose.palm ? (
-          <circle
-            cx={122.5}
-            cy={62.5}
-            r={6.5}
-            fill={def.skin}
-            stroke={INK}
-            strokeWidth={2}
-          />
-        ) : null}
       </g>
     </svg>
   );

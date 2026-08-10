@@ -46,4 +46,26 @@ describe("CharacterRig", () => {
     );
     expect(container.querySelector("svg")).not.toBeNull();
   });
+
+  it("stays a static pose-swap unless told it is alive", () => {
+    const { container, rerender } = render(<CharacterRig character="maya" />);
+    expect(container.querySelector("svg")).not.toHaveClass("rig-alive");
+
+    rerender(<CharacterRig character="maya" alive />);
+    const svg = container.querySelector("svg");
+    expect(svg).toHaveClass("rig-alive");
+    // The life is motion only — never words, never a change of role.
+    expect(svg).toHaveAttribute("aria-hidden", "true");
+    expect(container.textContent).toBe("");
+  });
+
+  it("plays the greeting reaction only when reacting", () => {
+    const { container, rerender } = render(
+      <CharacterRig character="maya" state="greet" alive />,
+    );
+    expect(container.querySelector("svg")).not.toHaveClass("rig-reacting");
+
+    rerender(<CharacterRig character="maya" state="greet" alive reacting />);
+    expect(container.querySelector("svg")).toHaveClass("rig-reacting");
+  });
 });

@@ -143,6 +143,8 @@ export function SceneStage({
           <CharacterRig
             character="theo"
             state="idle"
+            alive
+            beat="b"
             x={176}
             y={122}
             width={52}
@@ -151,6 +153,8 @@ export function SceneStage({
           <CharacterRig
             character="maya"
             state={isConsequence ? "greet" : "idle"}
+            alive
+            reacting={isConsequence}
             x={84}
             y={110}
             width={66}

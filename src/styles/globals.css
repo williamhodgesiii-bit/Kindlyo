@@ -218,6 +218,76 @@ li a {
 }
 
 /*
+ * Character life — the rig's idle "breathing" and blink, and a one-shot
+ * greeting reaction (docs/design/CHARACTER_BIBLE.md idle/greet; the "continuous
+ * motion later pass" the rig comment defers, taken here in CSS within the idle
+ * token's own ceiling). Opt-in: only a rig rendered with `alive` gets `.rig-alive`,
+ * so SSR, tests, and every non-lesson caller keep the static pose-swap they
+ * render today. Deliberately small — a <=1.5px, ~3.4s breath and an occasional
+ * blink, no parallax, no loop on the reaction — and the reduced-motion block
+ * below stills all of it. The scene stays aria-hidden; meaning never lives here.
+ */
+@keyframes rig-breathe {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-1.5px) scale(1.012);
+  }
+}
+@keyframes rig-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95%,
+  97% {
+    transform: scaleY(0.1);
+  }
+}
+/* A gentle "perk up" when a character greets the child — reaction token,
+   gentle-enter, one emission (MOTION.md "Character reaction"). */
+@keyframes rig-react {
+  0% {
+    transform: translateY(3px);
+  }
+  60% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.rig-alive .rig-breath {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: rig-breathe 3.4s ease-in-out infinite;
+}
+.rig-alive .rig-eye {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: rig-blink 6s ease-in-out infinite;
+}
+/* A second figure in the same scene breathes and blinks out of phase, so the
+   two never pulse in lockstep. */
+.rig-alive[data-beat="b"] .rig-breath {
+  animation-duration: 3.9s;
+  animation-delay: -1.2s;
+}
+.rig-alive[data-beat="b"] .rig-eye {
+  animation-duration: 7.3s;
+  animation-delay: -2.4s;
+}
+.rig-reacting .rig-react {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: rig-react var(--llc-motion-reaction) var(--llc-ease-gentle-enter) 1;
+}
+
+/*
  * Reduced-motion support: honour the OS preference globally rather than
  * relying on each component to remember.
  */
