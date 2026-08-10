@@ -223,17 +223,24 @@ li a {
  * motion later pass" the rig comment defers, taken here in CSS within the idle
  * token's own ceiling). Opt-in: only a rig rendered with `alive` gets `.rig-alive`,
  * so SSR, tests, and every non-lesson caller keep the static pose-swap they
- * render today. Deliberately small — a <=1.5px, ~3.4s breath and an occasional
- * blink, no parallax, no loop on the reaction — and the reduced-motion block
- * below stills all of it. The scene stays aria-hidden; meaning never lives here.
+ * render today. Deliberately small — a <=1.5px breath that rests between cycles,
+ * an occasional blink, no parallax, no loop on the reaction — all built from the
+ * idle-cadence tokens, and the reduced-motion block below stills every bit of
+ * it. The scene stays aria-hidden; meaning never lives here.
  */
 @keyframes rig-breathe {
-  0%,
-  100% {
+  /* One slow breath in the first ~45% of the cycle, then held at rest — the
+     bible's "slow breath, long stillness between", not a continuous sine. The
+     0%/100% rest frame is what reduced motion collapses onto. */
+  0% {
     transform: translateY(0) scale(1);
   }
-  50% {
+  22% {
     transform: translateY(-1.5px) scale(1.012);
+  }
+  45%,
+  100% {
+    transform: translateY(0) scale(1);
   }
 }
 @keyframes rig-blink {
@@ -264,22 +271,24 @@ li a {
 .rig-alive .rig-breath {
   transform-box: fill-box;
   transform-origin: 50% 100%;
-  animation: rig-breathe 3.4s ease-in-out infinite;
+  animation: rig-breathe var(--llc-motion-idle-breath)
+    var(--llc-ease-calm-scene) infinite;
 }
 .rig-alive .rig-eye {
   transform-box: fill-box;
   transform-origin: center;
-  animation: rig-blink 6s ease-in-out infinite;
+  animation: rig-blink var(--llc-motion-idle-blink) var(--llc-ease-calm-scene)
+    infinite;
 }
 /* A second figure in the same scene breathes and blinks out of phase, so the
    two never pulse in lockstep. */
 .rig-alive[data-beat="b"] .rig-breath {
-  animation-duration: 3.9s;
-  animation-delay: -1.2s;
+  animation-duration: var(--llc-motion-idle-breath-b);
+  animation-delay: var(--llc-motion-idle-phase-breath);
 }
 .rig-alive[data-beat="b"] .rig-eye {
-  animation-duration: 7.3s;
-  animation-delay: -2.4s;
+  animation-duration: var(--llc-motion-idle-blink-b);
+  animation-delay: var(--llc-motion-idle-phase-blink);
 }
 .rig-reacting .rig-react {
   transform-box: fill-box;

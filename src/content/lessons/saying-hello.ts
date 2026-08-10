@@ -66,9 +66,12 @@ export const sayingHello: Lesson = {
             "Now Maya knows you saw her, and what to call you. That makes it easy for her to answer back. A short hello did a lot.",
         },
         {
+          // Waiting is the situational choice: whether it works depends on
+          // whether Maya greets first. Framed as "it depends", never as wrong —
+          // this is the beat the parent dashboard offers as a conversation.
           id: "wait-to-be-greeted",
           text: "Wait, and let Maya speak first.",
-          consequenceType: "mixed",
+          consequenceType: "needs_context",
           response:
             "This can work. Maya might say hello first. Or you both wait, and it stays quiet for a while. Waiting is okay. It just lets someone else go first.",
         },
@@ -76,7 +79,8 @@ export const sayingHello: Lesson = {
           // A wave is affirmed exactly like a spoken hello ("That helps"), so
           // the one silent option in the scene never reads as the lesser
           // choice — non-speaking greetings are equal, not fallbacks. The
-          // waiting option carries the "could go either way" beat instead.
+          // situational "it depends" beat sits on *waiting* below instead, which
+          // is also what the parent dashboard surfaces as a talking point.
           id: "wave-instead",
           text: "Wave, without saying anything.",
           consequenceType: "helpful",

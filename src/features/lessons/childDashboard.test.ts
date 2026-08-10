@@ -23,6 +23,10 @@ const AUG_4 = "2026-08-04T10:00:00.000Z";
 const AUG_5 = "2026-08-05T10:00:00.000Z";
 const AUG_6 = "2026-08-06T10:00:00.000Z";
 
+// Read from the content so a lesson version bump doesn't strand these fixtures:
+// an in-progress run only counts when it matches the current lesson version.
+const SAYING_HELLO_VERSION = getLessonBySlug("saying-hello")?.version ?? 1;
+
 describe("a child who has not started", () => {
   it("is empty", () => {
     const dashboard = build({});
@@ -84,7 +88,7 @@ describe("what has been practised", () => {
     const dashboard = build({
       "saying-hello": {
         run: {
-          lessonVersion: 1,
+          lessonVersion: SAYING_HELLO_VERSION,
           state: {
             stepIndex: 2,
             choiceBySceneId: {},
@@ -218,8 +222,11 @@ describe("when the app was last used", () => {
 });
 
 describe("things worth talking about", () => {
-  /** Lesson one's "wave instead" choice is the needs_context option. */
-  function chose(choiceId: string, lessonVersion = 1): ProfileProgress {
+  /** Lesson one's "wait" choice is the needs_context (talking-point) option. */
+  function chose(
+    choiceId: string,
+    lessonVersion = SAYING_HELLO_VERSION,
+  ): ProfileProgress {
     return {
       "saying-hello": {
         ...completed(AUG_4),
@@ -237,10 +244,10 @@ describe("things worth talking about", () => {
   }
 
   it("surfaces a choice whose outcome depends on the situation", () => {
-    const points = build(chose("wave-instead")).talkingPoints;
+    const points = build(chose("wait-to-be-greeted")).talkingPoints;
 
     expect(points).toHaveLength(1);
-    expect(points[0]?.choiceText).toContain("Wave");
+    expect(points[0]?.choiceText).toContain("Wait");
     expect(points[0]?.question).toBe("What could you do first?");
   });
 
@@ -248,23 +255,23 @@ describe("things worth talking about", () => {
     expect(build(chose("say-hello-and-name")).talkingPoints).toEqual([]);
   });
 
-  it("says nothing about a mixed choice either", () => {
-    // Only "it depends" moments are conversation starters; a mixed outcome is
-    // already explained inside the lesson.
-    expect(build(chose("wait-to-be-greeted")).talkingPoints).toEqual([]);
+  it("says nothing about the wave, which is a plain, affirmed hello", () => {
+    // The wave is a "That helps" choice, equal to speaking — never flagged as a
+    // thing to discuss. Only the situational "it depends" choice starts a chat.
+    expect(build(chose("wave-instead")).talkingPoints).toEqual([]);
   });
 
   it("offers a question to ask, not a correction", () => {
     const lesson = getLessonBySlug("saying-hello");
 
     expect(
-      build(chose("wave-instead")).talkingPoints[0]?.conversationPrompt,
+      build(chose("wait-to-be-greeted")).talkingPoints[0]?.conversationPrompt,
     ).toBe(lesson?.offlineMission.completionQuestion);
   });
 
   it("ignores choices recorded against different content", () => {
     // The scenes may have changed, so the question no longer matches.
-    expect(build(chose("wave-instead", 99)).talkingPoints).toEqual([]);
+    expect(build(chose("wait-to-be-greeted", 99)).talkingPoints).toEqual([]);
   });
 });
 

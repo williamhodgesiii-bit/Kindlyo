@@ -15,6 +15,10 @@ import {
 
 const AUG_4 = "2026-08-04T10:00:00.000Z";
 
+// Match the run to the live lesson version, so a version bump doesn't silently
+// drop the in-progress run (and with it the talking point this fixture feeds).
+const SAYING_HELLO_VERSION = getLessonBySlug("saying-hello")?.version ?? 1;
+
 function dashboardFor(progress: ProfileProgress) {
   return buildChildDashboard([meetingPeopleModule], getLessonBySlug, progress);
 }
@@ -24,10 +28,11 @@ const practisedOne = dashboardFor({
     completion: { lessonVersion: 1, completedAt: AUG_4 },
     updatedAt: AUG_4,
     run: {
-      lessonVersion: 1,
+      lessonVersion: SAYING_HELLO_VERSION,
       state: {
         stepIndex: 6,
-        choiceBySceneId: { "the-first-moment": "wave-instead" },
+        // The "wait" choice is the needs_context one, so a talking point renders.
+        choiceBySceneId: { "the-first-moment": "wait-to-be-greeted" },
         practiceOptionId: "wave-hello",
         completedAt: AUG_4,
       },

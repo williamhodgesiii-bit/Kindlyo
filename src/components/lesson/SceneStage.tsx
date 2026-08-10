@@ -150,6 +150,10 @@ export function SceneStage({
             width={52}
             height={(52 * 152) / 132}
           />
+          {/* `reacting` fires for EVERY choice — it is gated on "a choice was
+              made" (isConsequence), never on the *kind* of choice. The stage
+              takes no choice/consequence data by design; the moment a reaction
+              were conditional on `helpful`, it would become reward/punishment. */}
           <CharacterRig
             character="maya"
             state={isConsequence ? "greet" : "idle"}
