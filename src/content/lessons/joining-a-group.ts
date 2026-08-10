@@ -84,18 +84,24 @@ export const joiningAGroup: Lesson = {
         text: "“Can I do some rainbow?”",
         encouragement:
           "You asked for the unfinished bit. That is the easiest yes there is.",
+        rehearsalCue:
+          "Try the words now if you like — “Can I do some rainbow?” — out loud or just in your head. An easy way in, and easier still once you have run it once.",
       },
       {
         id: "offer-help",
         text: "“Want me to wash brushes so Maya can paint?”",
         encouragement:
           "You found the group's actual problem and offered to hold it. Groups remember people like that.",
+        rehearsalCue:
+          "Try it now if you like — “Want me to wash brushes?” — out loud or just picture it. A practice run makes the real offer easier to make.",
       },
       {
         id: "compliment-first",
         text: "“That looks brilliant — is there room for one more?”",
         encouragement:
           "You told them their world is good before asking to enter it. Lovely order to do it in.",
+        rehearsalCue:
+          "Say it now, or just picture it — the good bit first, then your question. Trying the order once helps it come out that way with a real group.",
       },
     ],
     closing:

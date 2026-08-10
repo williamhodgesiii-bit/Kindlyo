@@ -84,17 +84,23 @@ export const listening: Lesson = {
         text: "Ask “what happened next?”",
         encouragement:
           "A question is proof of listening — you can only ask it if you followed.",
+        rehearsalCue:
+          "Picture Leo mid-story and the question you would slip in — “what happened next?” Say it under your breath or just imagine it. A question like that shows him you were with him.",
       },
       {
         id: "small-sounds",
         text: "Nod, or say “no way!” at the good bits",
         encouragement: "Small signals, big message: keep going, I'm with you.",
+        rehearsalCue:
+          "Try a small nod now, or just imagine one — a quiet “mm” or “no way!” if you like. You never have to make a sound you do not want to.",
       },
       {
         id: "busy-hands",
         text: "Listen while your hands keep painting",
         encouragement:
           "Busy hands, open ears — a completely real way to listen. Many people's best way.",
+        rehearsalCue:
+          "Let your hands keep busy now if you like, or just picture it — and notice your ears can stay wide open at the very same time.",
       },
     ],
     closing:
