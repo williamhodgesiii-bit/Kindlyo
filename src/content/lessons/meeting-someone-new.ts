@@ -86,7 +86,7 @@ export const meetingSomeoneNew: Lesson = {
         encouragement:
           "Name, name, place. You answered the question she could not ask.",
         rehearsalCue:
-          "Try the whole welcome now if you like — a hello, your name, and “you can sit here.” Out loud or just in your head; saying it once makes the real welcome easier.",
+          "Try the whole welcome now if you like — a hello, your name, and “you can sit here.” Out loud or just in your head, a practice run makes the real one easier.",
       },
       {
         id: "small-welcome",
@@ -94,7 +94,7 @@ export const meetingSomeoneNew: Lesson = {
         encouragement:
           "Not one word needed, and she still knows there is room for her. That is a whole welcome.",
         rehearsalCue:
-          "Picture the quiet welcome now — a pat on the chair beside you, and a smile if it is yours to give. No words needed, and it still says there is room. You never have to hold a smile you do not feel.",
+          "Picture the quiet welcome now — a pat on the chair beside you, and a smile only if it is yours to give. You never have to hold a smile you do not feel.",
       },
       {
         id: "shared-thing",
@@ -102,7 +102,7 @@ export const meetingSomeoneNew: Lesson = {
         encouragement:
           "You gave her a thing to do together, which is how most friendships actually start.",
         rehearsalCue:
-          "Run it through now, aloud or in your head — offering the blue, or whatever you would share. Handing someone a thing to do together is how a lot of friendships actually start.",
+          "Run it through now, out loud or just in your head — offering the blue, or whatever you would share. Picturing it now makes it easier to hold something out to a real person.",
       },
     ],
     closing:

@@ -86,7 +86,7 @@ export const usingNames: Lesson = {
         encouragement:
           "He heard his own name in a new place. That lands warmer than you might guess.",
         rehearsalCue:
-          "Try it now, out loud or just in your head — a hello with the name tucked in, “Hi Leo!” Hearing their own name is the warm part, and one practice helps it land.",
+          "Try it now if you like, out loud or just in your head — a hello with the name tucked in, “Hi Leo!” One practice makes the name come easily next time.",
       },
       {
         id: "ask-again",
@@ -94,7 +94,7 @@ export const usingNames: Lesson = {
         encouragement:
           "Asking again is caring about getting it right. That is the part people remember.",
         rehearsalCue:
-          "Say it now, quietly or just imagined — “can you tell me your name again?” Asking again is caring about getting it right, and it is easier the next time for having tried it once.",
+          "Say it now if you like, quietly or just in your head — “can you tell me your name again?” Trying the words once makes them easier to ask for real.",
       },
       {
         id: "wave-and-name",
@@ -102,11 +102,11 @@ export const usingNames: Lesson = {
         encouragement:
           "A wave plus a name — no full sentence needed. He knows he was remembered.",
         rehearsalCue:
-          "Give a little wave now, or picture it, and add the name if you like — “Leo!” A wave plus a name is a whole greeting; no full sentence needed.",
+          "Give a little wave now, or just picture it, and add the name if you like — “Leo!” A quick practice makes the real greeting easier to start.",
       },
     ],
     closing:
-      "Try saying the name of someone you know out loud right now, in a hello. Feel how it turns a greeting into their greeting.",
+      "Next time you say hello to someone you know, try tucking their name in — out loud, or just in your head. Feel how it turns a greeting into their greeting.",
   },
 
   offlineMission: {

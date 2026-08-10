@@ -85,14 +85,14 @@ export const listening: Lesson = {
         encouragement:
           "A question is proof of listening — you can only ask it if you followed.",
         rehearsalCue:
-          "Picture Leo mid-story and the question you would slip in — “what happened next?” Say it under your breath or just imagine it; a good question is the proof you were following.",
+          "Picture Leo mid-story and the question you would slip in — “what happened next?” Say it under your breath or just imagine it. A question like that shows him you were with him.",
       },
       {
         id: "small-sounds",
         text: "Nod, or say “no way!” at the good bits",
         encouragement: "Small signals, big message: keep going, I'm with you.",
         rehearsalCue:
-          "Try a small nod now, or just imagine one, maybe a quiet “no way!”. Little signals like these say keep going without taking over — and you never have to make a sound you do not want to.",
+          "Try a small nod now, or just imagine one — a quiet “mm” or “no way!” if you like. You never have to make a sound you do not want to.",
       },
       {
         id: "busy-hands",
@@ -100,7 +100,7 @@ export const listening: Lesson = {
         encouragement:
           "Busy hands, open ears — a completely real way to listen. Many people's best way.",
         rehearsalCue:
-          "Picture your hands staying busy while your ears stay open. For lots of people that is their best listening — imagine it now, and notice it still counts as being right there with someone.",
+          "Let your hands keep busy now if you like, or just picture it — and notice your ears can stay wide open at the very same time.",
       },
     ],
     closing:
