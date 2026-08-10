@@ -12,6 +12,9 @@ Newest first.
 
 ## 2026-08-10
 
+- Rebrand to Little Learner's Club and redesign the marketing homepage
+- Recolour to a warm storybook palette and cut the homepage to two scrolls
+- Shipped from `1385ddf` (`claude/llc-rebrand-marketing-tsokfe`)
 - Modernize parent dashboard: at-a-glance hero line, hero layout + staggered entrance motion, accent icons per panel
 - Shipped from `66329c6` (`claude/ios-app-development-tbfap6`)
 - Add tactile press-squish to choice cards (MOTION.md touch feedback)
