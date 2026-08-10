@@ -84,18 +84,24 @@ export const joiningAGroup: Lesson = {
         text: "“Can I do some rainbow?”",
         encouragement:
           "You asked for the unfinished bit. That is the easiest yes there is.",
+        rehearsalCue:
+          "Try the words now if you like — “Can I do some rainbow?” — out loud or just in your head. Naming the unfinished bit is the easiest way in, and it helps to have said it once.",
       },
       {
         id: "offer-help",
         text: "“Want me to wash brushes so Maya can paint?”",
         encouragement:
           "You found the group's actual problem and offered to hold it. Groups remember people like that.",
+        rehearsalCue:
+          "Run it through now — spotting the job and offering to hold it — aloud or just imagined. Either way, the real ask comes easier for having practised it once.",
       },
       {
         id: "compliment-first",
         text: "“That looks brilliant — is there room for one more?”",
         encouragement:
           "You told them their world is good before asking to enter it. Lovely order to do it in.",
+        rehearsalCue:
+          "Say it now, or picture saying it — the good bit first, then the ask. Trying the order once is what makes it flow when it counts.",
       },
     ],
     closing:

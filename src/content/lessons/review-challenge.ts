@@ -122,18 +122,24 @@ export const reviewChallenge: Lesson = {
         text: "“Bye Amara — come back after the holidays!”",
         encouragement:
           "Name, goodbye, and a door held open to next time. The full set, worn lightly.",
+        rehearsalCue:
+          "Try the full goodbye now if you like — a name, a “bye,” and a door held open to next time. Out loud or just in your head; you have all the pieces now.",
       },
       {
         id: "goodbye-wave",
         text: "A big wave and “bye!”",
         encouragement:
           "Where this module started — and it is still a complete, warm goodbye.",
+        rehearsalCue:
+          "Give a big wave now, or just picture it, with a “bye!” if you want one. It is where the module began, and it is still a whole warm goodbye.",
       },
       {
         id: "goodbye-callback",
         text: "“Bye! Tell me if the museum gets more dinosaurs.”",
         encouragement:
           "A goodbye made out of listening — you kept a piece of her story and handed it back. That is how people know they were really heard.",
+        rehearsalCue:
+          "Run it through now, aloud or in your head — a goodbye that hands back a piece of their story. Remembering one small thing is what tells someone they were really heard.",
       },
     ],
     closing:
