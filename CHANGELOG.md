@@ -12,6 +12,14 @@ Newest first.
 
 ## 2026-08-10
 
+- Add tactile press-squish to choice cards (MOTION.md touch feedback)
+- Simplify 'Saying hello' copy for ages 5-9; add safety-spine guard test
+- Harden 'Saying hello' safety spine per review: unconditional refusal, salience ordering, direction-pinning guard test
+- Affirm waving equally with speaking ('That helps') so silent greetings never read as lesser
+- Bring lesson characters to life: opt-in idle breathe/blink + one-shot greeting reaction on the rig
+- Reconcile dashboard with new design (waiting is the it-depends talking point) + put idle motion on tokens with rest-between-breaths
+- Drive the waiting choice in the dashboard e2e so the talking-point still appears
+- Shipped from `3632e37` (`claude/ios-app-development-tbfap6`)
 - content(meeting-people): draft rehearsal cues for the rest of module 1
 - content(meeting-people): revise rehearsal cues per safety + story-motion review
 - Shipped from `4dfad57` (`claude/routine-todo-approvals-f9dxdh`)
