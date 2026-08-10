@@ -87,12 +87,15 @@ export const sayingHello: Lesson = {
     title: "A hello tells someone you see them",
     body: "A hello tells someone: I see you, and I am glad you are here. That way they do not have to wonder if anyone noticed them.",
     points: [
-      "A hello can be words, a wave, a nod, or a sign.",
+      // Non-speaking forms lead, so waving/nodding/signing never read as a
+      // fallback to words. The two highest-stakes boundaries — refusing touch,
+      // and walking away if unsafe — hold the last two (most-remembered) slots.
+      "A hello can be a wave, a nod, a sign, or words.",
       "You can greet in the way that feels right for you.",
-      "You can say hello without looking someone in the eye.",
-      "You never have to be touched to say hello. You can say no.",
-      "If a place feels unsafe, walk away and find a grown-up you trust.",
+      "You never have to look someone in the eye to say hello.",
       "Families and countries greet in different ways. All of them count.",
+      "You never have to be touched to say hello. You can always say no.",
+      "If a place feels unsafe, walk away and find a grown-up you trust.",
     ],
   },
 
@@ -140,7 +143,7 @@ export const sayingHello: Lesson = {
 
   offlineMission: {
     childPrompt:
-      "Before your next lesson, say hello to one person in your own way. It could be a neighbour, a teacher, or a bus driver.",
+      "Before your next lesson, say hello to one person in your own way, with your grown-up nearby. It could be a neighbour, a teacher, or a bus driver.",
     parentPrompt:
       "Give your child one low-key chance to greet someone today. Let them choose how. Going first yourself is usually enough.",
     completionQuestion: "Who did you say hello to, and what happened next?",
@@ -153,8 +156,8 @@ export const sayingHello: Lesson = {
     tryThis: [
       "Greet someone where your child can see. Then say why: “I said hello so she knew I saw her.”",
       "Let your child pick how. A wave counts. Don’t ask for eye contact or a handshake.",
-      "Never make a greeting the price of help or affection. Your child may always say no to being touched.",
       "If the hello does not happen, skip the correction. Try again another day.",
+      "Never make a greeting the price of help or affection. Your child may always say no to being touched.",
     ],
   },
 
