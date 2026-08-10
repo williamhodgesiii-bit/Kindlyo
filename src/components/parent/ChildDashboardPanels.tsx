@@ -6,8 +6,16 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { MissionCard } from "@/components/ui/MissionCard";
 import { ParentInsightCard } from "@/components/ui/ParentInsightCard";
 import { ProgressBar } from "@/components/ui/ProgressBar";
-import { CheckIcon, CompassIcon, SparkIcon } from "@/components/ui/icons";
+import {
+  CheckIcon,
+  CompassIcon,
+  FlagIcon,
+  MapIcon,
+  ProgressIcon,
+  SparkIcon,
+} from "@/components/ui/icons";
 import { Heading, type HeadingLevel, Text } from "@/components/ui/Typography";
+import type { ReactNode } from "react";
 import { modulePathHref } from "@/content/worlds";
 import { skillAreaLabels } from "@/features/curriculum/schema";
 import {
@@ -48,6 +56,34 @@ export function describeWhen(iso: string, now: Date = new Date()): string {
   return "a while ago";
 }
 
+/**
+ * A panel heading with a small module-accent icon beside it. The icon is
+ * decorative (`aria-hidden`); the heading keeps its text and `id`, so the
+ * accessible name and the heading outline are exactly as before.
+ */
+function PanelHeading({
+  id,
+  level = 4,
+  icon,
+  children,
+}: {
+  id: string;
+  level?: HeadingLevel;
+  icon: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <span aria-hidden="true" className="shrink-0 text-module-accent-strong">
+        {icon}
+      </span>
+      <Heading level={level} id={id}>
+        {children}
+      </Heading>
+    </div>
+  );
+}
+
 export function ProgressOverview({ dashboard }: { dashboard: ChildDashboard }) {
   const { completedCount, lessonCount, resume, lastActiveAt } = dashboard;
 
@@ -60,9 +96,9 @@ export function ProgressOverview({ dashboard }: { dashboard: ChildDashboard }) {
 
   return (
     <Card as="section" aria-labelledby="overview" elevation="soft">
-      <Heading level={4} id="overview">
+      <PanelHeading id="overview" icon={<ProgressIcon />}>
         Progress
-      </Heading>
+      </PanelHeading>
 
       <ProgressBar
         className="mt-4 max-w-md"
@@ -129,9 +165,13 @@ export function SkillAreaSummary({
 }) {
   return (
     <Card as="section" aria-labelledby="skill-areas" elevation="soft">
-      <Heading level={headingLevel} id="skill-areas">
+      <PanelHeading
+        id="skill-areas"
+        level={headingLevel}
+        icon={<CompassIcon />}
+      >
         Skill areas
-      </Heading>
+      </PanelHeading>
       <Text tone="secondary" size="sm" className="mt-2 max-w-prose">
         What has been practised so far. These describe the lessons, not your
         child.
@@ -162,9 +202,9 @@ export function SkillAreaSummary({
 export function RecentActivity({ dashboard }: { dashboard: ChildDashboard }) {
   return (
     <Card as="section" aria-labelledby="recent" elevation="soft">
-      <Heading level={4} id="recent">
+      <PanelHeading id="recent" icon={<MapIcon />}>
         Recent lessons
-      </Heading>
+      </PanelHeading>
 
       {dashboard.recent.length === 0 ? (
         <Text tone="secondary" className="mt-3">
@@ -324,9 +364,9 @@ export function ReadyToReview({
 
   return (
     <Card as="section" aria-labelledby="ready-review" elevation="soft">
-      <Heading level={headingLevel} id="ready-review">
+      <PanelHeading id="ready-review" level={headingLevel} icon={<FlagIcon />}>
         Ready to review
-      </Heading>
+      </PanelHeading>
       <Text tone="secondary" size="sm" className="mt-2 max-w-prose">
         Lessons your child has been through once. Going back is always welcome —
         revisiting never costs progress, and a second look often lands

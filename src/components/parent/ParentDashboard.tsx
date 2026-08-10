@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useReducer, useState } from "react";
+import { useCallback, useReducer, useState, type CSSProperties } from "react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -17,6 +17,7 @@ import type { Family } from "@/features/profiles/useFamily";
 import { maxProfiles, type ChildProfile } from "@/features/profiles/types";
 import {
   CurrentMission,
+  describeWhen,
   NothingYet,
   ProgressOverview,
   RecentActivity,
@@ -94,6 +95,21 @@ function ChildPanel({
           <Text tone="secondary" size="sm">
             Ages {profile.ageBand}
           </Text>
+          {dashboard !== null && !dashboard.isEmpty ? (
+            <Text
+              size="sm"
+              className="mt-1 font-semibold text-module-accent-strong"
+            >
+              {dashboard.completedCount === 0
+                ? "Just getting started"
+                : `Practised ${dashboard.completedCount} lesson${
+                    dashboard.completedCount === 1 ? "" : "s"
+                  } so far`}
+              {dashboard.lastActiveAt !== null
+                ? ` · last here ${describeWhen(dashboard.lastActiveAt)}`
+                : ""}
+            </Text>
+          ) : null}
         </div>
         <Button
           variant="secondary"
@@ -115,13 +131,32 @@ function ChildPanel({
         <NothingYet nickname={profile.nickname} />
       ) : (
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
-          <ProgressOverview dashboard={dashboard} />
-          <SkillAreaSummary dashboard={dashboard} />
-          <RecentActivity dashboard={dashboard} />
-          <CurrentMission dashboard={dashboard} onToggle={toggleMission} />
-          <div className="lg:col-span-2">
-            <TalkingPoints dashboard={dashboard} />
-          </div>
+          {/* Progress leads full-width as the at-a-glance hero, then the
+              actionable mission, then the detail panels, then the conversation.
+              Each rises in on a small stagger (reduced motion collapses it). */}
+          {[
+            <ProgressOverview key="progress" dashboard={dashboard} />,
+            <CurrentMission
+              key="mission"
+              dashboard={dashboard}
+              onToggle={toggleMission}
+            />,
+            <SkillAreaSummary key="skills" dashboard={dashboard} />,
+            <RecentActivity key="recent" dashboard={dashboard} />,
+            <TalkingPoints key="talking" dashboard={dashboard} />,
+          ].map((panel, index) => (
+            <div
+              key={panel.key}
+              className={`llc-card-enter${
+                panel.key === "progress" || panel.key === "talking"
+                  ? " lg:col-span-2"
+                  : ""
+              }`}
+              style={{ "--llc-enter-index": index } as CSSProperties}
+            >
+              {panel}
+            </div>
+          ))}
         </div>
       )}
 
