@@ -138,6 +138,38 @@ li a {
 }
 
 /*
+ * Touch/press feedback — the "alive on tap" squish (docs/design/MOTION.md,
+ * "Touch feedback" / "Button press": touch 120 · soft-settle · scale 1→.97→1).
+ * A single reusable class for every pressable, so the whole app gains the same
+ * tactile acknowledgement from one place. Colour transitions ride on the same
+ * declaration; a Tailwind `transition-colors` alongside would reset
+ * `transition-property` and drop the transform channel, so pressables use this
+ * class instead of that utility.
+ *
+ * The `!important` on the pressed transform is deliberate and load-bearing: a
+ * choice card also carries an entrance animation (`.llc-card-enter`) whose
+ * `both` fill keeps applying `transform: translateY(0)` after it ends, and a
+ * filled animation outranks a normal author rule in the cascade — so without
+ * `!important` the squish would be silently suppressed on exactly the cards
+ * that most need it. An important author declaration outranks the animation;
+ * the in-flight transition still animates the squish, and the reduced-motion
+ * block below removes the scale entirely. `cursor: pointer` is also what makes
+ * iOS Safari deliver `:active` on tap at all (Tailwind v4 drops it by default).
+ */
+.llc-press {
+  cursor: pointer;
+  transition:
+    transform var(--llc-motion-touch) var(--llc-ease-soft-settle),
+    background-color var(--llc-motion-ui) var(--llc-ease-gentle-enter),
+    border-color var(--llc-motion-ui) var(--llc-ease-gentle-enter),
+    color var(--llc-motion-ui) var(--llc-ease-gentle-enter);
+}
+
+.llc-press:active:not(:disabled) {
+  transform: scale(0.97) !important;
+}
+
+/*
  * Lesson celebration — scale .8 → 1.05 → 1, once, then still
  * (MOTION.md "Lesson completion"; hard limit ≤ 600ms, no loop). The motif petals
  * are a separate one-emission drift; both are decorative and reduced motion
@@ -205,5 +237,16 @@ li a {
     transition-duration: 0.01ms !important;
     transition-delay: 0s !important;
     scroll-behavior: auto !important;
+  }
+
+  /*
+   * Zeroing the durations above only makes the press squish *instant* — the
+   * scale would still apply. The contract's reduced-motion rule for touch
+   * feedback is "no scale" at all, so the pressed transform is removed outright
+   * here (this rule is later in the sheet, so it wins over the important scale
+   * above). The pressed state is still conveyed by the fill/border swap.
+   */
+  .llc-press:active:not(:disabled) {
+    transform: none !important;
   }
 }
