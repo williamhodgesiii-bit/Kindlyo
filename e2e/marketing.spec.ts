@@ -13,7 +13,7 @@ import { expect, test, type Page } from "@playwright/test";
  */
 
 const marketingRoutes = [
-  { path: "/", heading: "Little steps to big kindness." },
+  { path: "/", heading: "Practice makes kind." },
   { path: "/how-it-works", heading: "A lesson takes about five minutes" },
   {
     path: "/curriculum",

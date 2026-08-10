@@ -1,35 +1,25 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Faq } from "@/components/marketing/Faq";
 import { HeroScene } from "@/components/marketing/HeroScene";
 import { JsonLd } from "@/components/marketing/JsonLd";
-import { MarketingSection } from "@/components/marketing/MarketingSection";
 import { SampleScenarioSection } from "@/components/marketing/SampleScenarioSection";
-import { WaitlistForm } from "@/components/marketing/WaitlistForm";
 import { ButtonLink } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { Heading, Text } from "@/components/ui/Typography";
-import { faqEntries } from "@/content/marketing/faq";
-import { publicSkills } from "@/content/marketing/skills";
-import { cn } from "@/lib/cn";
 import { pageMetadata } from "@/lib/seo";
-import { faqJsonLd, organizationJsonLd } from "@/lib/structuredData";
+import { organizationJsonLd } from "@/lib/structuredData";
 
 /**
- * The public homepage — rebuilt for the Little Learner's Club look: bold and
- * short, showing more than it explains.
+ * The public homepage.
  *
- * The one hard constraint still holds every line: nothing here may claim
- * something we cannot support. No testimonials, no user counts, no outcome
- * statistics, no implied expert review. Where the page can show rather than
- * claim it does — the sample below is a real lesson rendered by the real lesson
- * components, and the practice grid is generated from the curriculum's own skill
- * areas.
+ * Kept deliberately short — a hero, one real playable lesson, and a quiet way
+ * into the product — rather than a long scroll of feature cards. It shows the
+ * thing instead of describing it: the sample below is a real lesson rendered by
+ * the real lesson components, not a mock-up. The detail (curriculum, safety,
+ * pricing, parents) lives on its own pages, reached from the header and footer.
  *
- * The "Jump into the product" band is deliberate: the learning app and the
- * parent dashboard are reachable straight from the homepage while they are
- * previews, so the whole product can be explored from one place.
+ * The one hard rule still holds every line: nothing here claims a result we
+ * cannot support — no testimonials, no user counts, no implied expert review.
  */
 
 export const metadata: Metadata = pageMetadata({
@@ -37,74 +27,53 @@ export const metadata: Metadata = pageMetadata({
   absoluteTitle:
     "Little Learner's Club — social skills practice for children ages 5 to 9",
   description:
-    "Little steps to big kindness. Little Learner's Club gives children ages 5 to 9 short, story-based lessons and real-world missions to practise everyday social moments. Private beta — join the founding-family waitlist.",
+    "Practice makes kind. A little club where children ages 5 to 9 rehearse everyday social moments through short, story-based lessons — then try one for real. Private beta.",
   path: "/",
 });
-
-/** The three ideas that set the product apart, kept to a line each. */
-const promises = [
-  {
-    title: "No right answers",
-    body: "Every choice just shows what tends to happen next. Nothing is scored, ranked, or marked wrong.",
-    tint: "bg-tint-sand",
-  },
-  {
-    title: "Then, offline",
-    body: "Each lesson ends with one small mission to try for real. That is the part that makes it stick.",
-    tint: "bg-tint-sage",
-  },
-  {
-    title: "Calm for grown-ups",
-    body: "See what has been practised in four plain words. No streaks to keep alive, and no guilt.",
-    tint: "bg-tint-honey",
-  },
-] as const;
-
-/** Live surfaces a visitor can open right now — the header's counterparts. */
-const entryPoints = [
-  {
-    href: "/learn",
-    title: "Learning app",
-    body: "Step into a lesson the way a child would.",
-  },
-  {
-    href: "/parent",
-    title: "Parent dashboard",
-    body: "The calm grown-up view of what has been practised.",
-  },
-  {
-    href: "/login",
-    title: "Sign in",
-    body: "Already have a founding-family account?",
-  },
-] as const;
 
 export default function HomePage() {
   return (
     <>
       <JsonLd data={organizationJsonLd()} />
 
-      {/* The hero scene themes itself violet from this module so it reads as
-          part of the same brand as the buttons and the mark. */}
-      <section aria-labelledby="hero-heading" data-module="world-garden">
-        <PageContainer>
-          <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-12">
-            <div className="max-w-2xl">
-              <p className="inline-flex items-center rounded-round bg-tint-sand px-3 py-1 text-sm font-semibold text-brand-primary-strong">
-                Social skills · ages 5–9
+      <section aria-labelledby="hero-heading">
+        <PageContainer className="py-16 sm:py-24">
+          <div className="grid gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:items-center lg:gap-16">
+            <div className="max-w-xl">
+              <p className="inline-flex items-center rounded-round bg-tint-honey px-3 py-1 text-sm font-semibold text-ink">
+                A social-skills club · ages 5–9
               </p>
+
               <Heading
                 level={1}
                 size="display"
                 id="hero-heading"
-                className="mt-5"
+                className="mt-6 font-display leading-[1.05]"
               >
-                Little steps to big kindness.
+                Practice makes{" "}
+                <span className="relative inline-block whitespace-nowrap text-brand-primary-strong">
+                  kind.
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 240 16"
+                    preserveAspectRatio="none"
+                    fill="none"
+                    className="absolute -bottom-1 left-0 h-2.5 w-full text-brand-primary"
+                  >
+                    <path
+                      d="M4 10C64 3 132 3 196 7c18 1 30 2 40 1"
+                      stroke="currentColor"
+                      strokeWidth="6"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </span>
               </Heading>
-              <Text size="lg" tone="secondary" className="mt-6 max-w-xl">
-                Five-minute, story-based lessons that help children practise
-                kindness, confidence, and everyday manners — one small step at a
-                time.
+
+              <Text size="lg" tone="secondary" className="mt-6">
+                A little club where children five to nine rehearse the tricky
+                social moments — five minutes at a time, then one small thing to
+                try for real.
               </Text>
 
               <div className="mt-8 flex flex-wrap gap-4">
@@ -112,134 +81,50 @@ export default function HomePage() {
                   Try a lesson
                 </ButtonLink>
                 <ButtonLink href="/waitlist" variant="secondary" size="lg">
-                  Join the waitlist
+                  Join the club
                 </ButtonLink>
               </div>
-
-              <Text tone="secondary" size="sm" className="mt-6">
-                Free to try, right here. No account, and nothing is saved.
-              </Text>
             </div>
 
-            {/* Decorative — the copy carries the whole message. After it in the
-                DOM so the buttons stay above the fold on phones. */}
-            <HeroScene className="mx-auto w-full max-w-sm lg:max-w-none" />
+            {/* Decorative — the copy carries the whole message. */}
+            <HeroScene className="mx-auto w-full max-w-md lg:max-w-none" />
           </div>
         </PageContainer>
       </section>
 
       <SampleScenarioSection headingId="sample-heading" tone="muted" />
 
-      <MarketingSection
-        headingId="promises-heading"
-        title="Kind by practice, not by pressure"
-      >
-        <ul className="mt-8 grid gap-4 sm:grid-cols-3">
-          {promises.map((promise) => (
-            <li
-              key={promise.title}
-              className={cn("rounded-lg p-6", promise.tint)}
-            >
-              <Heading level={3} size="md">
-                {promise.title}
-              </Heading>
-              <Text className="mt-2">{promise.body}</Text>
-            </li>
-          ))}
-        </ul>
-      </MarketingSection>
-
-      <MarketingSection
-        headingId="skills-heading"
-        title="What your child practises"
-        lead="Six kinds of everyday moment from the first module, Meeting People. Each names what is being rehearsed — never what kind of child somebody is."
-      >
-        <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {publicSkills.map((skill) => (
-            <Card as="li" key={skill.area}>
-              <Heading level={3} size="sm">
-                {skill.label}
-              </Heading>
-              <Text tone="secondary" className="mt-2">
-                {skill.description}
-              </Text>
-            </Card>
-          ))}
-        </ul>
-      </MarketingSection>
-
-      {/* Jump into the product — the live previews, straight from the homepage. */}
+      {/* A quiet way straight into the live product; the detail pages sit in the
+          header and footer. */}
       <section
-        aria-labelledby="product-heading"
-        className="bg-brand-primary-strong text-on-brand"
+        aria-labelledby="peek-heading"
+        className="border-t border-border"
       >
-        <PageContainer>
-          <Heading level={2} id="product-heading" size="xl">
-            Jump straight into the product
+        <PageContainer className="flex flex-col gap-5 py-10 sm:flex-row sm:items-center sm:justify-between">
+          <Heading
+            level={2}
+            size="sm"
+            id="peek-heading"
+            className="font-display"
+          >
+            Rather look around yourself?
           </Heading>
-          <Text size="lg" className="mt-4 max-w-prose">
-            The learning app and the parent dashboard are open to explore right
-            now as an early preview — no account, no waiting for a beta place.
-          </Text>
-          <ul className="mt-8 grid gap-4 sm:grid-cols-3">
-            {entryPoints.map((point) => (
-              <li key={point.href}>
-                <Link
-                  href={point.href}
-                  className="group flex h-full flex-col rounded-lg bg-surface p-6 text-text-primary shadow-soft hover:bg-surface-muted"
-                >
-                  <span className="flex items-center justify-between gap-3">
-                    <Heading level={3} size="sm">
-                      {point.title}
-                    </Heading>
-                    <span
-                      aria-hidden="true"
-                      className="text-xl font-bold text-brand-primary-strong"
-                    >
-                      →
-                    </span>
-                  </span>
-                  <Text tone="secondary" className="mt-2">
-                    {point.body}
-                  </Text>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <div className="flex flex-wrap gap-x-8 gap-y-3">
+            <Link
+              href="/learn"
+              className="font-semibold text-brand-primary-strong underline-offset-4 hover:underline"
+            >
+              Open the learning app →
+            </Link>
+            <Link
+              href="/parent"
+              className="font-semibold text-brand-primary-strong underline-offset-4 hover:underline"
+            >
+              Peek at the parent dashboard →
+            </Link>
+          </div>
         </PageContainer>
       </section>
-
-      <MarketingSection
-        headingId="trust-heading"
-        tone="muted"
-        title="Built to hold as little as possible"
-        lead="No advertising. No child logins. No messaging, no feeds, no leaderboards. A nickname and an age band is the whole of what a child's profile holds."
-      >
-        <div className="mt-8">
-          <ButtonLink href="/safety" variant="secondary">
-            How safety and privacy work
-          </ButtonLink>
-        </div>
-      </MarketingSection>
-
-      <MarketingSection
-        headingId="waitlist-heading"
-        tone="sand"
-        width="narrow"
-        title="Be a founding family"
-        lead="Beta places open in small groups. Leave an email address and we will tell you when the next group opens."
-      >
-        <WaitlistForm className="mt-8" />
-      </MarketingSection>
-
-      <MarketingSection
-        headingId="faq-heading"
-        title="Questions parents ask"
-        width="narrow"
-      >
-        <JsonLd data={faqJsonLd(faqEntries)} />
-        <Faq entries={faqEntries} className="mt-8" />
-      </MarketingSection>
     </>
   );
 }

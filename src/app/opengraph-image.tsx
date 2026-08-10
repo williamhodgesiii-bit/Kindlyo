@@ -18,7 +18,7 @@ import { siteName } from "@/lib/seo";
  */
 
 export const alt =
-  "Little Learner's Club — little steps to big kindness. Social skills for children ages 5 to 9.";
+  "Little Learner's Club — practice makes kind. Social skills for children ages 5 to 9.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -43,20 +43,17 @@ export default function OpengraphImage() {
             width: "56px",
             height: "56px",
             borderRadius: "18px",
-            backgroundColor: "#6d4cf0",
+            backgroundColor: "#e4572e",
           }}
         />
-        <div style={{ fontSize: 40, fontWeight: 700, color: "#5b3dd6" }}>
+        <div style={{ fontSize: 40, fontWeight: 700, color: "#c2451f" }}>
           {siteName}
         </div>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-        <div style={{ fontSize: 84, fontWeight: 700, lineHeight: 1.1 }}>
-          Little steps to
-        </div>
-        <div style={{ fontSize: 84, fontWeight: 700, lineHeight: 1.1 }}>
-          big kindness.
+        <div style={{ fontSize: 96, fontWeight: 700, lineHeight: 1.05 }}>
+          Practice makes kind.
         </div>
       </div>
 

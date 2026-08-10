@@ -30,14 +30,14 @@
   --llc-color-surface: #fffdf8; /* cards, bars (elevation 1) */
   --llc-color-paper: #f0e6d2; /* paper layers, offsets, scene ground band */
   --llc-color-border: #e4d7bf; /* hairlines */
-  /* Brand hue — re-themed for the Little Learner's Club rebrand from the
-     handoff's coral to a bold, modern grape-violet. White on -strong is
-     6.8:1 (AA for all text); the base step is for fills, large text, and the
-     focus ring. The warm-cream neutrals above are kept deliberately: a calm,
-     kid-friendly ground under a confident brand. */
-  --llc-color-brand: #6d4cf0; /* primary action fill, brand moments */
-  --llc-color-brand-strong: #5b3dd6; /* brand as text, hover/pressed */
-  --llc-color-on-brand: #ffffff; /* text/icon on a filled brand surface */
+  /* Brand hue — a warm, friendly tomato for the Little Learner's Club rebrand.
+     It sits in the same warm family as the cream ground and the sage scene, so
+     the whole palette reads as one storybook world rather than clashing accents.
+     White on -strong is 5.0:1 (AA for all text); the base step is for fills,
+     large display text, and the focus ring. */
+  --llc-color-brand: #e4572e; /* primary action fill, brand moments */
+  --llc-color-brand-strong: #c2451f; /* brand as text, hover/pressed */
+  --llc-color-on-brand: #fffdf8; /* text/icon on a filled brand surface */
 
   /* ---- Colour · feedback trio (global, module-independent) — DESIGN.md §2 ----
      Always paired with an icon AND a text label — never colour alone. There is
@@ -379,16 +379,17 @@
    * their previous values for not-yet-migrated components and the placeholder
    * vector art (avatarArt / illustrations / icons consume these via var()).
    */
-  /* Companion accents for the rebrand: a fresh teal (the calm, "growth" role
-     the old sage held) plus gold and rose for playful pops. -strong carries
-     text (>= 4.5:1 on surface); the tints are backgrounds only. */
-  --color-brand-secondary: #2e9e96;
-  --color-brand-secondary-strong: #0f6e68;
-  --color-brand-accent: #f5a524;
-  --color-tint-clay: #fbe6ec; /* rose */
-  --color-tint-sage: #dcefec; /* teal */
-  --color-tint-honey: #fbe8c8; /* gold */
-  --color-tint-sand: #ece4fa; /* soft lavender */
+  /* A single companion for the tomato brand: a muted sage-pine (the calm,
+     natural role), which matches the default lesson scene so the greens flow
+     together. Marigold is a small warm highlight only. -strong carries text
+     (>= 4.5:1 on surface); the tints are soft, warm backgrounds only. */
+  --color-brand-secondary: #2f6b57;
+  --color-brand-secondary-strong: #215243;
+  --color-brand-accent: #f2b134;
+  --color-tint-clay: #f7ded2; /* soft tomato */
+  --color-tint-sage: #dfe9e1; /* soft sage */
+  --color-tint-honey: #f8e6c2; /* soft marigold */
+  --color-tint-sand: #efe1cb; /* warm paper */
 
   /* ---- Radius — DESIGN.md §4 (values updated to the exact scale) ---- */
   --radius-sm: var(--llc-radius-sm);

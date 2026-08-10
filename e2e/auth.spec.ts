@@ -60,7 +60,7 @@ test.describe("signing in and out", () => {
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: "Little steps to big kindness.",
+        name: "Practice makes kind.",
       }),
     ).toBeVisible();
 

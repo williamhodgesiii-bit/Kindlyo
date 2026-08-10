@@ -17,8 +17,8 @@
 /** `--llc-color-canvas` — the real app background, and the PWA splash colour. */
 export const MARK_BACKGROUND = "#faf3e7";
 
-/** The grape-violet heart fill, matching `src/app/icon.svg`. */
-export const MARK_FILL = "#6d4cf0";
+/** The tomato heart fill, matching `src/app/icon.svg`. */
+export const MARK_FILL = "#e4572e";
 
 /** The heart outline on a 64×64 grid, lifted verbatim from `icon.svg`. */
 const HEART_PATH =
