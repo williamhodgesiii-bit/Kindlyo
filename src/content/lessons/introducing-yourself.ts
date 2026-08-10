@@ -87,18 +87,24 @@ export const introducingYourself: Lesson = {
         text: "“I’m … — I like …”",
         encouragement:
           "That is the whole skill in one breath: a name, and a door for the next question.",
+        rehearsalCue:
+          "Try your version now if you like — “I’m … and I like …” — aloud, whispered, or just in your head. However you run it, the real one comes easier.",
       },
       {
         id: "just-name",
         text: "“I’m …”, and nothing else yet",
         encouragement:
           "Short works. Your name alone is already a real introduction; the rest can come later.",
+        rehearsalCue:
+          "Say just your name now if you like, out loud or inside your head — “I’m …”. A quiet go now makes it easier to start for real.",
       },
       {
         id: "ask-then-tell",
         text: "“What’s your name? I’m …”",
         encouragement:
           "Nice — you asked and you told. Now you both have handles.",
+        rehearsalCue:
+          "Picture asking first and then telling — “What’s your name? I’m …” — or murmur it now if you like. Trying it that way once helps it come out in order later.",
       },
     ],
     closing:

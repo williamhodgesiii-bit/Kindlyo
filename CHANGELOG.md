@@ -10,6 +10,12 @@ Newest first.
 
 <!-- new-entries-below -->
 
+## 2026-08-10
+
+- content(meeting-people): draft rehearsal cues for the rest of module 1
+- content(meeting-people): revise rehearsal cues per safety + story-motion review
+- Shipped from `4dfad57` (`claude/routine-todo-approvals-f9dxdh`)
+
 ## 2026-08-09
 
 - refactor(lesson): retire the parallel scene-drawing system

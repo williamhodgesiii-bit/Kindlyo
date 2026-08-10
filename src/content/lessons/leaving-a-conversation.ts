@@ -85,18 +85,24 @@ export const leavingAConversation: Lesson = {
         text: "“Got to go — finish it next week?”",
         encouragement:
           "You turned an interruption into an appointment. Maya keeps her ending and you keep it warm.",
+        rehearsalCue:
+          "Try it now if you like, out loud or in your head — “Got to go — finish it next week?” A quiet run-through makes the real goodbye come easier.",
       },
       {
         id: "wave-goodbye",
         text: "Wave and say “bye, Maya!”",
         encouragement:
           "Quick and clear. She knows you left for home, not away from her.",
+        rehearsalCue:
+          "Give a little wave now, or just picture it, with a “bye!” if you want one. Practising the wave on its own makes the real goodbye feel easier.",
       },
       {
         id: "honest-goodbye",
         text: "“Sorry — my grown-up’s waiting!”",
         encouragement:
           "You gave the real reason, and real reasons are the whole point of goodbyes.",
+        rehearsalCue:
+          "Say your real reason now if you like, out loud or just in your head — “my grown-up’s waiting!” Saying it once makes it easier to find the words in the moment.",
       },
     ],
     closing:
