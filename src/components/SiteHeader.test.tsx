@@ -83,7 +83,9 @@ describe("SiteHeader", () => {
     render(<SiteHeader />);
 
     await user.tab();
-    expect(screen.getByRole("link", { name: "Kindlyo" })).toHaveFocus();
+    expect(
+      screen.getByRole("link", { name: "Little Learner's Club" }),
+    ).toHaveFocus();
 
     await user.tab();
     const [firstNavLink] = screen.getAllByRole("link", {

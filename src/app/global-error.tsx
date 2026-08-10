@@ -40,8 +40,8 @@ export default function GlobalError({
         <main style={{ maxWidth: "36rem", margin: "0 auto" }}>
           <h1 style={{ fontSize: "1.875rem" }}>Something went wrong</h1>
           <p>
-            Kindlyo could not load. Please try again in a moment; nothing has
-            been lost.
+            Little Learner&apos;s Club could not load. Please try again in a
+            moment; nothing has been lost.
           </p>
           <button
             type="button"

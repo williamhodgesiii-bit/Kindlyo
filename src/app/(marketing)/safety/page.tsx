@@ -21,7 +21,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "Safety and privacy",
   description:
-    "How Kindlyo protects children ages 5 to 9: no advertising, no child logins, no messaging between children, no public profiles, and the minimum data we can manage. Politeness never overrides a child's safety or consent.",
+    "How Little Learner's Club protects children ages 5 to 9: no advertising, no child logins, no messaging between children, no public profiles, and the minimum data we can manage. Politeness never overrides a child's safety or consent.",
   path: "/safety",
 });
 
@@ -65,9 +65,10 @@ export default function SafetyPage() {
               Safety and privacy
             </Heading>
             <Text size="lg" tone="secondary" className="mt-6">
-              Kindlyo is used by children, so the interesting question is not
-              what we protect but what we decided never to hold or build in the
-              first place. Most of this page is a list of absences.
+              Little Learner&apos;s Club is used by children, so the interesting
+              question is not what we protect but what we decided never to hold
+              or build in the first place. Most of this page is a list of
+              absences.
             </Text>
           </div>
         </PageContainer>
@@ -102,7 +103,7 @@ export default function SafetyPage() {
       <MarketingSection
         headingId="safety-account-heading"
         title="Who has an account"
-        lead="One answer: the parent or guardian. Children are not users of Kindlyo in the account sense, and cannot be."
+        lead="One answer: the parent or guardian. Children are not users of Little Learner's Club in the account sense, and cannot be."
       >
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
           <Card>
@@ -176,7 +177,7 @@ export default function SafetyPage() {
       <MarketingSection
         headingId="safety-analytics-heading"
         title="What we do measure"
-        lead="First-party product events, so we can tell whether Kindlyo is any use. Nothing is shared with an advertising network, because there is no advertising."
+        lead="First-party product events, so we can tell whether Little Learner's Club is any use. Nothing is shared with an advertising network, because there is no advertising."
       >
         <Card className="mt-8">
           <Text className="max-w-prose">
@@ -201,9 +202,10 @@ export default function SafetyPage() {
       >
         <div className="mt-8 grid gap-4">
           <InlineFeedback tone="neutral" title="No accounts yet">
-            Kindlyo is in private beta and there is no account system. The
-            preview on this site keeps profiles and progress in your own
-            browser. Clearing your browser data removes them entirely.
+            Little Learner&apos;s Club is in private beta and there is no
+            account system. The preview on this site keeps profiles and progress
+            in your own browser. Clearing your browser data removes them
+            entirely.
           </InlineFeedback>
           <InlineFeedback
             tone="neutral"
@@ -214,11 +216,11 @@ export default function SafetyPage() {
             They are built alongside accounts, before the beta opens.
           </InlineFeedback>
           <InlineFeedback tone="neutral" title="Not yet legally reviewed">
-            Before Kindlyo is available to the public, its handling of
-            children&rsquo;s data will be reviewed by qualified counsel against
-            COPPA, applicable state and international privacy law, and app-store
-            family policies. That review has not happened yet, and nothing in
-            our documentation is legal advice.
+            Before Little Learner&apos;s Club is available to the public, its
+            handling of children&rsquo;s data will be reviewed by qualified
+            counsel against COPPA, applicable state and international privacy
+            law, and app-store family policies. That review has not happened
+            yet, and nothing in our documentation is legal advice.
           </InlineFeedback>
         </div>
       </MarketingSection>

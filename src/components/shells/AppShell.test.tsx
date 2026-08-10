@@ -101,10 +101,9 @@ describe("ChildAppShell", () => {
       </ChildAppShell>,
     );
 
-    expect(screen.getByRole("link", { name: "Kindlyo" })).toHaveAttribute(
-      "href",
-      "/learn",
-    );
+    expect(
+      screen.getByRole("link", { name: "Little Learner's Club" }),
+    ).toHaveAttribute("href", "/learn");
   });
 
   it("gives the child the Clubhouse / Map / Me bottom navigation", () => {

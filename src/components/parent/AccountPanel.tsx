@@ -57,9 +57,9 @@ export function AccountPanel() {
           Your data
         </Heading>
         <Text tone="secondary" className="mt-2 max-w-prose">
-          Download everything Kindlyo keeps about your family — your email, your
-          children&rsquo;s profiles, and what they have practised — as a single
-          file you can keep.
+          Download everything Little Learner&apos;s Club keeps about your family
+          — your email, your children&rsquo;s profiles, and what they have
+          practised — as a single file you can keep.
         </Text>
         <a
           href="/api/family/export"

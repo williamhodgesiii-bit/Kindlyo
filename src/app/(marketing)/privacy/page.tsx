@@ -22,7 +22,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "Privacy policy",
   description:
-    "Kindlyo's formal privacy policy is being prepared and will be published before the product opens to the public. Our current data practices are described in plain language on the safety and privacy page.",
+    "The Little Learner's Club formal privacy policy is being prepared and will be published before the product opens to the public. Our current data practices are described in plain language on the safety and privacy page.",
   path: "/privacy",
 });
 
@@ -45,8 +45,9 @@ export default function PrivacyPage() {
             Privacy policy
           </Heading>
           <Text size="lg" tone="secondary" className="mt-6">
-            This is a placeholder, not a policy. Kindlyo is in private beta and
-            the formal privacy notice has not been written or reviewed yet.
+            This is a placeholder, not a policy. Little Learner&apos;s Club is
+            in private beta and the formal privacy notice has not been written
+            or reviewed yet.
           </Text>
 
           <InlineFeedback
@@ -56,8 +57,8 @@ export default function PrivacyPage() {
           >
             Nothing on this page is a privacy notice, a contract, or legal
             advice. When a real policy exists it will replace this page, and it
-            will be published before Kindlyo is open to the public or holds any
-            family&rsquo;s data on a server.
+            will be published before Little Learner&apos;s Club is open to the
+            public or holds any family&rsquo;s data on a server.
           </InlineFeedback>
         </PageContainer>
       </section>

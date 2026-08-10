@@ -13,9 +13,12 @@ import { expect, test, type Page } from "@playwright/test";
  */
 
 const marketingRoutes = [
-  { path: "/", heading: "Kindness is a skill. Confidence takes practice." },
+  { path: "/", heading: "Little steps to big kindness." },
   { path: "/how-it-works", heading: "A lesson takes about five minutes" },
-  { path: "/curriculum", heading: "What Kindlyo teaches, and how" },
+  {
+    path: "/curriculum",
+    heading: "What Little Learner's Club teaches, and how",
+  },
   {
     path: "/for-parents",
     heading: "You hold the account. Your child learns inside it.",

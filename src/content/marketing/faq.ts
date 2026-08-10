@@ -26,7 +26,7 @@ export type FaqEntry = {
 export const faqEntries: readonly FaqEntry[] = [
   {
     id: "what-is-it",
-    question: "What is Kindlyo?",
+    question: "What is Little Learner's Club?",
     answer:
       "A learning platform where children ages 5 to 9 practise everyday social situations — greeting someone, joining a group, listening, ending a conversation — through short illustrated stories where they choose what to do and read what tends to follow. Each lesson finishes with one small thing to try offline with a grown-up.",
   },
@@ -34,7 +34,7 @@ export const faqEntries: readonly FaqEntry[] = [
     id: "beta-status",
     question: "Can I use it today?",
     answer:
-      "Not yet. Kindlyo is in private beta and is not open to the public. You can join the founding-family waitlist to hear when places open, and you can play a sample scenario on this site right now without an account.",
+      "Not yet. Little Learner's Club is in private beta and is not open to the public. You can join the founding-family waitlist to hear when places open, and you can play a sample scenario on this site right now without an account.",
   },
   {
     id: "expert-review",
@@ -64,7 +64,7 @@ export const faqEntries: readonly FaqEntry[] = [
     id: "advertising",
     question: "Are there advertisements?",
     answer:
-      "No. There is no advertising anywhere in Kindlyo, no third-party advertising code, and no behavioural advertising. We do not sell personal information.",
+      "No. There is no advertising anywhere in Little Learner's Club, no third-party advertising code, and no behavioural advertising. We do not sell personal information.",
   },
   {
     id: "lesson-length",
@@ -82,7 +82,7 @@ export const faqEntries: readonly FaqEntry[] = [
     id: "quiet-children",
     question: "What if my child does not like speaking or making eye contact?",
     answer:
-      "Then Kindlyo should still work for them. Waving, nodding, and signing are taught as real greetings rather than as substitutes for a better one. No lesson requires eye contact, speaking, or physical touch, and every lesson states that a child may decline to be touched.",
+      "Then Little Learner's Club should still work for them. Waving, nodding, and signing are taught as real greetings rather than as substitutes for a better one. No lesson requires eye contact, speaking, or physical touch, and every lesson states that a child may decline to be touched.",
   },
   {
     id: "safety-first",

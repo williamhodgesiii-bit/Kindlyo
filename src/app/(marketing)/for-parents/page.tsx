@@ -23,7 +23,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "For parents",
   description:
-    "You hold the Kindlyo account and your child learns inside it. See what has been practised in four plain words, get one offline mission at a time, and never a score, a streak, or a comparison between siblings.",
+    "You hold the Little Learner's Club account and your child learns inside it. See what has been practised in four plain words, get one offline mission at a time, and never a score, a streak, or a comparison between siblings.",
   path: "/for-parents",
 });
 
@@ -64,9 +64,10 @@ export default function ForParentsPage() {
               You hold the account. Your child learns inside it.
             </Heading>
             <Text size="lg" tone="secondary" className="mt-6">
-              Kindlyo is built for a parent with about ninety seconds and no
-              appetite for another dashboard to keep up with. You are not asked
-              to plan a session, mark anything, or maintain a streak.
+              Little Learner&apos;s Club is built for a parent with about ninety
+              seconds and no appetite for another dashboard to keep up with. You
+              are not asked to plan a session, mark anything, or maintain a
+              streak.
             </Text>
             <div className="mt-8 flex flex-wrap gap-4">
               <ButtonLink href="/waitlist" size="lg">
@@ -202,10 +203,11 @@ export default function ForParentsPage() {
               Where things stand today
             </Heading>
             <Text tone="secondary" className="mt-2">
-              There is no Kindlyo account yet. The preview stores profiles and
-              progress in your own browser, and clearing your browser data
-              removes them completely. Accounts, and the deletion and export
-              tools that go with them, arrive before the beta opens.
+              There is no Little Learner&apos;s Club account yet. The preview
+              stores profiles and progress in your own browser, and clearing
+              your browser data removes them completely. Accounts, and the
+              deletion and export tools that go with them, arrive before the
+              beta opens.
             </Text>
           </Card>
         </div>

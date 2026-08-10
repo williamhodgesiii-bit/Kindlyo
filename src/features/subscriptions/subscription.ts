@@ -136,8 +136,8 @@ export function describeBilling(
         tone: "positive",
         title: "Your family membership is active",
         body: on
-          ? `It renews on ${on}. Thank you for supporting Kindlyo.`
-          : "Thank you for supporting Kindlyo.",
+          ? `It renews on ${on}. Thank you for supporting Little Learner's Club.`
+          : "Thank you for supporting Little Learner's Club.",
       };
     case "past_due":
       return {

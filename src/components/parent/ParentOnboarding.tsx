@@ -42,12 +42,12 @@ export function ParentOnboarding({ family }: { family: Family }) {
       {step === "welcome" ? (
         <section>
           <Heading level={1} size="display" className="mt-3">
-            Welcome to Kindlyo
+            Welcome to Little Learner&apos;s Club
           </Heading>
           <Text size="lg" className="mt-6 max-w-prose">
-            Kindlyo helps children between five and nine practise the small
-            social moments that are easy to find hard — saying hello, joining
-            in, listening, leaving a conversation kindly.
+            Little Learner&apos;s Club helps children between five and nine
+            practise the small social moments that are easy to find hard —
+            saying hello, joining in, listening, leaving a conversation kindly.
           </Text>
           <Text size="lg" className="mt-4 max-w-prose">
             Lessons are short. Each one ends with something to try away from the

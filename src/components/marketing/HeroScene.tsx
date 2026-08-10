@@ -25,7 +25,7 @@ import { cn } from "@/lib/cn";
  * the curriculum (and the copy on this very page) promises that nothing
  * requires touch or eye contact, so the hero must not depict the opposite. The
  * two figures use different skin-ramp steps and hair, echoing the cast's
- * inclusivity without making a documentary claim about who uses Kindlyo.
+ * inclusivity without making a documentary claim about who uses the product.
  *
  * Motion is a single one-shot entrance (`.llc-scene-enter`: a 20px rise + fade,
  * `both` fill so it rests visible without JS). There is no loop, no parallax,

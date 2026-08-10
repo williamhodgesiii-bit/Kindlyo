@@ -2,8 +2,9 @@
 
 ## Product
 
-This repository contains Kindlyo, a responsive learning platform that teaches
-children ages 5–9 social confidence, kindness, manners, communication, and
+This repository contains Little Learner's Club, a responsive learning platform
+that teaches children ages 5–9 social confidence, kindness, manners,
+communication, and
 context-aware etiquette.
 
 The paying and account-owning user is the parent or guardian.

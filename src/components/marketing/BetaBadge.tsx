@@ -3,7 +3,8 @@ import { cn } from "@/lib/cn";
 /**
  * The private-beta label.
  *
- * Kindlyo is not open to the public, and `prompts/21-marketing-site.md` asks
+ * Little Learner's Club is not open to the public, and
+ * `prompts/21-marketing-site.md` asks
  * for that to be clearly labelled rather than buried. It sits beside the
  * wordmark in the header, so it is on every page of the site without needing a
  * dismissible banner and the "was it dismissed?" state that comes with one.

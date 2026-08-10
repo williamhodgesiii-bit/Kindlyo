@@ -32,7 +32,7 @@ export default async function LoginPage({
       intro="Welcome back. Sign in to reach your family's dashboard and lessons."
       footer={
         <>
-          New to Kindlyo?{" "}
+          New to Little Learner&apos;s Club?{" "}
           <Link href={signupHref} className={linkClass}>
             Create an account
           </Link>

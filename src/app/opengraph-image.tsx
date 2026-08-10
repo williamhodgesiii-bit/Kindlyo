@@ -18,7 +18,7 @@ import { siteName } from "@/lib/seo";
  */
 
 export const alt =
-  "Kindlyo — kindness is a skill, confidence takes practice. Social skills for children ages 5 to 9.";
+  "Little Learner's Club — little steps to big kindness. Social skills for children ages 5 to 9.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -43,20 +43,20 @@ export default function OpengraphImage() {
             width: "56px",
             height: "56px",
             borderRadius: "18px",
-            backgroundColor: "#d96f52",
+            backgroundColor: "#6d4cf0",
           }}
         />
-        <div style={{ fontSize: 40, fontWeight: 700, color: "#b0492f" }}>
+        <div style={{ fontSize: 40, fontWeight: 700, color: "#5b3dd6" }}>
           {siteName}
         </div>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-        <div style={{ fontSize: 76, fontWeight: 700, lineHeight: 1.1 }}>
-          Kindness is a skill.
+        <div style={{ fontSize: 84, fontWeight: 700, lineHeight: 1.1 }}>
+          Little steps to
         </div>
-        <div style={{ fontSize: 76, fontWeight: 700, lineHeight: 1.1 }}>
-          Confidence takes practice.
+        <div style={{ fontSize: 84, fontWeight: 700, lineHeight: 1.1 }}>
+          big kindness.
         </div>
       </div>
 

@@ -48,7 +48,9 @@ describe("who sees onboarding", () => {
     render(<ParentArea />);
 
     expect(
-      await screen.findByRole("heading", { name: "Welcome to Kindlyo" }),
+      await screen.findByRole("heading", {
+        name: "Welcome to Little Learner's Club",
+      }),
     ).toBeInTheDocument();
   });
 
@@ -60,7 +62,9 @@ describe("who sees onboarding", () => {
       await screen.findByRole("heading", { name: "For parents" }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("heading", { name: "Welcome to Kindlyo" }),
+      screen.queryByRole("heading", {
+        name: "Welcome to Little Learner's Club",
+      }),
     ).toBeNull();
   });
 

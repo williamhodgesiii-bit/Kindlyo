@@ -16,7 +16,7 @@
  *   2. `[data-module=...]`  — the twelve per-world theme overrides.
  *   3. `@theme`             — maps the tokens into Tailwind v4 utility
  *                            namespaces (bg-*, text-*, rounded-*, font-*, ...)
- *                            and aliases Kindlyo's older token names onto the
+ *                            and aliases the legacy (pre-rebrand) token names onto the
  *                            new values, so existing components adopt the
  *                            palette without breaking (to be removed as those
  *                            components migrate onto the llc.* tokens).
@@ -30,9 +30,14 @@
   --llc-color-surface: #fffdf8; /* cards, bars (elevation 1) */
   --llc-color-paper: #f0e6d2; /* paper layers, offsets, scene ground band */
   --llc-color-border: #e4d7bf; /* hairlines */
-  --llc-color-brand: #be5136; /* primary action fill, brand moments */
-  --llc-color-brand-strong: #a03f27; /* brand as text, hover/pressed */
-  --llc-color-on-brand: #fffdf8; /* text/icon on a filled brand surface */
+  /* Brand hue — re-themed for the Little Learner's Club rebrand from the
+     handoff's coral to a bold, modern grape-violet. White on -strong is
+     6.8:1 (AA for all text); the base step is for fills, large text, and the
+     focus ring. The warm-cream neutrals above are kept deliberately: a calm,
+     kid-friendly ground under a confident brand. */
+  --llc-color-brand: #6d4cf0; /* primary action fill, brand moments */
+  --llc-color-brand-strong: #5b3dd6; /* brand as text, hover/pressed */
+  --llc-color-on-brand: #ffffff; /* text/icon on a filled brand surface */
 
   /* ---- Colour · feedback trio (global, module-independent) — DESIGN.md §2 ----
      Always paired with an icon AND a text label — never colour alone. There is
@@ -350,7 +355,7 @@
   --color-module-tint-deep: var(--module-tint-deep);
 
   /*
-   * Legacy Kindlyo colour tokens — SUPERSEDED onto the Little Learner's Club
+   * Legacy (pre-rebrand) colour tokens — SUPERSEDED onto the Little Learner's Club
    * palette so existing components adopt the warm skin without edits. These
    * aliases are retained only until those components migrate onto the llc.*
    * tokens; new screens must not use them.
@@ -374,13 +379,16 @@
    * their previous values for not-yet-migrated components and the placeholder
    * vector art (avatarArt / illustrations / icons consume these via var()).
    */
-  --color-brand-secondary: #6f9b8f;
-  --color-brand-secondary-strong: #3f6a5d;
-  --color-brand-accent: #e5ad4f;
-  --color-tint-clay: #f4ded6;
-  --color-tint-sage: #dde9e5;
-  --color-tint-honey: #f7e7c8;
-  --color-tint-sand: #ece2d4;
+  /* Companion accents for the rebrand: a fresh teal (the calm, "growth" role
+     the old sage held) plus gold and rose for playful pops. -strong carries
+     text (>= 4.5:1 on surface); the tints are backgrounds only. */
+  --color-brand-secondary: #2e9e96;
+  --color-brand-secondary-strong: #0f6e68;
+  --color-brand-accent: #f5a524;
+  --color-tint-clay: #fbe6ec; /* rose */
+  --color-tint-sage: #dcefec; /* teal */
+  --color-tint-honey: #fbe8c8; /* gold */
+  --color-tint-sand: #ece4fa; /* soft lavender */
 
   /* ---- Radius — DESIGN.md §4 (values updated to the exact scale) ---- */
   --radius-sm: var(--llc-radius-sm);
@@ -402,7 +410,7 @@
   /* ---- Typography families — DESIGN.md §3 ---- */
   --font-display: var(--llc-type-display);
   --font-body: var(--llc-type-body);
-  /* Kindlyo's existing `font-sans` / var(--font-sans) now resolve to the body
+  /* The legacy `font-sans` / var(--font-sans) now resolve to the body
      family (Source Sans 3 with the same system fallbacks it used before). */
   --font-sans: var(--llc-type-body);
 
@@ -424,7 +432,7 @@
   --text-label-200--line-height: 0.9375rem;
 
   /*
-   * Kindlyo's existing type scale, retained for not-yet-migrated components.
+   * The legacy type scale, retained for not-yet-migrated components.
    * Nudged above Tailwind's defaults for children reading at arm's length.
    */
   --text-xs: 0.8125rem;
@@ -448,7 +456,7 @@
 
   /* ---- Elevation — DESIGN.md §4 ---- */
   --shadow-soft: var(--llc-shadow-soft);
-  /* Kindlyo extra, re-based on the ink colour; used sparingly. */
+  /* Legacy extra, re-based on the ink colour; used sparingly. */
   --shadow-lifted: 0 8px 32px rgb(49 40 28 / 0.14);
 
   /* ---- Motion easings — exposed as `ease-*` utilities (MOTION.md) ---- */

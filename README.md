@@ -1,8 +1,8 @@
-# Kindlyo
+# Little Learner's Club
 
-Kindlyo is a parent-guided learning platform that helps children ages 5–9
-practice kindness, communication, manners, and social confidence through short
-interactive stories and real-world missions.
+Little Learner's Club is a parent-guided learning platform that helps children
+ages 5–9 practice kindness, communication, manners, and social confidence
+through short interactive stories and real-world missions.
 
 The parent or guardian owns the account. Children learn within a
 parent-controlled session and never create independent accounts.
@@ -52,24 +52,24 @@ kindlyo/
 
 ## Documentation
 
-| Document                                                  | Purpose                                   |
-| --------------------------------------------------------- | ----------------------------------------- |
-| [PRODUCT_BRIEF.md](docs/PRODUCT_BRIEF.md)                 | What Kindlyo is and the problem it solves |
-| [MVP_SCOPE.md](docs/MVP_SCOPE.md)                         | What is in and out of the MVP             |
-| [USER_JOURNEYS.md](docs/USER_JOURNEYS.md)                 | Primary paths through the product         |
-| [CURRICULUM_PRINCIPLES.md](docs/CURRICULUM_PRINCIPLES.md) | How lessons teach                         |
-| [CONTENT_SCHEMA.md](docs/CONTENT_SCHEMA.md)               | Structured lesson content model           |
-| [LESSON_ENGINE.md](docs/LESSON_ENGINE.md)                 | How lessons are validated and played      |
-| [PROFILES.md](docs/PROFILES.md)                           | Family setup, child profiles, and privacy |
-| [AUTH.md](docs/AUTH.md)                                   | Parent authentication and its security    |
-| [PARENT_DASHBOARD.md](docs/PARENT_DASHBOARD.md)           | What parents see, and what it never says  |
-| [DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)                 | Brand, tokens, components, accessibility  |
-| [PRIVACY_AND_SAFETY.md](docs/PRIVACY_AND_SAFETY.md)       | Data posture and safety rules             |
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md)                   | Stack, structure, and boundaries          |
-| [ANALYTICS.md](docs/ANALYTICS.md)                         | What we measure and why                   |
-| [TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md)           | Unit, component, e2e, and auth tests      |
-| [ROADMAP.md](docs/ROADMAP.md)                             | Phased plan from discovery to validation  |
-| [DECISIONS.md](docs/DECISIONS.md)                         | Decision log                              |
+| Document                                                  | Purpose                                                 |
+| --------------------------------------------------------- | ------------------------------------------------------- |
+| [PRODUCT_BRIEF.md](docs/PRODUCT_BRIEF.md)                 | What Little Learner's Club is and the problem it solves |
+| [MVP_SCOPE.md](docs/MVP_SCOPE.md)                         | What is in and out of the MVP                           |
+| [USER_JOURNEYS.md](docs/USER_JOURNEYS.md)                 | Primary paths through the product                       |
+| [CURRICULUM_PRINCIPLES.md](docs/CURRICULUM_PRINCIPLES.md) | How lessons teach                                       |
+| [CONTENT_SCHEMA.md](docs/CONTENT_SCHEMA.md)               | Structured lesson content model                         |
+| [LESSON_ENGINE.md](docs/LESSON_ENGINE.md)                 | How lessons are validated and played                    |
+| [PROFILES.md](docs/PROFILES.md)                           | Family setup, child profiles, and privacy               |
+| [AUTH.md](docs/AUTH.md)                                   | Parent authentication and its security                  |
+| [PARENT_DASHBOARD.md](docs/PARENT_DASHBOARD.md)           | What parents see, and what it never says                |
+| [DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)                 | Brand, tokens, components, accessibility                |
+| [PRIVACY_AND_SAFETY.md](docs/PRIVACY_AND_SAFETY.md)       | Data posture and safety rules                           |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md)                   | Stack, structure, and boundaries                        |
+| [ANALYTICS.md](docs/ANALYTICS.md)                         | What we measure and why                                 |
+| [TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md)           | Unit, component, e2e, and auth tests                    |
+| [ROADMAP.md](docs/ROADMAP.md)                             | Phased plan from discovery to validation                |
+| [DECISIONS.md](docs/DECISIONS.md)                         | Decision log                                            |
 
 ## Build-phase prompts
 
@@ -158,8 +158,9 @@ scripts/day.sh cleanup            # preview removal of merged, stale branches
 
 ## Content and safety
 
-All curriculum content is **draft** until reviewed by qualified humans. Kindlyo
-does not imply professional, educational, or clinical validation that has not
+All curriculum content is **draft** until reviewed by qualified humans. Little
+Learner's Club does not imply professional, educational, or clinical validation
+that has not
 occurred. Safety, consent, and trusted-adult guidance always take priority over
 politeness. See [`docs/PRIVACY_AND_SAFETY.md`](docs/PRIVACY_AND_SAFETY.md).
 
