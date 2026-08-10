@@ -12,6 +12,8 @@ Newest first.
 
 ## 2026-08-10
 
+- Modernize parent dashboard: at-a-glance hero line, hero layout + staggered entrance motion, accent icons per panel
+- Shipped from `66329c6` (`claude/ios-app-development-tbfap6`)
 - Add tactile press-squish to choice cards (MOTION.md touch feedback)
 - Simplify 'Saying hello' copy for ages 5-9; add safety-spine guard test
 - Harden 'Saying hello' safety spine per review: unconditional refusal, salience ordering, direction-pinning guard test
