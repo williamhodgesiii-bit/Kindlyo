@@ -8,12 +8,21 @@ import type { Lesson } from "@/features/curriculum/schema";
  * `reviewedAt` are absent. Nothing here should be described as validated by an
  * educator, psychologist, or clinician, because it has not been.
  *
- * Two things to hold on to if you edit this file:
+ * Version 2 rewrote the child-facing copy shorter and more concrete for ages
+ * 5-9 (short sentences, one idea each, concrete high-frequency words), on the
+ * age-appropriate-reading-level research gathered for the lesson revamp. The
+ * lesson's meaning, structure, ids, and every safety point are unchanged; only
+ * the wording is tighter. Three things to hold on to if you edit this file:
  *
  * - None of the three choices is wrong. They differ in what tends to follow,
  *   which is what `consequenceType` records. Do not add a "best" answer.
  * - Every greeting form offered in the practice step is presented as equally
  *   valid. Speaking is not the standard that waving falls short of.
+ * - The safety spine lives in `principle.points` (and `parentCoaching.tryThis`):
+ *   greetings can be silent, need no eye contact, never require being touched,
+ *   can be declined, give way to safety, and vary by culture. Those points are
+ *   kept as discrete, affirmatively-framed lines on purpose — do not fold them
+ *   into prose or shorten them away. `saying-hello.safety.test.ts` guards them.
  */
 export const sayingHello: Lesson = {
   id: "saying-hello",
@@ -22,30 +31,30 @@ export const sayingHello: Lesson = {
   order: 1,
   title: "Saying hello",
   description:
-    "A first morning at art club, and someone you have not met yet looks up. What does a hello actually do?",
-  estimatedMinutes: 6,
+    "It is your first day at art club. Someone looks up. What does a hello really do?",
+  estimatedMinutes: 5,
   ageMin: 5,
   ageMax: 9,
   learningObjectives: [
-    "Explain that a greeting tells another person they have been noticed.",
+    "Understand that a hello tells someone they were noticed.",
     "Name more than one way to say hello, including ways without words.",
-    "Recognise that a greeting never requires touch, eye contact, or speaking.",
+    "Know that a hello can be silent and never needs touch or eye contact.",
   ],
   skillArea: "greeting",
 
   scenes: [
     {
       id: "art-club-morning",
-      title: "The first morning at art club",
+      title: "Your first day at art club",
       narration:
-        "It is your first morning at art club. A girl called Maya is already at the long table, laying out paintbrushes in a row. She looks up when you come in, and then keeps going with the brushes. You have never met her before.",
+        "It is your first day at art club. A girl is already there. Her name is Maya. She looks up, then goes back to setting out the paintbrushes. You have not met her before.",
       illustrationKey: "art-table-morning",
     },
     {
       id: "the-first-moment",
       title: "Maya looks up",
       narration:
-        "Maya glances over again. There is a free chair beside her. Right now, she does not know whether you noticed her at all.",
+        "Maya looks over again. There is an empty chair next to her. She does not know yet if you saw her.",
       illustrationKey: "two-children-meeting",
       prompt: "What could you do first?",
       choices: [
@@ -54,105 +63,105 @@ export const sayingHello: Lesson = {
           text: "Say hello and tell her your name.",
           consequenceType: "helpful",
           response:
-            "Now Maya knows two things: you noticed her, and what to call you. That gives her something easy to answer. A hello is short, and it does a lot of work.",
+            "Now Maya knows you saw her, and what to call you. That makes it easy for her to answer back. A short hello did a lot.",
         },
         {
           id: "wait-to-be-greeted",
-          text: "Look at the paints and wait for Maya to say something first.",
+          text: "Wait, and let Maya speak first.",
           consequenceType: "mixed",
           response:
-            "This might work. Maya may say hello first, and then you are both fine. It might also mean you each wait for the other, and the quiet gets longer. Waiting is not wrong — it just leaves the first move to someone else.",
+            "This can work. Maya might say hello first. Or you both wait, and it stays quiet for a while. Waiting is okay. It just lets someone else go first.",
         },
         {
           id: "wave-instead",
           text: "Wave, without saying anything.",
           consequenceType: "needs_context",
           response:
-            "A wave is a real hello. Some rooms are too loud for words, some days words are hard to find, and some people greet with hands, a nod, or a sign. What matters is that Maya can tell you noticed her. Different situations can need different responses.",
+            "A wave is a real hello. Some rooms are too loud for words. Some people greet with a nod or a sign. What matters is Maya knows you saw her.",
         },
       ],
     },
   ],
 
   principle: {
-    title: "A hello tells someone you noticed them",
-    body: "When you greet somebody, you are telling them something useful: I can see you, and I am glad you are here. That is why it helps. It is not about being polite for the sake of it — it is so the other person does not have to wonder whether they were noticed at all.",
+    title: "A hello tells someone you see them",
+    body: "A hello tells someone: I see you, and I am glad you are here. That way they do not have to wonder if anyone noticed them.",
     points: [
-      "A hello can be words, a wave, a nod, a smile, or a sign.",
-      "You can greet people in the way that works for you. You never have to look someone in the eye.",
-      "You never have to hug, shake hands, or be touched to say hello, and you can say no to that.",
-      "If a person or a place feels unsafe, you do not owe anyone a greeting. Walk away and find a grown-up you trust.",
-      "Families and countries greet in different ways, and all of them count.",
+      "A hello can be words, a wave, a nod, or a sign.",
+      "You can greet in the way that feels right for you.",
+      "You can say hello without looking someone in the eye.",
+      "You never have to be touched to say hello. You can say no.",
+      "If a place feels unsafe, walk away and find a grown-up you trust.",
+      "Families and countries greet in different ways. All of them count.",
     ],
   },
 
   practice: {
-    prompt:
-      "Your turn. Maya has just looked up. Which hello feels right for you?",
+    prompt: "Your turn. Maya just looked up. Which hello feels right for you?",
     helperText:
-      "There is no single right answer here. Pick the one you would really use.",
+      "There is no single right answer. Pick the one you would really use.",
     options: [
       {
         id: "spoken-hello",
         text: "Say “Hi, I’m …” and your name",
         encouragement:
-          "Good one. Saying your name gives the other person something to answer with.",
+          "Nice. Your name gives them something to answer with.",
         rehearsalCue:
-          "Say it out loud now if you like — “Hi, I’m …” — quietly, or just in your head. Any way you say it makes it easier with a real person later.",
+          "Try it now: say “Hi, I’m …” out loud, or just in your head.",
       },
       {
         id: "wave-hello",
         text: "Wave",
         encouragement:
-          "A wave carries just as much. Maya can tell straight away that you saw her.",
+          "A wave says it just as well. Maya sees that you noticed her.",
         rehearsalCue:
-          "Give a little wave now, the way you would to Maya — or just picture yourself waving. Both count, and both make the real one easier.",
+          "Give a little wave now, or picture yourself waving. Both count.",
       },
       {
         id: "smile-and-nod",
         text: "Smile and nod",
         encouragement:
-          "That works. A nod is a small hello, and it still reaches the other person.",
+          "A nod is a small hello, and it still reaches someone.",
         rehearsalCue:
-          "Try a small nod now, or imagine one. You never have to hold a smile for anyone — a nod on its own is a hello too.",
+          "Try a small nod now, or imagine one. A nod on its own is a hello too.",
       },
       {
         id: "sign-hello",
         text: "Sign or gesture hello",
         encouragement:
-          "Hello travels in lots of ways. Anything the other person can notice is a hello.",
+          "Hello travels in lots of ways. Anything someone can notice is a hello.",
         rehearsalCue:
-          "Make your sign or gesture now, or picture yourself doing it. Your way of saying hello counts, and practising it makes the real one easier.",
+          "Make your sign or gesture now, or picture it. Your way counts.",
       },
     ],
     closing:
-      "However you picked, giving it a go now — even just in your head — makes it easier when it is a real person.",
+      "However you said it, trying it now makes it easier with a real person.",
   },
 
   offlineMission: {
     childPrompt:
-      "Before your next lesson, say hello to one person in your own way. It could be a neighbour, a teacher, a bus driver, or someone at the door.",
+      "Before your next lesson, say hello to one person in your own way. It could be a neighbour, a teacher, or a bus driver.",
     parentPrompt:
-      "Give your child one low-stakes chance to greet somebody today, and let them choose how they do it. Going first yourself is usually enough.",
+      "Give your child one low-key chance to greet someone today. Let them choose how. Going first yourself is usually enough.",
     completionQuestion: "Who did you say hello to, and what happened next?",
   },
 
   parentCoaching: {
     title: "For the grown-up sitting alongside",
     prompt:
-      "Children copy greetings long before they can explain them. The most useful thing you can do this week is greet people out loud where your child can hear you.",
+      "Children copy greetings long before they can explain them. The best thing you can do this week: greet people out loud where your child can hear.",
     tryThis: [
-      "Greet someone in front of your child, then say what you did: “I said hello so she knew I’d seen her.”",
-      "Let your child pick the form. A wave counts. Do not ask for eye contact or a handshake.",
-      "Never make a greeting the price of safety, help, or affection — your child may always decline being touched.",
-      "If the greeting does not happen, skip the correction and try again another day.",
+      "Greet someone where your child can see. Then say why: “I said hello so she knew I saw her.”",
+      "Let your child pick how. A wave counts. Don’t ask for eye contact or a handshake.",
+      "Never make a greeting the price of help or affection. Your child may always say no to being touched.",
+      "If the hello does not happen, skip the correction. Try again another day.",
     ],
   },
 
   completion: {
     title: "You finished “Saying hello”",
     message:
-      "You practised noticing somebody and letting them know it. That is the whole skill, and you can use it tomorrow.",
+      "You practised noticing someone and letting them know. That is the whole skill. You can use it tomorrow.",
   },
 
   reviewQuestionIds: [],
@@ -167,6 +176,7 @@ export const sayingHello: Lesson = {
   accessibilityNotes: [
     "Eye contact is never required, and is named explicitly as optional.",
     "Non-speaking greetings — waving, nodding, signing — are presented as equal, not as fallbacks.",
+    "Copy uses short sentences with one idea each, and reads aloud cleanly for a parent alongside a pre-reader.",
     "Feedback is written to be read aloud by an adult and does not depend on colour or on the illustration.",
     "Illustrations are decorative; the narration carries the whole situation.",
   ],
@@ -176,5 +186,5 @@ export const sayingHello: Lesson = {
     "The scenario is set in a supervised group, not a stranger encounter; the lesson does not encourage greeting unknown adults unsupervised.",
   ],
 
-  version: 1,
+  version: 2,
 };

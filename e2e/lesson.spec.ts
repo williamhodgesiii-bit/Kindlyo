@@ -54,14 +54,14 @@ test.describe("lesson one", () => {
 
     // Story scene.
     await expect(
-      page.getByRole("heading", { name: "The first morning at art club" }),
+      page.getByRole("heading", { name: "Your first day at art club" }),
     ).toBeVisible();
     await next(page);
 
     // Decision: cannot move on until a choice is made.
     await expect(page.getByRole("button", { name: "Next" })).toBeDisabled();
     await page.getByRole("button", { name: /tell her your name/ }).click();
-    await expect(page.getByText(/Now Maya knows two things/)).toBeVisible();
+    await expect(page.getByText(/Now Maya knows you saw her/)).toBeVisible();
     await next(page);
 
     // Principle.
