@@ -73,9 +73,13 @@ export const sayingHello: Lesson = {
             "This can work. Maya might say hello first. Or you both wait, and it stays quiet for a while. Waiting is okay. It just lets someone else go first.",
         },
         {
+          // A wave is affirmed exactly like a spoken hello ("That helps"), so
+          // the one silent option in the scene never reads as the lesser
+          // choice — non-speaking greetings are equal, not fallbacks. The
+          // waiting option carries the "could go either way" beat instead.
           id: "wave-instead",
           text: "Wave, without saying anything.",
-          consequenceType: "needs_context",
+          consequenceType: "helpful",
           response:
             "A wave is a real hello. Some rooms are too loud for words. Some people greet with a nod or a sign. What matters is Maya knows you saw her.",
         },
